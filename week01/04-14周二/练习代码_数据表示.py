@@ -43,7 +43,7 @@ class 数据表示练习:
             # 从右往左找第一个0，从该位开始取反
             binary = inverse_code[1:]
             result = list(binary)
-            i = 7
+            i = len(result) - 1  # 修复：7 位数值，索引从 6 开始
             while i >= 0 and result[i] == '1':
                 result[i] = '0'
                 i -= 1
@@ -56,7 +56,9 @@ class 数据表示练习:
         if complement_code[0] == '0':  # 正数
             return int(complement_code, 2)
         else:  # 负数
-            # 补码-1得反码，反码取反得原码，原码转十进制
+            if complement_code == '10000000':  # 特殊值 -128
+                return -128
+            # 补码 -1 得反码，反码取反得原码，原码转十进制
             inverse = self.complement_minus_one(complement_code)
             original = self.inverse_to_original(inverse)
             return -int(original[1:], 2)
