@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>软考练习系统 · 软件设计师</title>
+<script src="17-练习数据.js"></script>
+<style>
+:root{--blue:#2563eb;--green:#16a34a;--red:#dc2626;--bg:#f1f5f9;--card:#fff;--border:#e2e8f0;--muted:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;background:var(--bg);color:#0f172a;line-height:1.7}
+header{background:#1e3a5f;color:#fff;padding:14px 18px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header h1{font-size:17px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hstats{font-size:12.5px;opacity:.9;margin-left:auto;display:flex;gap:14px;flex-wrap:wrap}
+.hstats b{color:#fde047}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:49}
+nav button{flex-shrink:0;border:1px solid var(--border);background:#fff;color:#334155;padding:6px 13px;border-radius:18px;font-size:13px;cursor:pointer}
+nav button.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+main{max-width:920px;margin:0 auto;padding:16px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+.toolbar .prog{font-weight:600;margin-right:auto}
+.toolbar button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:4px 10px;font-size:12.5px;cursor:pointer}
+.toolbar button:hover{background:#eff6ff;border-color:var(--blue)}
+.fbtn.on{background:#e0e7ff;border-color:var(--blue);color:var(--blue);font-weight:600}
+#filebar{display:none;background:#fef9c3;border:1px solid #eab308;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+#filebar.ok{display:block;background:#dcfce7;border-color:#16a34a}
+#filebar.warn{display:block}
+#filebar button{margin-left:10px;border:1px solid #854d0e;background:#fde047;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12.5px}
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.qhead{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12.5px}
+.qno{font-weight:700;color:var(--blue)}
+.mtag{background:#e0e7ff;color:#3730a3;border-radius:4px;padding:1px 7px}
+.rtag{font-weight:600;margin-left:auto}
+.qtext{font-size:14.5px;margin-bottom:12px;white-space:pre-wrap}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:640px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;gap:8px;align-items:flex-start;text-align:left;border:1.5px solid var(--border);background:#fff;border-radius:8px;padding:9px 12px;font-size:14px;cursor:pointer;transition:.12s}
+.opt:hover{border-color:var(--blue);background:#eff6ff}
+.opt .L{font-weight:700;color:var(--blue);flex-shrink:0}
+.opt.right{border-color:var(--green);background:#f0fdf4}
+.opt.right .L{color:var(--green)}
+.opt.wrong{border-color:var(--red);background:#fef2f2}
+.opt.wrong .L{color:var(--red)}
+.opt:disabled{cursor:default;opacity:1}
+.exp{display:none;margin-top:10px;background:#f8fafc;border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 12px;font-size:13.5px;color:#334155}
+.exp.show{display:block}
+.passage{background:#fffdf5;border:1px dashed #d4b106;padding:14px 16px;font-size:14px;line-height:1.9;margin:12px 0;border-radius:8px;font-family:Georgia,serif}
+.done{color:var(--green)} .miss{color:var(--red)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+#summary table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:8px;overflow:hidden}
+#summary th,#summary td{border:1px solid var(--border);padding:7px 10px;text-align:left}
+#summary th{background:#f1f5f9}
+.bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--green)}
+.bar i.low{background:var(--red)}
+kbd{background:#e2e8f0;border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 软件设计师练习系统
+    <span class="hstats">
+      <span>今日 <b id="hToday">0</b> 题 / 对 <b id="hTodayOk">0</b></span>
+      <span>累计 <b id="hAll">0</b> 题 · 正确率 <b id="hRate">-</b></span>
+      <span>待清错题 <b id="hWrong">0</b></span>
+    </span>
+  </h1>
+</header>
+<nav id="tabs"></nav>
+<main>
+  <div id="filebar"><span id="filemsg"></span><button id="filebtn">📁 连接记录文件</button></div>
+  <div id="view"></div>
+</main>
+
+<script>
+/* ============ 基础数据 ============ */
+const D = window.RK_DATA;
+if(!D){ document.getElementById('view').innerHTML='<div class="qcard" style="color:#dc2626">数据文件加载失败：请确保 <b>17-练习数据.js</b> 和本文件在同一文件夹。</div>'; throw new Error('RK_DATA missing'); }
+
+const MODS = [
+  {id:'mock', name:'摸底卷75题', list:()=>D.mock, keyOf:i=>'mock-'+(i+1), extra:()=>null},
+  {id:'sw',  name:'软件工程',   list:()=>D.banks[0].qs, keyOf:i=>'sw-'+(i+1)},
+  {id:'ds',  name:'数据结构',   list:()=>D.banks[1].qs, keyOf:i=>'ds-'+(i+1)},
+  {id:'db',  name:'数据库',     list:()=>D.banks[2].qs, keyOf:i=>'db-'+(i+1)},
+  {id:'os',  name:'操作系统',   list:()=>D.banks[3].qs, keyOf:i=>'os-'+(i+1)},
+  {id:'hw',  name:'组成与网络', list:()=>D.banks[4].qs, keyOf:i=>'hw-'+(i+1)},
+  {id:'pl',  name:'程序语言与背诵', list:()=>D.banks[5].qs, keyOf:i=>'pl-'+(i+1)},
+  {id:'at',  name:'📐应用技术大题', list:()=>D.at, keyOf:i=>'at-'+(i+1), selfcheck:true},
+  {id:'net', name:'网络自测12题', list:()=>D.net, keyOf:i=>'net-'+(i+1), selfcheck:true},
+  {id:'eng', name:'英语挖空20题', list:()=>D.eng, keyOf:i=>'eng-'+(i+1)},
+];
+const MODNAME = {}; MODS.forEach(m=>m.list().forEach((q,i)=>MODNAME[m.keyOf(i)]=m.name));
+
+/* 摸底结果种子（2026-09-20 实考：27/75，48错；所选字母来自截图，null=截图无法辨认） */
+const SEED_DATE='2026-09-20';
+const SEED_WRONG={2:'D',3:'B',4:'D',5:'B',6:'D',7:'B',10:'A',11:'A',12:'D',13:'B',14:'A',15:'C',16:'A',17:'C',18:'D',19:'D',20:'A',22:'A',23:'C',24:'D',25:'A',26:'B',27:'D',28:'D',29:'C',30:'A',31:'B',32:'D',33:'D',34:null,35:null,37:'A',38:'D',41:'C',43:'D',46:'D',49:'A',53:'C',54:'A',55:'A',57:'C',58:'C',59:'A',64:'A',65:null,66:null,67:null,75:'A'};
+
+/* ============ 记录 ============ */
+const LSKEY='rk_practice_v1';
+let rec = {app:'rk-practice-v1',seeded:false,answers:{},history:[],daily:{}};
+try{ const s=localStorage.getItem(LSKEY); if(s) rec=JSON.parse(s); }catch(e){}
+function saveLocal(){ try{ localStorage.setItem(LSKEY, JSON.stringify(rec)); }catch(e){} }
+
+let fileHandle=null, fileOK=false, writeTimer=null;
+function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('rk_practice',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('handles');
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function loadHandle(){ try{ const db=await openDB();
+  fileHandle = await new Promise(res=>{ const t=db.transaction('handles').objectStore('handles').get('record'); t.onsuccess=()=>res(t.result); t.onerror=()=>res(null); });
+  if(fileHandle){ const p=await fileHandle.queryPermission({mode:'readwrite'});
+    if(p==='granted'){ fileOK=true; setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存，AI 助手可直接读取）'); flushFile(); }
+    else setBar('warn','📄 已绑定记录文件但需重新授权一次（浏览器安全要求）'); }
+  else setBar('warn','📄 尚未绑定记录文件——绑定后 AI 助手就能直接看到你每次的作答与错题');
+}catch(e){ setBar('warn','📄 此浏览器不支持自动记录文件，请用「复制记录」按钮代替'); } }
+function setBar(cls,msg){ const b=document.getElementById('filebar'); b.className=cls; document.getElementById('filemsg').innerHTML=msg;
+  document.getElementById('filebtn').style.display = cls==='ok' ? 'none':'inline-block'; }
+document.getElementById('filebtn').onclick = async ()=>{
+  try{
+    if(!fileHandle){
+      fileHandle = await window.showSaveFilePicker({suggestedName:'软考-练习记录.json',
+        types:[{description:'JSON 记录',accept:{'application/json':['.json']}}]});
+      const db=await openDB(); db.transaction('handles','readwrite').objectStore('handles').put(fileHandle,'record');
+    }
+    const p=await fileHandle.queryPermission({mode:'readwrite'});
+    if(p!=='granted' && await fileHandle.requestPermission({mode:'readwrite'})!=='granted') throw 0;
+    fileOK=true; setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存）'); flushFile();
+  }catch(e){ setBar('warn','⚠️ 未完成绑定（或已取消）。也可以不绑定，用「复制记录」发给 AI。'); }
+};
+async function flushFile(){ if(!fileOK||!fileHandle) return;
+  try{ const w=await fileHandle.createWritable(); await w.write(JSON.stringify(rec,null,1)); await w.close(); }catch(e){ fileOK=false; setBar('warn','⚠️ 记录文件写入失败，点击重新连接'); } }
+function persist(){ rec.lastUpdated=new Date().toISOString(); saveLocal();
+  clearTimeout(writeTimer); writeTimer=setTimeout(flushFile,900); }
+
+function today(){ return new Date().toISOString().slice(0,10); }
+function answer(key, chosen, correct){
+  const a = rec.answers[key] || {chosen:null,correct:null,attempts:0,firstTs:null};
+  a.chosen=chosen; a.correct=correct; a.attempts++; a.lastTs=new Date().toISOString();
+  if(!a.firstTs) a.firstTs=a.lastTs;
+  rec.answers[key]=a;
+  rec.history.push({t:a.lastTs,k:key,c:chosen,ok:correct});
+  if(rec.history.length>4000) rec.history=rec.history.slice(-3000);
+  const d=rec.daily[today()]||(rec.daily[today()]={done:0,ok:0});
+  d.done++; if(correct) d.ok++;
+  persist(); updateHeader();
+}
+if(!rec.seeded){ // 注入摸底结果
+  for(let i=1;i<=75;i++){ const w=SEED_WRONG[i]; const key='mock-'+i;
+    if(w!==undefined){ rec.answers[key]={chosen:w,correct:false,attempts:1,firstTs:SEED_DATE,lastTs:SEED_DATE}; } }
+  rec.daily[SEED_DATE]={done:75,ok:27}; rec.seeded=true; persist();
+}
+
+/* ============ 渲染 ============ */
+const LET=['A','B','C','D'];
+let curTab='mock', filter='all';
+const tabsEl=document.getElementById('tabs'), viewEl=document.getElementById('view');
+
+function buildTabs(){
+  tabsEl.innerHTML='';
+  const mk=(id,name)=>{ const b=document.createElement('button'); b.textContent=name; b.className=(curTab===id?'on':'');
+    b.onclick=()=>{curTab=id;filter='all';buildTabs();render();window.scrollTo(0,0);}; tabsEl.appendChild(b); };
+  MODS.forEach(m=>mk(m.id,m.name));
+  mk('wrong','🔁 错题重练'); mk('sum','📊 我的记录');
+  const mk2=(id,name,fn)=>{ const b=document.createElement('button'); b.textContent=name; b.onclick=fn; tabsEl.appendChild(b); };
+  mk2('copy','📋 复制记录',copyRec); mk2('reset','🗑 清空',resetAll);
+}
+function updateHeader(){
+  const keys=Object.keys(rec.answers);
+  const done=keys.length, ok=keys.filter(k=>rec.answers[k].correct).length;
+  const d=rec.daily[today()]||{done:0,ok:0};
+  document.getElementById('hToday').textContent=d.done;
+  document.getElementById('hTodayOk').textContent=d.ok;
+  document.getElementById('hAll').textContent=done;
+  document.getElementById('hRate').textContent=done?Math.round(ok/done*100)+'%':'-';
+  document.getElementById('hWrong').textContent=keys.filter(k=>rec.answers[k].correct===false).length;
+}
+function render(){
+  if(!D) return;
+  if(curTab==='wrong') return renderWrong();
+  if(curTab==='sum') return renderSum();
+  renderMod(MODS.find(m=>m.id===curTab));
+}
+function renderMod(m){
+  const qs=m.list();
+  const doneArr=qs.map((q,i)=>rec.answers[m.keyOf(i)]);
+  const judged=doneArr.filter(a=>a&&a.correct!==null&&a.correct!==undefined);
+  const done=doneArr.filter(Boolean).length, ok=judged.filter(a=>a.correct).length;
+  let html=`<div class="toolbar"><span class="prog">${m.name}：已做 ${done}/${qs.length} · 判对 ${ok} · 判错 ${judged.length-ok}</span>`
+    +['all','todo','wrong'].map(f=>`<button class="fbtn ${filter===f?'on':''}" onclick="setF('${f}')">${{all:'全部',todo:'未做',wrong:'只看错题'}[f]}</button>`).join('')
+    +`<button onclick="clearMod()">清除本模块作答</button></div>`;
+  qs.forEach((q,i)=>{
+    const key=m.keyOf(i), a=rec.answers[key];
+    if(filter==='todo'&&a) return;
+    if(filter==='wrong'&&(!a||a.correct!==false)) return;
+    if(m.id==='mock'&&i===70) html+=`<div class="passage">${D.passage||''}</div>`;
+    html+= m.selfcheck ? selfCheckCard(key,q,a) : qCard(key,i+1,q,a);
+  });
+  viewEl.innerHTML=html;
+  // 恢复已保存的大题作答文本
+  qs.forEach((q,i)=>{ const key=m.keyOf(i), a=rec.answers[key];
+    const ta=viewEl.querySelector('textarea[data-key="'+key+'"]');
+    if(ta&&a&&a.text) ta.value=a.text; });
+}
+function qCard(key,no,q,a){
+  const answered=!!a, right=answered&&a.correct;
+  let h=`<div class="qcard"><div class="qhead"><span class="qno">${no}.</span><span class="mtag">${q.mod}</span>`
+    +`<span class="rtag ${answered?(right?'done':'miss'):''}">${answered?(right?'✔ 已答对':'✘ 曾答错（点选项重做）'):''}</span></div>`
+    +`<div class="qtext">${q.q}</div><div class="opts">`;
+  q.o.forEach((o,k)=>{
+    let cls=''; if(answered){ if(k===LET.indexOf(q.ans)) cls='right'; else if(a.chosen===LET[k]) cls='wrong'; }
+    const click = answered ? '' : " onclick=\"pick('"+key+"',"+k+")\"";
+    const dis = answered ? ' disabled' : '';
+    h+='<button class="opt '+cls+'"'+click+dis+'><span class="L">'+LET[k]+'.</span><span>'+o+'</span></button>';
+  });
+  h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${q.exp}</div>`;
+  if(answered&&a.attempts>1) h+=`<div class="hint">已做 ${a.attempts} 次${right?'（本次已答对）':''}</div>`;
+  return h+`</div>`;
+}
+/* 自判题型（应用技术大题 / 网络自测）：读题→作答→对照参考答案→自判对错 */
+function selfCheckCard(key,item,a){
+  const judged=a&&a.correct!==null&&a.correct!==undefined, right=judged&&a.correct;
+  let h='<div class="qcard"><div class="qhead"><span class="qno">'+(item.title||item.id)+'</span>'
+    +'<span class="mtag">'+item.mod+'</span>'
+    +'<span class="rtag '+(judged?(right?'done':'miss'):'' )+'">'+(judged?(right?'✔ 已判对':'✘ 曾判错（可重做）'):'')+'</span></div>'
+    +'<div class="qtext" style="font-size:14px">'+item.q+'</div>'
+    +'<textarea data-key="'+key+'" rows="4" style="width:100%;margin:6px 0;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;font-family:inherit" placeholder="把你的答案打在这里（模拟机考输入），会自动保存" oninput="saveText(\''+key+'\',this.value)"></textarea>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="opt" style="cursor:pointer" onclick="toggleAns(\''+key+'\')">📖 显示参考答案</button>'
+    +'<button class="opt" style="cursor:pointer;border-color:#16a34a" onclick="selfMark(\''+key+'\',true)">✔ 基本答对</button>'
+    +'<button class="opt" style="cursor:pointer;border-color:#dc2626" onclick="selfMark(\''+key+'\',false)">✘ 没答好</button></div>'
+    +'<div class="exp'+(judged?' show':'')+'" id="ans-'+key+'"><b>参考答案</b>：<br>'+item.ans+'</div>'
+    +(judged&&a.attempts>1?'<div class="hint">已判 '+a.attempts+' 次</div>':'')
+    +'</div>';
+  return h;
+}
+window.saveText=(key,v)=>{ const a=rec.answers[key]||{chosen:null,correct:null,attempts:0,firstTs:null};
+  a.text=v; if(!a.firstTs)a.firstTs=new Date().toISOString(); a.lastTs=a.firstTs;
+  rec.answers[key]=a; persist(); };
+window.toggleAns=key=>{ const el=document.getElementById('ans-'+key);
+  el.classList.toggle('show'); window.scrollTo(0,window.scrollY); };
+window.selfMark=(key,ok)=>{ const v=ok?'✔对':'✘错';
+  const a=rec.answers[key]||{chosen:null,correct:null,attempts:0};
+  a.chosen=v; a.correct=ok; a.attempts++; a.lastTs=new Date().toISOString();
+  if(!a.firstTs)a.firstTs=a.lastTs;
+  const ta=viewEl.querySelector('textarea[data-key="'+key+'"]'); if(ta)a.text=ta.value;
+  rec.answers[key]=a;
+  const d=rec.daily[today()]||(rec.daily[today()]={done:0,ok:0});
+  d.done++; if(ok)d.ok++;
+  persist(); updateHeader(); render(); };
+
+window.pick=(key,k)=>{
+  const m=MODS.find(m=>key.startsWith(m.id+'-'));
+  const i=+key.split('-')[1]-1, q=m.list()[i];
+  const correct=(LET[k]===q.ans);
+  answer(key,LET[k],correct);
+  render();
+};
+window.setF=f=>{filter=f;buildTabs();render();};
+window.clearMod=()=>{ if(!confirm('清除本模块全部作答记录？（练习记录文件里会保留历史）'))return;
+  const m=MODS.find(x=>x.id===curTab); m.list().forEach((q,i)=>delete rec.answers[m.keyOf(i)]);
+  persist(); updateHeader(); render(); };
+function resetAll(){ if(!confirm('清空全部作答记录（含错题重练数据）？此操作不可恢复！'))return;
+  if(!confirm('再次确认：真的全部清空？建议先用「📋 复制记录」备份。'))return;
+  rec={app:'rk-practice-v1',seeded:true,answers:{},history:[],daily:{}}; persist(); updateHeader(); render(); }
+
+function renderWrong(){
+  const wrongKeys=Object.keys(rec.answers).filter(k=>rec.answers[k].correct===false).sort();
+  let html=`<div class="toolbar"><span class="prog">🔁 待清错题 ${wrongKeys.length} 道（答对即自动移出；来自所有模块+摸底卷+大题）</span></div>`;
+  if(!wrongKeys.length) html+=`<div class="qcard" style="color:var(--green);font-weight:600">🎉 没有待清错题！去标签页继续刷新题吧。</div>`;
+  wrongKeys.forEach(k=>{
+    const mi=MODS.findIndex(m=>k.startsWith(m.id+'-')); if(mi<0)return;
+    const m=MODS[mi], i=+k.split('-')[1]-1, q=m.list()[i]; if(!q)return;
+    html+= m.selfcheck ? selfCheckCard(k,q,rec.answers[k]) : qCard(k,(m.id==='mock'?'摸底':'')+(i+1), q, rec.answers[k]);
+  });
+  viewEl.innerHTML=html;
+  wrongKeys.forEach(k=>{ const a=rec.answers[k];
+    const ta=viewEl.querySelector('textarea[data-key="'+k+'"]');
+    if(ta&&a&&a.text) ta.value=a.text; });
+}
+function renderSum(){
+  const rows=[]; MODS.forEach(m=>{
+    const qs=m.list(); let done=0,ok=0,wrongList=[];
+    qs.forEach((q,i)=>{ const a=rec.answers[m.keyOf(i)]; if(a){done++; if(a.correct===true)ok++; else if(a.correct===false)wrongList.push(i+1);} });
+    const rate=done?Math.round(ok/done*100):null;
+    rows.push({name:m.name,total:qs.length,done,ok,rate,wrongList});
+  });
+  let html=`<div id="summary"><div class="toolbar"><span class="prog">各模块作答统计（最新一次作答口径）</span><button onclick="copyRec()">📋 复制记录给AI</button></div><table><tr><th>模块</th><th>已做/总数</th><th>正确率</th><th>待清错题号</th></tr>`;
+  rows.forEach(r=>{ const pct=r.rate==null?'-':r.rate+'%';
+    html+=`<tr><td>${r.name}</td><td>${r.done}/${r.total}</td><td>${pct} <span class="bar"><i class="${r.rate!=null&&r.rate<60?'low':''}" style="width:${r.rate||0}%"></i></span></td><td style="font-size:12px">${r.wrongList.join(',')||'—'}</td></tr>`; });
+  html+=`</table><div class="qcard" style="margin-top:14px;font-size:13px;color:var(--muted)">每天做完题不用截图：只要绑定了记录文件，直接对 AI 说「看下练习记录」即可；或点「📋 复制记录」粘贴给 AI。<br>历史按天统计：`+Object.entries(rec.daily).slice(-14).map(([d,v])=>`${d} 做${v.done}对${v.ok}`).join('｜')+`</div></div>`;
+  viewEl.innerHTML=html;
+}
+function copyRec(){
+  const txt=JSON.stringify({lastUpdated:rec.lastUpdated,daily:rec.daily,answers:rec.answers,history:rec.history.slice(-500)});
+  const sum=`【软考练习记录】更新于 ${new Date().toLocaleString()}\n`+JSON.stringify(rec.daily,null,0)+'\n'+txt;
+  const done=()=>alert('已复制！粘贴给 AI 即可（微信/QQ对话框或对话框里直接 Ctrl+V）');
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(sum).then(done,()=>fb());
+  else fb();
+  function fb(){ const ta=document.createElement('textarea'); ta.value=sum; document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy'); done();}catch(e){ prompt('复制下面全部内容发给AI：',sum); } document.body.removeChild(ta); }
+}
+
+buildTabs(); render(); updateHeader(); loadHandle();
+</script>
+</body>
+</html>

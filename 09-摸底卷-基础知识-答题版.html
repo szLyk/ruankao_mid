@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>软件设计师 · 摸底卷（基础知识 75 题）</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#f0f2f5; color:#2c3e50; padding-bottom:80px; }
+  .container { max-width:860px; margin:0 auto; padding:16px; }
+
+  /* 顶部栏 */
+  #topbar { position:sticky; top:0; z-index:50; background:#1e3a5f; color:#fff; padding:10px 16px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+  #topbar .title { font-weight:bold; font-size:16px; }
+  #timer { font-size:20px; font-weight:bold; font-family:Consolas,monospace; background:rgba(255,255,255,.15); padding:4px 12px; border-radius:6px; }
+  #timer.warn { background:#e67e22; animation:blink 1s infinite; }
+  #timer.over { background:#c0392b; }
+  @keyframes blink { 50% { opacity:.55; } }
+  #progress { font-size:13px; opacity:.9; }
+  #submitBtn { margin-left:auto; background:#27ae60; color:#fff; border:none; padding:8px 20px; border-radius:6px; font-size:15px; cursor:pointer; }
+  #submitBtn:hover { background:#219a52; }
+
+  /* 开始遮罩 */
+  #overlay { position:fixed; inset:0; background:rgba(20,35,55,.93); z-index:100; display:flex; align-items:center; justify-content:center; }
+  #overlay .card { background:#fff; border-radius:12px; padding:36px 40px; max-width:520px; width:92%; }
+  #overlay h1 { font-size:20px; margin-bottom:14px; color:#1e3a5f; }
+  #overlay li { margin:8px 0 8px 20px; font-size:14px; line-height:1.6; }
+  #startBtn { display:block; width:100%; margin-top:22px; background:#1e3a5f; color:#fff; border:none; padding:12px; border-radius:8px; font-size:16px; cursor:pointer; }
+  #startBtn:hover { background:#2c4f7c; }
+
+  /* 模块标题 */
+  .section { margin:26px 0 10px; padding:8px 12px; background:#dce8f5; border-left:5px solid #1e3a5f; font-weight:bold; font-size:15px; border-radius:0 6px 6px 0; }
+  .passage { background:#fffdf5; border:1px dashed #d4b106; padding:14px 16px; font-size:14px; line-height:1.9; margin:12px 0; border-radius:8px; font-family:Georgia,serif; }
+
+  /* 题目卡片 */
+  .qcard { background:#fff; border-radius:10px; padding:16px 18px; margin:12px 0; box-shadow:0 1px 4px rgba(0,0,0,.07); }
+  .qcard .stem { font-size:15px; line-height:1.7; margin-bottom:12px; }
+  .qcard .stem b { color:#1e3a5f; }
+  .opt { display:flex; align-items:flex-start; gap:10px; padding:9px 12px; margin:6px 0; border:1.5px solid #e3e8ee; border-radius:8px; cursor:pointer; font-size:14px; line-height:1.6; transition:all .12s; }
+  .opt:hover { border-color:#8fb3d9; background:#f5f9fd; }
+  .opt .letter { flex:none; width:24px; height:24px; border-radius:50%; background:#eef2f6; color:#5a6b7d; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:bold; }
+  .opt.sel { border-color:#1e66c9; background:#eaf2fd; }
+  .opt.sel .letter { background:#1e66c9; color:#fff; }
+  .opt.right { border-color:#27ae60; background:#e9f9ef; }
+  .opt.right .letter { background:#27ae60; color:#fff; }
+  .opt.wrong { border-color:#e74c3c; background:#fdeceb; }
+  .opt.wrong .letter { background:#e74c3c; color:#fff; }
+  .opt.locked { cursor:default; }
+  .expl { display:none; margin-top:10px; padding:10px 12px; background:#f7f9fa; border-left:4px solid #95a5a6; font-size:13px; line-height:1.7; color:#4a5a6a; }
+  .qcard.done .expl { display:block; }
+  .verdict { font-weight:bold; margin-bottom:6px; }
+  .verdict.ok { color:#27ae60; } .verdict.no { color:#e74c3c; }
+
+  /* 答题卡 */
+  #palette { position:fixed; right:12px; bottom:12px; z-index:60; background:#fff; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.2); padding:12px; max-width:330px; }
+  #palette .ph { font-size:13px; font-weight:bold; margin-bottom:8px; color:#1e3a5f; }
+  #palette .grid { display:grid; grid-template-columns:repeat(10,1fr); gap:4px; }
+  #palette .cell { width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:11px; border-radius:4px; background:#e6eaf0; color:#666; cursor:pointer; }
+  #palette .cell.answered { background:#1e66c9; color:#fff; }
+  #palette .cell.current { outline:2px solid #e67e22; }
+  #palette .toggle { text-align:center; margin-top:8px; font-size:12px; color:#888; cursor:pointer; }
+
+  /* 成绩 */
+  #result { display:none; }
+  .score-hero { background:linear-gradient(135deg,#1e3a5f,#2c6fb0); color:#fff; border-radius:12px; padding:26px; text-align:center; margin:16px 0; }
+  .score-hero .big { font-size:52px; font-weight:bold; font-family:Consolas,monospace; }
+  .score-hero .sub { font-size:14px; opacity:.9; margin-top:6px; }
+  table.mtable { width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.08); font-size:14px; }
+  table.mtable th, table.mtable td { padding:9px 10px; text-align:center; border-bottom:1px solid #eef1f4; }
+  table.mtable th { background:#1e3a5f; color:#fff; font-weight:normal; }
+  table.mtable td.weak { background:#fdeceb; color:#c0392b; font-weight:bold; }
+  table.mtable td.good { background:#e9f9ef; color:#1e874b; font-weight:bold; }
+  .actions { margin:18px 0; display:flex; gap:12px; flex-wrap:wrap; }
+  .actions button { flex:1; min-width:160px; padding:12px; border:none; border-radius:8px; font-size:15px; cursor:pointer; }
+  #reviewBtn { background:#1e3a5f; color:#fff; }
+  #retryBtn { background:#fff; color:#1e3a5f; border:1.5px solid #1e3a5f !important; }
+  .hint { font-size:13px; color:#888; margin:6px 0; }
+  #exam { display:block; }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span class="title">软件设计师 · 摸底卷</span>
+  <span id="timer" style="font-size:13px;font-weight:normal;background:rgba(255,255,255,.12);padding:6px 10px;">不限时 · 进度自动保存</span>
+  <span id="progress">已答 0 / 75</span>
+  <button id="submitBtn" onclick="confirmSubmit()">交卷</button>
+</div>
+
+<div id="overlay">
+  <div class="card">
+    <h1>摸底卷 · 基础知识 75 题</h1>
+    <ul>
+      <li><b>不限时</b>：边上班边做，中途关闭页面进度<b>自动保存</b>（同一浏览器重开继续）</li>
+      <li>建议仍按<b>闭卷</b>做：不看讲义、不查资料，摸底才准</li>
+      <li>直接<b>点击选项</b>作答，交卷前可随时修改</li>
+      <li>交卷后自动判分，输出<b>各模块得分率</b>（这是找弱项用的）</li>
+      <li>现在 40 分上下都正常——你还没开始学</li>
+    </ul>
+    <button id="startBtn" onclick="startExam()">开始答题</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="exam" class="container-inner"></div>
+
+  <div id="result">
+    <div class="score-hero">
+      <div class="big" id="scoreNum">0</div>
+      <div class="sub" id="scoreSub"></div>
+    </div>
+    <p class="hint">红色 = 得分率低于 50%（需加练）；绿色 = 70% 以上（按原计划即可）。把这张表抄进 01 文件的弱项跟踪表。</p>
+    <table class="mtable" id="moduleTable"></table>
+    <div class="actions">
+      <button id="copyBtn" onclick="copyReport()" style="background:#e67e22;color:#fff;">复制成绩单（发给AI分析）</button>
+      <button id="reviewBtn" onclick="showReview()">查看逐题解析</button>
+      <button id="retryBtn" onclick="resetAll()">重新测试</button>
+    </div>
+    <p class="hint" style="text-align:center;margin-bottom:40px">解析会显示在每道题下方：你的选择会被标出，正确答案为绿色，错误为红色。</p>
+    <div id="reviewArea"></div>
+  </div>
+</div>
+
+<div id="palette">
+  <div class="ph">答题卡 <span id="palCount"></span></div>
+  <div class="grid" id="palGrid"></div>
+  <div class="toggle" onclick="document.getElementById('palette').style.display='none'">收起 ▾</div>
+</div>
+
+<script>
+const SECTIONS = [
+  {t:"第 1-10 题 · 计算机组成"},
+  {t:"第 11-13 题 · 数学"},
+  {t:"第 14-15 题 · 多媒体"},
+  {t:"第 16-21 题 · 操作系统"},
+  {t:"第 22-27 题 · 数据库"},
+  {t:"第 28-35 题 · 网络"},
+  {t:"第 36-46 题 · 数据结构与算法"},
+  {t:"第 47-51 题 · 程序设计语言"},
+  {t:"第 52-61 题 · 软件工程"},
+  {t:"第 62-63 题 · 面向对象"},
+  {t:"第 64-66 题 · 信息安全"},
+  {t:"第 67-68 题 · 知识产权与标准化"},
+  {t:"第 69-70 题 · 新技术常识"},
+  {t:"第 71-75 题 · 专业英语", passage:"Software maintenance is the process of modifying a software system after delivery. Four types of maintenance are recognized: corrective, adaptive, perfective and preventive. <b>(71)</b> maintenance fixes errors discovered after delivery. <b>(72)</b> maintenance adapts the software to a changed environment, such as a new operating system or new hardware. Most maintenance effort, however, is spent on <b>(73)</b> maintenance, which provides enhancements and new features for users. To reduce future maintenance cost, designers should aim for high <b>(74)</b> — the ease with which a software system can be modified. Good documentation, modular design and thorough <b>(75)</b> all contribute to easier maintenance."}
+];
+
+/* m:模块 q:题干 o:选项 a:答案下标0-3 e:解析 */
+const Q = [
+ {m:"组成",q:"二进制数 101101B 的十进制值是（　）。",o:["32","44","45","46"],a:2,e:"按权展开：32+8+4+1=45。"},
+ {m:"组成",q:"8 位补码 11101100 表示的十进制数是（　）。",o:["-20","-21","236","20"],a:0,e:"补码减 1 → 11101011 → 取反 = 00010100 = 20 → 负数即 -20。"},
+ {m:"组成",q:"浮点数中，阶码的位数决定浮点数的（　）。",o:["表示范围","精度","符号","有效性"],a:0,e:"阶码定范围、尾数定精度。"},
+ {m:"组成",q:"数据位为 4 位时，采用海明校验至少需要的校验位数是（　）。",o:["2","3","4","5"],a:1,e:"2³=8 ≥ 4+3+1=8，r=3。"},
+ {m:"组成",q:"奇偶校验码的检错能力是（　）。",o:["能发现并纠正一位错","只能发现偶数个错","无检错能力","只能发现奇数个错，不能纠错"],a:3,e:"码距 2，只能发现奇数个位错，不能定位纠错。"},
+ {m:"组成",q:"某指令流水线分 4 段，各段耗时 1ns、3ns、2ns、2ns，流水线周期为（　）。",o:["1ns","2ns","3ns","8ns"],a:2,e:"周期 = 最长段 3ns。"},
+ {m:"组成",q:"承上题，该流水线连续执行 100 条指令共需（　）。",o:["303ns","300ns","312ns","309ns"],a:3,e:"T=(k+n−1)×Δt=(4+100−1)×3=309ns。"},
+ {m:"组成",q:"Cache 命中率 95%，Cache 访问 10ns，主存访问 100ns，平均访问时间约（　）。",o:["14.5ns","55ns","10.5ns","19.5ns"],a:0,e:"0.95×10+0.05×100=14.5ns。"},
+ {m:"组成",q:"两个部件可靠度 0.95 与 0.90 串联，系统可靠度为（　）。",o:["1.85","0.99","0.855","0.05"],a:2,e:"串联相乘：0.95×0.90=0.855。"},
+ {m:"组成",q:"下列属于 RISC 特点的是（　）。",o:["指令数量多且长度可变","寄存器数量少","只有取数/存数指令访问内存","难以采用流水技术"],a:2,e:"RISC：指令少且定长、寄存器多、Load/Store 才访存、易流水。"},
+
+ {m:"数学",q:"从 6 名同学中选 2 人参加比赛的方案数是（　）。",o:["30","15","12","20"],a:1,e:"组合（无序）：C(6,2)=15。"},
+ {m:"数学",q:"掷两枚均匀骰子，点数之和为 7 的概率是（　）。",o:["7/36","1/12","1/6","1/9"],a:2,e:"和为 7 共 6 种（1,6…6,1），6/36=1/6。"},
+ {m:"数学",q:"十进制数 25.625 对应的二进制数是（　）。",o:["11001.101","11001.11","11010.101","10101.101"],a:0,e:"25=11001B；0.625=0.5+0.125=0.101B。"},
+
+ {m:"多媒体",q:"PAL 制电视每秒播放（　）帧。",o:["24","30","50","25"],a:3,e:"PAL 25 帧/秒；NTSC 30 帧/秒。"},
+ {m:"多媒体",q:"能表示 65536 种颜色的图像，颜色深度为（　）位。",o:["8","16","24","32"],a:1,e:"2¹⁶=65536 → 16 位。"},
+
+ {m:"操作系统",q:"分时系统中采用时间片轮转调度，主要为了保证（　）。",o:["吞吐量","响应时间","周转时间","处理机利用率"],a:1,e:"轮转让交互用户都尽快得到响应。"},
+ {m:"操作系统",q:"对信号量执行 V 操作后，信号量值加 1，若结果仍 ≤0，则（　）。",o:["阻塞本进程","唤醒一个等待进程","结束本进程","什么都不做"],a:1,e:"V=释放资源；结果 ≤0 说明有等待者，唤醒一个。"},
+ {m:"操作系统",q:"生产者-消费者问题中，互斥访问缓冲区的信号量 mutex 的初值是（　）。",o:["0","1","n","n-1"],a:1,e:"互斥锁初值 1（empty=n、full=0）。"},
+ {m:"操作系统",q:"系统中 4 个进程各自最多需要 2 个资源，系统至少有（　）个资源可保证不发生死锁。",o:["4","5","8","6"],a:1,e:"n(m−1)+1=4×1+1=5。"},
+ {m:"操作系统",q:"页式存储中页面大小 1KB，逻辑地址 2053 对应的页号与页内偏移是（　）。",o:["页 1、偏移 1029","页 0、偏移 2053","页 2、偏移 5","页 2、偏移 1024"],a:2,e:"2053÷1024=商 2 余 5。"},
+ {m:"操作系统",q:"LRU 页面置换算法淘汰的是（　）的页面。",o:["最先进入内存","最近最久未被访问","将来最久不再访问","访问次数最少"],a:1,e:"LRU 看过去（最久未访问）；OPT 看未来。"},
+
+ {m:"数据库",q:"SQL 的视图对应数据库三级模式中的（　）。",o:["概念模式","外模式","内模式","存储模式"],a:1,e:"外模式=用户视图；概念模式=基本表；内模式=存储文件。"},
+ {m:"数据库",q:"关系代数表达式 σ年龄>20(学生) 执行的操作是（　）。",o:["选取满足条件的行","选取某些列","两表连接","除法运算"],a:0,e:"σ 选择=行；π 投影=列。"},
+ {m:"数据库",q:"R(A,B,C)，函数依赖集 F={AB→C, C→B}，则关系 R 的候选键是（　）。",o:["A","AB","C","BC"],a:1,e:"(AB)⁺=ABC 含全部属性；BC⁺不含 A。"},
+ {m:"数据库",q:"事务中“全部操作要么全做、要么全不做”的性质是（　）。",o:["一致性","隔离性","原子性","持续性"],a:2,e:"原子性=全做或全不做；隔离性=并发互不干扰。"},
+ {m:"数据库",q:"一个事务读取了另一个事务尚未提交的数据，称为（　）。",o:["丢失修改","不可重复读","死锁","脏读"],a:3,e:"读未提交数据=脏读。"},
+ {m:"数据库",q:"SQL 中对分组后的结果进行条件过滤应使用（　）子句。",o:["WHERE","GROUP BY","HAVING","ORDER BY"],a:2,e:"WHERE 筛行（分组前）、HAVING 筛组（分组后）。"},
+
+ {m:"网络",q:"OSI 参考模型中负责路由选择的是（　）。",o:["传输层","网络层","数据链路层","物理层"],a:1,e:"网络层选路；路由器工作在网络层。"},
+ {m:"网络",q:"以太网交换机工作在 OSI 的（　）。",o:["物理层","数据链路层","网络层","传输层"],a:1,e:"集线器=物理层、交换机=链路层、路由器=网络层。"},
+ {m:"网络",q:"TCP 建立连接需要三次握手，主要是为了（　）。",o:["提高带宽利用率","防止失效的连接请求造成错误建立","加密数据","压缩报文"],a:1,e:"确认双方收发能力，防旧 SYN 建错连接。"},
+ {m:"网络",q:"UDP 报文头部的长度是（　）。",o:["8 字节","20 字节","16 字节","可变长"],a:0,e:"UDP 固定 8 字节；TCP 最小 20 字节可变。"},
+ {m:"网络",q:"发送电子邮件使用的协议与端口是（　）。",o:["HTTP / 80","SMTP / 25","DNS / 53","POP3 / 110"],a:1,e:"发信 SMTP 25；收信 POP3 110。"},
+ {m:"网络",q:"子网掩码为 255.255.255.240（/28）的子网中，可用的主机数是（　）。",o:["14","16","30","12"],a:0,e:"主机位 4 → 2⁴−2=14。"},
+ {m:"网络",q:"IP 地址 192.168.20.100/28 所在子网的网络地址是（　）。",o:["192.168.20.64","192.168.20.96","192.168.20.95","192.168.20.100"],a:1,e:"块 16：96~111；100 属于该块，网络地址 96。"},
+ {m:"网络",q:"IPv6 地址长度为（　）位。",o:["32","64","128","256"],a:2,e:"IPv4=32 位，IPv6=128 位。"},
+
+ {m:"数据结构",q:"下列应用中不适合使用栈的是（　）。",o:["表达式求值","括号匹配检验","递归调用","二分查找"],a:3,e:"表达式/括号/递归是栈的经典应用；二分查找不需要栈。"},
+ {m:"数据结构",q:"循环队列容量 10，front=6、rear=2（下标从 0），队中元素个数为（　）。",o:["4","5","6","无法确定"],a:2,e:"(rear−front+n)%n=(2−6+10)%10=6。"},
+ {m:"数据结构",q:"某二叉树中度为 2 的结点有 10 个，则叶子结点数为（　）。",o:["9","10","11","12"],a:2,e:"n₀=n₂+1=11。"},
+ {m:"数据结构",q:"31 个结点的完全二叉树，高度（深度）为（　）。",o:["4","6","31","5"],a:3,e:"⌊log₂31⌋+1=4+1=5。"},
+ {m:"数据结构",q:"先序遍历序列为 ABC、中序遍历序列为 BAC 的二叉树，其后序序列为（　）。",o:["BCA","CBA","ABC","BAC"],a:0,e:"A 为根；左 B 右 C；后序=左右根=BCA。"},
+ {m:"数据结构",q:"6 个叶结点的哈夫曼树，总结点数为（　）。",o:["12","11","13","6"],a:1,e:"2n−1=11。"},
+ {m:"数据结构",q:"二叉排序树的中序遍历得到的是（　）。",o:["升序序列","降序序列","层序序列","随机序列"],a:0,e:"BST 中序遍历为升序。"},
+ {m:"数据结构",q:"存储稀疏图更节省空间的结构是（　）。",o:["邻接矩阵","邻接表","逆矩阵","二维数组"],a:1,e:"邻接表 n+e，稀疏图 e≪n²。"},
+ {m:"数据结构",q:"图的广度优先遍历（BFS）借助的数据结构是（　）。",o:["栈","队列","树","堆"],a:1,e:"DFS 用栈，BFS 用队列。"},
+ {m:"数据结构",q:"求单源最短路径（边权非负）的经典算法是（　）。",o:["Prim","Dijkstra","Kruskal","Floyd"],a:1,e:"Dijkstra 单源非负权；Floyd 全源。"},
+ {m:"数据结构",q:"对 1000 个元素的有序顺序表二分查找，最多比较（　）次。",o:["8","9","10","11"],a:2,e:"⌈log₂1001⌉=10（2¹⁰=1024）。"},
+
+ {m:"程序语言",q:"编译过程中发现“缺少右括号”类错误的是（　）阶段。",o:["词法分析","语法分析","语义分析","代码优化"],a:1,e:"结构错误（括号/分号）归语法分析。"},
+ {m:"程序语言",q:"编译过程中发现“运算对象类型不匹配”的是（　）阶段。",o:["词法分析","语法分析","语义分析","目标代码生成"],a:2,e:"类型检查归语义分析。"},
+ {m:"程序语言",q:"表达式 a+b*c 的后缀式是（　）。",o:["ab+c*","abc*+","a+bc*","+abc"],a:1,e:"先乘：bc*，再加：abc*+。"},
+ {m:"程序语言",q:"传值调用的特点是（　）。",o:["形参与实参共用存储单元","形参值的改变不影响实参","必须传递指针","只能用于数组参数"],a:1,e:"传值=改副本；传址才改本体。"},
+ {m:"程序语言",q:"描述程序设计语言单词（词法）的文法通常是（　）文法。",o:["0 型","1 型","2 型","3 型（正规文法）"],a:3,e:"词法=3 型正规文法↔有限自动机；语法=2 型↔下推自动机。"},
+
+ {m:"软件工程",q:"螺旋模型区别于其他模型的最主要特征是（　）。",o:["文档驱动","风险分析","用户界面原型","数据库设计"],a:1,e:"螺旋=每圈做风险分析，风险驱动。"},
+ {m:"软件工程",q:"用户需求不明确、经常变化时，最适宜先采用（　）方法获取需求。",o:["瀑布模型","原型模型","螺旋模型","V 模型"],a:1,e:"需求不明确→先做原型澄清需求。"},
+ {m:"软件工程",q:"Scrum 中负责整理产品待办列表、对产品价值最大化负责的角色是（　）。",o:["Scrum Master","产品负责人","架构师","测试负责人"],a:1,e:"PO 管待办列表；Master 是教练。"},
+ {m:"软件工程",q:"“系统应支持 5000 用户并发访问”属于（　）。",o:["功能需求","非功能需求","设计约束","数据需求"],a:1,e:"并发数/响应时间是性能类非功能需求。"},
+ {m:"软件工程",q:"内聚程度最高的模块是（　）。",o:["偶然内聚","逻辑内聚","时间内聚","功能内聚"],a:3,e:"功能内聚最高、偶然内聚最低。"},
+ {m:"软件工程",q:"模块间耦合程度最低的是（　）。",o:["数据耦合","控制耦合","公共耦合","内容耦合"],a:0,e:"非直接耦合之外最低的是数据耦合；内容耦合最高。"},
+ {m:"软件工程",q:"白盒测试中覆盖程度最弱的是（　）。",o:["语句覆盖","判定覆盖","条件覆盖","路径覆盖"],a:0,e:"语句<判定<条件<判定/条件<条件组合<路径。"},
+ {m:"软件工程",q:"输入范围为 1~100 的整数，按边界值法设计的测试数据应包含（　）。",o:["1、50、100","0、1、99、100、101","2、99","0、100"],a:1,e:"边界两侧都要取：0,1 与 100,101（2、99 为紧邻边界也常纳入）。"},
+ {m:"软件工程",q:"V 模型中，与详细设计阶段对应的测试是（　）。",o:["验收测试","系统测试","集成测试","单元测试"],a:2,e:"编码↔单元、详细设计↔集成、概要设计↔系统、需求↔验收。"},
+ {m:"软件工程",q:"软件维护中所占比例最大的类型是（　）。",o:["改正性维护","适应性维护","完善性维护","预防性维护"],a:2,e:"完善性约占一半，占比最大。"},
+
+ {m:"面向对象",q:"将对象的内部实现细节隐藏、仅对外提供公共接口的特性是（　）。",o:["继承","封装","多态","聚合"],a:1,e:"隐藏细节暴露接口=封装。"},
+ {m:"面向对象",q:"同一消息发送给不同对象时，各对象产生不同行为，这是（　）。",o:["继承","封装","多态","泛化"],a:2,e:"同消息不同响应=多态。"},
+
+ {m:"安全",q:"下列属于对称加密算法的是（　）。",o:["RSA","ECC","3DES","ElGamal"],a:2,e:"对称：DES/3DES/AES/IDEA/RC4/SM4；其余为非对称。"},
+ {m:"安全",q:"数字签名使用的密钥是（　）。",o:["发送方公钥","发送方私钥","接收方公钥","接收方私钥"],a:1,e:"私钥签、公钥验。"},
+ {m:"安全",q:"蠕虫病毒的主要特征是（　）。",o:["必须寄生在宿主文件中","自我复制、主动通过网络传播","只能通过电子邮件传播","断网状态下才能传播"],a:1,e:"蠕虫=自我复制主动传播，不需宿主；病毒需寄生。"},
+
+ {m:"产权标准化",q:"实用新型专利的保护期是（　），自申请日起计算。",o:["10 年","15 年","20 年","5 年"],a:0,e:"发明 20 / 实用新型 10 / 外观 15。"},
+ {m:"产权标准化",q:"GB/T 代表（　）。",o:["强制性国家标准","推荐性国家标准","行业标准","企业标准"],a:1,e:"GB 强制、GB/T 推荐、GB/Z 指导。"},
+
+ {m:"新技术",q:"企业按订阅方式直接使用在线办公软件（无需自建服务器和开发），这属于云计算的（　）模式。",o:["IaaS","PaaS","SaaS","DaaS"],a:2,e:"直接用软件=SaaS；租平台=PaaS；租机器=IaaS。"},
+ {m:"新技术",q:"大数据的基本特征 4V 不包括（　）。",o:["Volume（规模大）","Velocity（速度快）","Value（价值密度低）","Verification（可验证性）"],a:3,e:"4V=Volume/Variety/Velocity/Value，无 Verification。"},
+
+ {m:"英语",q:"(71)",o:["Corrective","Adaptive","Perfective","Preventive"],a:0,e:"fixes errors → corrective（词根 correct）。"},
+ {m:"英语",q:"(72)",o:["Corrective","Adaptive","Perfective","Preventive"],a:1,e:"adapts to a changed environment → adaptive。"},
+ {m:"英语",q:"(73)",o:["Corrective","Adaptive","Perfective","Preventive"],a:2,e:"enhancements and new features → perfective。"},
+ {m:"英语",q:"(74)",o:["reliability","maintainability","portability","usability"],a:1,e:"the ease with which a system can be modified → maintainability。"},
+ {m:"英语",q:"(75)",o:["security","efficiency","testing","complexity"],a:2,e:"thorough ______ 与文档、模块化设计并列提升可维护性 → testing。"}
+];
+
+const MODNAMES = ["组成","数学","多媒体","操作系统","数据库","网络","数据结构","程序语言","软件工程","面向对象","安全","产权标准化","新技术","英语"];
+const LET = ["A","B","C","D"];
+const answers = new Array(Q.length).fill(-1);
+let submitted=false;
+const LSKEY="rk_mock_v1";
+
+/* 渲染试卷 */
+function renderExam(){
+  const ex = document.getElementById("exam");
+  let html=""; let qi=0;
+  const secIdx=[0,10,13,15,21,27,35,46,51,61,63,66,68,70,75];
+  for(let s=0;s<SECTIONS.length;s++){
+    html+=`<div class="section">${SECTIONS[s].t}</div>`;
+    if(SECTIONS[s].passage) html+=`<div class="passage">${SECTIONS[s].passage}</div>`;
+    for(;qi<secIdx[s+1];qi++){
+      const q=Q[qi];
+      html+=`<div class="qcard" id="qc${qi}">
+        <div class="stem"><b>${qi+1}.</b> ${q.q}</div>`;
+      for(let k=0;k<4;k++){
+        html+=`<div class="opt" id="o${qi}_${k}" onclick="pick(${qi},${k})"><span class="letter">${LET[k]}</span><span>${q.o[k]}</span></div>`;
+      }
+      html+=`<div class="expl" id="ex${qi}"></div></div>`;
+    }
+  }
+  ex.innerHTML=html;
+}
+
+/* 答题卡 */
+function renderPalette(){
+  let h="";
+  for(let i=0;i<Q.length;i++){
+    h+=`<div class="cell" id="pc${i}" onclick="jump(${i})">${i+1}</div>`;
+  }
+  document.getElementById("palGrid").innerHTML=h;
+}
+function jump(i){ document.getElementById("qc"+i).scrollIntoView({behavior:"smooth",block:"center"}); flash(i); }
+function flash(i){ const c=document.getElementById("pc"+i); c.classList.add("current"); setTimeout(()=>c.classList.remove("current"),1200); }
+
+function pick(i,k){
+  if(submitted) return;
+  answers[i]=k;
+  saveAnswers();
+  for(let j=0;j<4;j++) document.getElementById(`o${i}_${j}`).classList.remove("sel");
+  document.getElementById(`o${i}_${k}`).classList.add("sel");
+  document.getElementById("pc"+i).classList.add("answered");
+  updateProgress();
+}
+function updateProgress(){
+  const n=answers.filter(a=>a>=0).length;
+  document.getElementById("progress").textContent=`已答 ${n} / 75`;
+  document.getElementById("palCount").textContent=`${n}/75`;
+}
+
+/* 进度保存 */
+function saveAnswers(){ try{ localStorage.setItem(LSKEY, JSON.stringify(answers)); }catch(e){} }
+function restoreAnswers(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(LSKEY)||"null");
+    if(Array.isArray(saved) && saved.length===Q.length){
+      saved.forEach((k,i)=>{ if(k>=0 && k<4 && Q[i]) answers[i]=k; });
+    }
+  }catch(e){}
+}
+function restoreUI(){
+  answers.forEach((k,i)=>{
+    if(k>=0){
+      document.getElementById(`o${i}_${k}`).classList.add("sel");
+      document.getElementById("pc"+i).classList.add("answered");
+    }
+  });
+  updateProgress();
+}
+function resetAll(){ try{ localStorage.removeItem(LSKEY); }catch(e){} location.reload(); }
+
+function startExam(){
+  document.getElementById("overlay").style.display="none";
+}
+
+function confirmSubmit(){
+  const un=answers.filter(a=>a<0).length;
+  let msg="确定交卷吗？";
+  if(un>0) msg=`还有 ${un} 题未作答（按错题计），确定交卷吗？`;
+  if(confirm(msg)) doSubmit();
+}
+
+/* 判分 */
+function doSubmit(){
+  if(submitted) return;
+  submitted=true;
+  try{ localStorage.removeItem(LSKEY); }catch(e){}
+  let score=0;
+  const stats={};
+  const wrong=[];
+  MODNAMES.forEach(m=>stats[m]={ok:0,total:0});
+  Q.forEach((q,i)=>{ stats[q.m].total++; if(answers[i]===q.a){score++; stats[q.m].ok++;} else wrong.push(i+1); });
+  window._rep={score,stats,wrong,answers:answers.slice()};
+  document.getElementById("scoreNum").textContent=score;
+  const sub = `总分 ${score} / 75　·　及格线 45　·　${score>=45?"已达及格线":"未到及格线（现在没学过很正常）"}`;
+  document.getElementById("scoreSub").textContent=sub;
+  let rows=`<tr><th>模块</th><th>题号</th><th>满分</th><th>答对</th><th>得分率</th></tr>`;
+  MODNAMES.forEach(m=>{
+    const st=stats[m]; if(st.total===0) return;
+    const r=st.ok/st.total;
+    const cls = r<0.5?"weak":(r>=0.7?"good":"");
+    const ids=[];
+    Q.forEach((q,i)=>{ if(q.m===m) ids.push(i+1); });
+    const idStr = ids.length>4 ? `${ids[0]}-${ids[ids.length-1]}` : ids.join(",");
+    rows+=`<tr><td>${m}</td><td>${idStr}</td><td>${st.total}</td><td>${st.ok}</td><td class="${cls}">${Math.round(r*100)}%</td></tr>`;
+  });
+  document.getElementById("moduleTable").innerHTML=rows;
+  document.getElementById("palette").style.display="none";
+  document.getElementById("exam").style.display="none";
+  document.getElementById("result").style.display="block";
+  window.scrollTo(0,0);
+}
+
+/* 逐题解析 */
+function showReview(){
+  const area=document.getElementById("reviewArea");
+  let html="";
+  Q.forEach((q,i)=>{
+    const my=answers[i], ok=my===q.a;
+    html+=`<div class="qcard done">
+      <div class="stem"><b>${i+1}.</b> ${q.q}</div>
+      ${[0,1,2,3].map(k=>{
+        let cls="opt locked";
+        if(k===q.a) cls+=" right";
+        else if(k===my) cls+=" wrong";
+        return `<div class="${cls}"><span class="letter">${LET[k]}</span><span>${q.o[k]}</span></div>`;
+      }).join("")}
+      <div class="expl"><div class="verdict ${ok?"ok":"no"}">${my<0?"未作答":(ok?"✔ 回答正确":"✘ 回答错误，你选了 "+LET[my]+"，正确答案是 "+LET[q.a])}</div>${q.e}</div>
+    </div>`;
+  });
+  area.innerHTML=html;
+  area.scrollIntoView({behavior:"smooth"});
+}
+
+/* 复制成绩单 */
+function copyReport(){
+  const r=window._rep; if(!r){ alert("请先交卷再复制成绩单"); return; }
+  let txt=`软件设计师摸底成绩\n总分 ${r.score}/75\n\n模块得分：\n`;
+  MODNAMES.forEach(m=>{
+    const st=r.stats[m]; if(!st||st.total===0) return;
+    txt+=`${m}：${st.ok}/${st.total}（${Math.round(st.ok/st.total*100)}%）\n`;
+  });
+  txt+=`\n错题号：${r.wrong.length ? r.wrong.join(", ") : "无"}`;
+  const ta=document.createElement("textarea");
+  ta.value=txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); alert("成绩单已复制，直接粘贴发给AI即可"); }
+  catch(e){ prompt("复制失败，请手动全选复制：", txt); }
+  document.body.removeChild(ta);
+}
+
+renderExam();
+renderPalette();
+restoreAnswers();
+restoreUI();
+updateProgress();
+</script>
+</body>
+</html>
