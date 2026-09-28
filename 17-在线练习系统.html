@@ -84,6 +84,7 @@ const MODS = [
   {id:'db',  name:'数据库',     list:()=>D.banks[2].qs, keyOf:i=>'db-'+(i+1)},
   {id:'os',  name:'操作系统',   list:()=>D.banks[3].qs, keyOf:i=>'os-'+(i+1)},
   {id:'hw',  name:'组成与网络', list:()=>D.banks[4].qs, keyOf:i=>'hw-'+(i+1)},
+  {id:'nt',  name:'网络专项100题', list:()=>D.banks[6].qs, keyOf:i=>'nt-'+(i+1)},
   {id:'pl',  name:'程序语言与背诵', list:()=>D.banks[5].qs, keyOf:i=>'pl-'+(i+1)},
   {id:'at',  name:'📐应用技术大题', list:()=>D.at, keyOf:i=>'at-'+(i+1), selfcheck:true},
   {id:'net', name:'网络自测12题', list:()=>D.net, keyOf:i=>'net-'+(i+1), selfcheck:true},
@@ -108,7 +109,9 @@ function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('rk_pr
 async function loadHandle(){ try{ const db=await openDB();
   fileHandle = await new Promise(res=>{ const t=db.transaction('handles').objectStore('handles').get('record'); t.onsuccess=()=>res(t.result); t.onerror=()=>res(null); });
   if(fileHandle){ const p=await fileHandle.queryPermission({mode:'readwrite'});
-    if(p==='granted'){ fileOK=true; setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存，AI 助手可直接读取）'); flushFile(); }
+    if(p==='granted'){ fileOK=true;
+      const merged = await mergeFromFile();
+      setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'，AI 助手可直接读取）'); flushFile(); }
     else setBar('warn','📄 已绑定记录文件但需重新授权一次（浏览器安全要求）'); }
   else setBar('warn','📄 尚未绑定记录文件——绑定后 AI 助手就能直接看到你每次的作答与错题');
 }catch(e){ setBar('warn','📄 此浏览器不支持自动记录文件，请用「复制记录」按钮代替'); } }
@@ -123,13 +126,55 @@ document.getElementById('filebtn').onclick = async ()=>{
     }
     const p=await fileHandle.queryPermission({mode:'readwrite'});
     if(p!=='granted' && await fileHandle.requestPermission({mode:'readwrite'})!=='granted') throw 0;
-    fileOK=true; setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存）'); flushFile();
+    fileOK=true;
+    const merged = await mergeFromFile();
+    setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'）'); flushFile();
   }catch(e){ setBar('warn','⚠️ 未完成绑定（或已取消）。也可以不绑定，用「复制记录」发给 AI。'); }
 };
+/* 绑定/重连时：读取记录文件，与本地记录双向合并（换浏览器/清缓存不丢历史）
+   规则：每题按 lastTs 新者胜；流水按时间去重合并；每日统计按天取大 */
+async function mergeFromFile(){
+  try{
+    const file = await fileHandle.getFile();
+    const txt = await file.text();
+    if(!txt.trim()) return false;
+    const data = JSON.parse(txt);
+    if(!data || data.app !== 'rk-practice-v1' || typeof data.answers !== 'object') return false;
+    let changed = false;
+    for(const k in data.answers){
+      const f = data.answers[k], l = rec.answers[k];
+      if(!l){ rec.answers[k] = f; changed = true; continue; }
+      if(!f) continue;
+      const ft = f.lastTs || '', lt = l.lastTs || '';
+      if(ft > lt || (ft === lt && (f.attempts||0) > (l.attempts||0))){ rec.answers[k] = f; changed = true; }
+    }
+    const seen = {}; const all = [];
+    for(const h of [].concat(data.history||[], rec.history||[])){
+      const key = h.t + '|' + h.k + '|' + h.c + '|' + h.ok;
+      if(!seen[key]){ seen[key] = 1; all.push(h); }
+    }
+    all.sort((a,b) => (a.t < b.t ? -1 : 1));
+    if(all.length > 4000) all = all.slice(-3000);
+    if(all.length !== (rec.history||[]).length){ changed = true; }
+    rec.history = all;
+    for(const day in (data.daily||{})){
+      const f = data.daily[day], l = rec.daily[day];
+      if(!l){ rec.daily[day] = f; changed = true; continue; }
+      const m = { done: Math.max(f.done||0, l.done||0), ok: Math.max(f.ok||0, l.ok||0) };
+      m.ok = Math.min(m.ok, m.done);
+      if(m.done !== l.done || m.ok !== l.ok){ rec.daily[day] = m; changed = true; }
+    }
+    rec.seeded = rec.seeded || !!data.seeded;
+    if(data.lastUpdated && data.lastUpdated > (rec.lastUpdated||'')) rec.lastUpdated = data.lastUpdated;
+    saveLocal(); updateHeader(); render();
+    return changed;
+  }catch(e){ return false; }
+}
 async function flushFile(){ if(!fileOK||!fileHandle) return;
   try{ const w=await fileHandle.createWritable(); await w.write(JSON.stringify(rec,null,1)); await w.close(); }catch(e){ fileOK=false; setBar('warn','⚠️ 记录文件写入失败，点击重新连接'); } }
 function persist(){ rec.lastUpdated=new Date().toISOString(); saveLocal();
   clearTimeout(writeTimer); writeTimer=setTimeout(flushFile,900); }
+window.addEventListener('beforeunload', () => { if(fileOK && fileHandle) flushFile(); });
 
 function today(){ return new Date().toISOString().slice(0,10); }
 function answer(key, chosen, correct){

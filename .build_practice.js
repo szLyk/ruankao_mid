@@ -25,6 +25,7 @@ const BANKS = [
   { f: '13-讲义题库-操作系统.md', id: 'os', name: '操作系统' },
   { f: '14-讲义题库-组成原理与网络.md', id: 'hw', name: '组成原理与网络' },
   { f: '15-讲义题库-程序语言与背诵类.md', id: 'pl', name: '程序语言与背诵类' },
+  { f: '23-网络真题风格专项卷.md', id: 'nt', name: '网络真题专项' },
 ];
 
 function parseBank(file, modId, modName) {
@@ -45,7 +46,7 @@ function parseBank(file, modId, modName) {
     }
     if (!cur) continue;
     if ((m = ln.match(ansLine))) {
-      cur.ans = m[1]; cur.exp = m[2].trim(); inAnswer = true;
+      cur.ans = m[1]; cur.exp = m[2].replace(/^。/, '').trim(); inAnswer = true;
       // 答案行之后的续行并入解析
       continue;
     }
@@ -168,7 +169,7 @@ const banks = BANKS.map(b => {
   const qs = parseBank(b.f, b.id, b.name);
   return { id: b.id, name: b.name, qs };
 });
-const expect = { '软件工程': 32, '数据结构与算法': 35, '数据库': 26, '操作系统': 24, '组成原理与网络': 34, '程序语言与背诵类': 28 };
+const expect = { '软件工程': 32, '数据结构与算法': 35, '数据库': 26, '操作系统': 24, '组成原理与网络': 34, '程序语言与背诵类': 28, '网络真题专项': 100 };
 for (const b of banks) if (expect[b.name] !== b.qs.length) throw new Error(`${b.name}: 期望${expect[b.name]}题，实得${b.qs.length}`);
 
 const at = parseBigQ(), eng = parseEng(), net = NET12;
