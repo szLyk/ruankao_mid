@@ -78,17 +78,17 @@ const D = window.RK_DATA;
 if(!D){ document.getElementById('view').innerHTML='<div class="qcard" style="color:#dc2626">数据文件加载失败：请确保 <b>17-练习数据.js</b> 和本文件在同一文件夹。</div>'; throw new Error('RK_DATA missing'); }
 
 const MODS = [
-  {id:'mock', name:'摸底卷75题', list:()=>D.mock, keyOf:i=>'mock-'+(i+1), extra:()=>null},
+  {id:'mock', name:'摸底卷',     list:()=>D.mock, keyOf:i=>'mock-'+(i+1), extra:()=>null},
   {id:'sw',  name:'软件工程',   list:()=>D.banks[0].qs, keyOf:i=>'sw-'+(i+1)},
   {id:'ds',  name:'数据结构',   list:()=>D.banks[1].qs, keyOf:i=>'ds-'+(i+1)},
   {id:'db',  name:'数据库',     list:()=>D.banks[2].qs, keyOf:i=>'db-'+(i+1)},
   {id:'os',  name:'操作系统',   list:()=>D.banks[3].qs, keyOf:i=>'os-'+(i+1)},
   {id:'hw',  name:'组成与网络', list:()=>D.banks[4].qs, keyOf:i=>'hw-'+(i+1)},
-  {id:'nt',  name:'网络专项100题', list:()=>D.banks[6].qs, keyOf:i=>'nt-'+(i+1)},
+  {id:'nt',  name:'网络专项',   list:()=>D.banks[6].qs, keyOf:i=>'nt-'+(i+1)},
   {id:'pl',  name:'程序语言与背诵', list:()=>D.banks[5].qs, keyOf:i=>'pl-'+(i+1)},
   {id:'at',  name:'📐应用技术大题', list:()=>D.at, keyOf:i=>'at-'+(i+1), selfcheck:true},
-  {id:'net', name:'网络自测12题', list:()=>D.net, keyOf:i=>'net-'+(i+1), selfcheck:true},
-  {id:'eng', name:'英语挖空20题', list:()=>D.eng, keyOf:i=>'eng-'+(i+1)},
+  {id:'net', name:'网络自测',   list:()=>D.net, keyOf:i=>'net-'+(i+1), selfcheck:true},
+  {id:'eng', name:'英语挖空',   list:()=>D.eng, keyOf:i=>'eng-'+(i+1)},
 ];
 const MODNAME = {}; MODS.forEach(m=>m.list().forEach((q,i)=>MODNAME[m.keyOf(i)]=m.name));
 
@@ -203,7 +203,7 @@ function buildTabs(){
   tabsEl.innerHTML='';
   const mk=(id,name)=>{ const b=document.createElement('button'); b.textContent=name; b.className=(curTab===id?'on':'');
     b.onclick=()=>{curTab=id;filter='all';buildTabs();render();window.scrollTo(0,0);}; tabsEl.appendChild(b); };
-  MODS.forEach(m=>mk(m.id,m.name));
+  MODS.forEach(m=>mk(m.id,m.name+m.list().length+'题'));
   mk('wrong','🔁 错题重练'); mk('sum','📊 我的记录');
   const mk2=(id,name,fn)=>{ const b=document.createElement('button'); b.textContent=name; b.onclick=fn; tabsEl.appendChild(b); };
   mk2('copy','📋 复制记录',copyRec); mk2('reset','🗑 清空',resetAll);

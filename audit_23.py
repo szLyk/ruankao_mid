@@ -239,7 +239,7 @@ p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 h = open('17-在线练习系统.html', encoding='utf-8').read()
 check(p00.count('497项') == 2 and '297项' not in p00 and '254题' not in p00 and '397项' not in p00, '00 总数引用异常')
 check('网络真题36题' not in p00 and '网络真题36题' not in p02 and '网络真题36题' not in h, '旧标签名残留')
-check('网络专项100题' in h and '网络专项100题' in p00, '新标签名缺失')
+check('网络专项' in h and '网络专项100题' in p00, '新标签名缺失')
 check('网络专项100' in p02, '02 未引用网络专项100')
 print('[引用] 00/02/html 标签与总数: %s' % ('OK' if not [f for f in fails if '引用' in f or '标签' in f or '总数' in f] else '见报告'))
 
