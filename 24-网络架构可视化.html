@@ -78,6 +78,16 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
 .tnode.on{border-color:var(--acc);background:#eff6ff;color:var(--acc)}
 .tarrow{color:var(--mut);font-size:13px}
 
+/* ===== 七层流转 ===== */
+.l7row{border:1px solid var(--bd);border-radius:10px;background:#fff;padding:9px 12px;margin-bottom:6px}
+.l7top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.l7top .no{font-weight:800;font-size:14.5px;color:#fff;border-radius:7px;padding:2px 9px;flex-shrink:0}
+.l7top .nm{font-weight:700;font-size:14.5px;flex-shrink:0}
+.l7top .act{font-size:13.5px;flex:1;min-width:220px}
+.l7sub{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:7px;padding-top:7px;border-top:1px dashed var(--bd)}
+.blk.sm{padding:3px 10px;font-size:11.5px;min-width:0;font-weight:600}
+.l7note{color:var(--mut);font-size:12px;margin-left:auto;text-align:right}
+
 /* ===== 知识图谱 ===== */
 .gwrap{display:flex;gap:12px;align-items:stretch}
 .svgbox{flex:1;min-width:0;background:#fff;border:1px solid var(--bd);border-radius:12px;overflow:hidden}
@@ -163,6 +173,31 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
    <tr><td>数据链路层</td><td>帧 Frame</td><td>帧头 + 帧尾(FCS)</td><td>目标/源 MAC、类型、校验</td></tr>
    <tr><td>物理层</td><td>比特 Bit</td><td>—</td><td>电/光信号</td></tr>
   </table>
+ </div>
+</section>
+
+<!-- ============ Tab 2c 七层流转 ============ -->
+<section id="s-l7">
+ <div class="tip">🪜 两个对称过程：发送方<b>自上而下逐层加头</b>（封装），接收方<b>自下而上逐层去头</b>（拆封装），中间结点只拆到自己那一层。注意：<b>只有 2~7 层加头；链路层是唯一带"帧尾"的层；物理层不封装</b>。</div>
+ <div class="card">
+  <h2>发送方：自上而下逐层加头（以浏览器访问网页 80 端口为例）</h2>
+  <div id="l7down"></div>
+  <div class="kv" style="margin-top:10px"><b>色块口径与"数据封装"动画一致：</b><span class="blk sm" style="background:#f59e0b">TCP头</span> <span class="blk sm" style="background:#3b82f6">IP头</span> <span class="blk sm" style="background:#10b981">帧头</span> <span class="blk sm" style="background:#94a3b8">帧尾FCS</span> <span class="blk sm" style="background:#64748b">应用数据</span></div>
+ </div>
+ <div class="card">
+  <h2>中间结点与接收方：只拆到自己那一层</h2>
+  <div class="kv"><b>交换机（第2层）：</b>收帧 → 验 FCS → 摘帧头看 <b>MAC</b> → 查 MAC 表选端口 → <b>换一个新帧头</b>再发。第 3 层以上的内容它从头到尾没看过</div>
+  <div class="kv"><b>路由器（第3层）：</b>再往上一层，看<b>目的 IP</b> 查路由表定下一跳，TTL 减 1，然后整帧重建——源/目的 MAC 全换成新链路上的地址——再发往下一跳</div>
+  <div class="kv"><b>接收主机：</b>自下而上剥头——FCS 错 → 丢帧；MAC 不是自己 → 丢；IP 是自己 → 摘 IP 头；最后按<b>目的端口 80</b> 把数据交给监听该端口的进程</div>
+  <div class="kv"><b>全程规律：</b>帧头每过一台路由器换一次；IP 头和里面的 TCP 段、应用数据一路不变（除 TTL 减 1）——<b>IP 端到端不变，MAC 每跳都变</b></div>
+ </div>
+ <div class="card">
+  <h2>三个必背结论</h2>
+  <div class="grid2">
+   <div class="fcard"><b>① 头与尾</b>只有 2~7 层加头，物理层无封装；链路层是唯一带"尾"（FCS 校验）的层</div>
+   <div class="fcard"><b>② 对等层通信</b>每层加的头只由对端<b>同一层</b>拆：TCP头→传输层、IP头→网络层、帧头→本跳链路层</div>
+   <div class="fcard"><b>③ PDU 名称链（必背）</b>报文 → 段 → 包 → 帧 → 比特（自上而下）；TCP/IP 实际把 5~7 层合并进应用层，考试按 OSI 七层口径答</div>
+  </div>
  </div>
 </section>
 
@@ -475,7 +510,7 @@ const TCP_TD = [
 ];
 
 /* ================= Tab 导航 ================= */
-const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
+const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
@@ -532,6 +567,36 @@ function capNext(){ if(capStep < CAPS.length-1) capStep++; capRender(); }
 function capPrev(){ if(capStep > 0) capStep--; capRender(); }
 function capReset(){ capStep = 0; capRender(); }
 capRender();
+
+/* ================= 七层流转 ================= */
+const L7FLOW = [
+ {n:7, zh:'应用层', act:'你的浏览器产出原始数据 M（HTTP 请求）', pdu:'报文',
+  form:[['应用数据','#64748b']], note:'对端应用层读取'},
+ {n:6, zh:'表示层', act:'编码转换 / 压缩 / 加密', pdu:'报文',
+  form:[['应用数据','#64748b']], note:'不分段，数据原样下传'},
+ {n:5, zh:'会话层', act:'建立、管理这次对话', pdu:'报文',
+  form:[['应用数据','#64748b']], note:'TCP/IP 中合并进应用层'},
+ {n:4, zh:'传输层', act:'+ TCP头 <span class="mono">[源端口51324 | 目的端口80]</span>，数据太长就切成段', pdu:'段 Segment',
+  form:[['TCP头','#f59e0b'],['应用数据','#64748b']], note:'头由对端传输层拆——端口定位进程'},
+ {n:3, zh:'网络层', act:'+ IP头 <span class="mono">[源IP | 目的IP | TTL]</span>，全局寻址', pdu:'包 Packet',
+  form:[['IP头','#3b82f6'],['TCP头','#f59e0b'],['应用数据','#64748b']], note:'头由沿途路由器读——IP 端到端不变'},
+ {n:2, zh:'链路层', act:'+ 帧头 <span class="mono">[源MAC | 目的MAC=网关]</span> + <b>帧尾 FCS</b>', pdu:'帧 Frame',
+  form:[['帧头','#10b981'],['IP头','#3b82f6'],['TCP头','#f59e0b'],['应用数据','#64748b'],['帧尾FCS','#94a3b8']], note:'头只管本跳——FCS 是唯一的"尾"'},
+ {n:1, zh:'物理层', act:'<b>不加头！</b>把整帧变成电/光/无线电信号', pdu:'比特 Bit',
+  form:[['比特流 0101101001…','#0f172a']], note:'介质只传信号，不认识任何头'}
+];
+function renderL7(){
+  document.getElementById('l7down').innerHTML = L7FLOW.map(f =>
+    '<div class="l7row"><div class="l7top">' +
+    '<span class="no" style="background:hsl('+hue(f.n)+',60%,48%)">L'+f.n+'</span>' +
+    '<span class="nm">'+f.zh+'</span>' +
+    '<span class="act">'+f.act+'</span>' +
+    '<span class="tag">PDU: '+f.pdu+'</span></div>' +
+    '<div class="l7sub">' + f.form.map(b =>
+      '<span class="blk sm" style="background:'+b[1]+'">'+b[0]+'</span>').join('') +
+    '<span class="l7note">'+f.note+'</span></div></div>').join('');
+}
+renderL7();
 
 /* ================= 子网计算器 ================= */
 (function(){
