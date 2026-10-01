@@ -42,6 +42,9 @@ main{max-width:920px;margin:0 auto;padding:16px}
 .opt.wrong{border-color:var(--red);background:#fef2f2}
 .opt.wrong .L{color:var(--red)}
 .opt:disabled{cursor:default;opacity:1}
+.opt.picked{border-color:var(--blue);background:#eff6ff}
+.opt.picked .L{color:var(--blue)}
+.subok{color:var(--green);font-weight:600}
 .exp{display:none;margin-top:10px;background:#f8fafc;border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 12px;font-size:13.5px;color:#334155}
 .exp.show{display:block}
 .passage{background:#fffdf5;border:1px dashed #d4b106;padding:14px 16px;font-size:14px;line-height:1.9;margin:12px 0;border-radius:8px;font-family:Georgia,serif}
@@ -68,7 +71,7 @@ kbd{background:#e2e8f0;border-radius:4px;padding:0 5px;font-size:12px}
 </header>
 <nav id="tabs"></nav>
 <main>
-  <div id="filebar"><span id="filemsg"></span><button id="filebtn">📁 连接记录文件</button></div>
+  <div id="filebar"><span id="filemsg"></span><button id="filebtn">📁 连接记录文件</button><button id="fileswap" style="display:none">🔄 换文件</button></div>
   <div id="view"></div>
 </main>
 
@@ -116,7 +119,8 @@ async function loadHandle(){ try{ const db=await openDB();
   else setBar('warn','📄 尚未绑定记录文件——绑定后 AI 助手就能直接看到你每次的作答与错题');
 }catch(e){ setBar('warn','📄 此浏览器不支持自动记录文件，请用「复制记录」按钮代替'); } }
 function setBar(cls,msg){ const b=document.getElementById('filebar'); b.className=cls; document.getElementById('filemsg').innerHTML=msg;
-  document.getElementById('filebtn').style.display = cls==='ok' ? 'none':'inline-block'; }
+  document.getElementById('filebtn').style.display = cls==='ok' ? 'none':'inline-block';
+  document.getElementById('fileswap').style.display='inline-block'; }
 document.getElementById('filebtn').onclick = async ()=>{
   try{
     if(!fileHandle){
@@ -128,8 +132,14 @@ document.getElementById('filebtn').onclick = async ()=>{
     if(p!=='granted' && await fileHandle.requestPermission({mode:'readwrite'})!=='granted') throw 0;
     fileOK=true;
     const merged = await mergeFromFile();
-    setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'）'); flushFile();
+    setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'；选错了点「🔄 换文件」重选）'); flushFile();
   }catch(e){ setBar('warn','⚠️ 未完成绑定（或已取消）。也可以不绑定，用「复制记录」发给 AI。'); }
+};
+/* 换记录文件：清掉旧句柄（含 IndexedDB 里的持久化），重新走一次绑定选择 */
+document.getElementById('fileswap').onclick = async ()=>{
+  try{ const db=await openDB(); db.transaction('handles','readwrite').objectStore('handles').delete('record'); }catch(e){}
+  fileHandle=null; fileOK=false;
+  document.getElementById('filebtn').onclick();
 };
 /* 绑定/重连时：读取记录文件，与本地记录双向合并（换浏览器/清缓存不丢历史）
    规则：每题按 lastTs 新者胜；流水按时间去重合并；每日统计按天取大 */
@@ -196,13 +206,16 @@ if(!rec.seeded){ // 注入摸底结果
 
 /* ============ 渲染 ============ */
 const LET=['A','B','C','D'];
-let curTab='mock', filter='all';
+let curTab='mock', filter='all', lastMsg='';
+/* 考试模式：点选只暂存到 pending（localStorage 单独存，与 AI 记录格式无关），交卷才判分入档 */
+let pending={}; try{ pending=JSON.parse(localStorage.getItem('rk_pending_v1')||'{}'); }catch(e){}
+const savePending=()=>{ try{ localStorage.setItem('rk_pending_v1',JSON.stringify(pending)); }catch(e){} };
 const tabsEl=document.getElementById('tabs'), viewEl=document.getElementById('view');
 
 function buildTabs(){
   tabsEl.innerHTML='';
   const mk=(id,name)=>{ const b=document.createElement('button'); b.textContent=name; b.className=(curTab===id?'on':'');
-    b.onclick=()=>{curTab=id;filter='all';buildTabs();render();window.scrollTo(0,0);}; tabsEl.appendChild(b); };
+    b.onclick=()=>{curTab=id;filter='all';lastMsg='';buildTabs();render();window.scrollTo(0,0);}; tabsEl.appendChild(b); };
   MODS.forEach(m=>mk(m.id,m.name+m.list().length+'题'));
   mk('wrong','🔁 错题重练'); mk('sum','📊 我的记录');
   const mk2=(id,name,fn)=>{ const b=document.createElement('button'); b.textContent=name; b.onclick=fn; tabsEl.appendChild(b); };
@@ -229,9 +242,12 @@ function renderMod(m){
   const doneArr=qs.map((q,i)=>rec.answers[m.keyOf(i)]);
   const judged=doneArr.filter(a=>a&&a.correct!==null&&a.correct!==undefined);
   const done=doneArr.filter(Boolean).length, ok=judged.filter(a=>a.correct).length;
-  let html=`<div class="toolbar"><span class="prog">${m.name}：已做 ${done}/${qs.length} · 判对 ${ok} · 判错 ${judged.length-ok}</span>`
+  const pend=qs.filter((q,i)=>pending[m.keyOf(i)]!==undefined && !rec.answers[m.keyOf(i)]).length;
+  let html=`<div class="toolbar"><span class="prog">${m.name}：已做 ${done}/${qs.length} · 判对 ${ok} · 判错 ${judged.length-ok}${pend?` · <b>待交卷 ${pend}</b>`:''}</span>`
     +['all','todo','wrong'].map(f=>`<button class="fbtn ${filter===f?'on':''}" onclick="setF('${f}')">${{all:'全部',todo:'未做',wrong:'只看错题'}[f]}</button>`).join('')
-    +`<button onclick="clearMod()">清除本模块作答</button></div>`;
+    +(m.selfcheck?'':`<button onclick="submitMod()">📄 交卷</button>`)
+    +`<button onclick="clearMod()">清除本模块作答</button></div>`
+    +(lastMsg?`<div class="toolbar subok">${lastMsg}</div>`:'');
   qs.forEach((q,i)=>{
     const key=m.keyOf(i), a=rec.answers[key];
     if(filter==='todo'&&a) return;
@@ -245,15 +261,19 @@ function renderMod(m){
     const ta=viewEl.querySelector('textarea[data-key="'+key+'"]');
     if(ta&&a&&a.text) ta.value=a.text; });
 }
-function qCard(key,no,q,a){
-  const answered=!!a, right=answered&&a.correct;
+function qCard(key,no,q,a,retry){
+  /* retry=true：错题重练中的曾错题——按"可重做"渲染（不亮答案、不锁选项） */
+  const rp=!!retry && !!a && a.correct===false;
+  const answered=!!a && !rp;
+  const pd=!answered && pending[key]!==undefined;
+  const right=answered&&a.correct;
   let h=`<div class="qcard"><div class="qhead"><span class="qno">${no}.</span><span class="mtag">${q.mod}</span>`
-    +`<span class="rtag ${answered?(right?'done':'miss'):''}">${answered?(right?'✔ 已答对':'✘ 曾答错（点选项重做）'):''}</span></div>`
+    +`<span class="rtag ${answered?(right?'done':'miss'):(rp?'miss':'')}">${answered?(right?'✔ 已答对':'✘ 曾答错（去🔁错题重练重做）'):(rp?'🔁 重练中——选好点「📄 交卷」':(pd?'⏳ 已选，待交卷':''))}</span></div>`
     +`<div class="qtext">${q.q}</div><div class="opts">`;
   q.o.forEach((o,k)=>{
     let cls=''; if(answered){ if(k===LET.indexOf(q.ans)) cls='right'; else if(a.chosen===LET[k]) cls='wrong'; }
-    const click = answered ? '' : " onclick=\"pick('"+key+"',"+k+")\"";
-    const dis = answered ? ' disabled' : '';
+    else if(pd && pending[key]===k) cls='picked';
+    const dis=answered?' disabled':'', click=answered?'':' onclick="pick(\''+key+'\','+k+')"';
     h+='<button class="opt '+cls+'"'+click+dis+'><span class="L">'+LET[k]+'.</span><span>'+o+'</span></button>';
   });
   h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${q.exp}</div>`;
@@ -292,29 +312,44 @@ window.selfMark=(key,ok)=>{ const v=ok?'✔对':'✘错';
   d.done++; if(ok)d.ok++;
   persist(); updateHeader(); render(); };
 
-window.pick=(key,k)=>{
-  const m=MODS.find(m=>key.startsWith(m.id+'-'));
-  const i=+key.split('-')[1]-1, q=m.list()[i];
-  const correct=(LET[k]===q.ans);
-  answer(key,LET[k],correct);
+window.pick=(key,k)=>{ pending[key]=k; savePending(); render(); };
+/* 交卷：把所有已选未交的选择统一判分入档（历史/日统计/记录文件都在这一刻写入） */
+window.submitMod=()=>{
+  const keys=Object.keys(pending);
+  if(!keys.length){ lastMsg='没有待交卷的选择——先点选项作答，再交卷。'; render(); return; }
+  let n=0, ok=0;
+  keys.forEach(key=>{
+    const m=MODS.find(m=>key.startsWith(m.id+'-')); if(!m) return;
+    const i=+key.split('-')[1]-1, q=m.list()[i]; if(!q) return;
+    const chosen=LET[pending[key]], correct=(chosen===q.ans);
+    answer(key,chosen,correct);
+    n++; if(correct) ok++;
+    delete pending[key];
+  });
+  savePending();
+  lastMsg='📄 交卷完成：共 '+n+' 题 · 答对 '+ok+' · 答错 '+(n-ok)+(n-ok?'（错题已进🔁错题重练）':'（全对 🎉）');
+  window.scrollTo(0,0);
   render();
 };
 window.setF=f=>{filter=f;buildTabs();render();};
 window.clearMod=()=>{ if(!confirm('清除本模块全部作答记录？（练习记录文件里会保留历史）'))return;
   const m=MODS.find(x=>x.id===curTab); m.list().forEach((q,i)=>delete rec.answers[m.keyOf(i)]);
+  Object.keys(pending).forEach(k=>{ if(k.startsWith(m.id+'-')) delete pending[k]; }); savePending(); lastMsg='';
   persist(); updateHeader(); render(); };
 function resetAll(){ if(!confirm('清空全部作答记录（含错题重练数据）？此操作不可恢复！'))return;
   if(!confirm('再次确认：真的全部清空？建议先用「📋 复制记录」备份。'))return;
-  rec={app:'rk-practice-v1',seeded:true,answers:{},history:[],daily:{}}; persist(); updateHeader(); render(); }
+  rec={app:'rk-practice-v1',seeded:true,answers:{},history:[],daily:{}}; pending={}; savePending(); lastMsg=''; persist(); updateHeader(); render(); }
 
 function renderWrong(){
   const wrongKeys=Object.keys(rec.answers).filter(k=>rec.answers[k].correct===false).sort();
-  let html=`<div class="toolbar"><span class="prog">🔁 待清错题 ${wrongKeys.length} 道（答对即自动移出；来自所有模块+摸底卷+大题）</span></div>`;
+  const pendN=wrongKeys.filter(k=>pending[k]!==undefined).length;
+  let html=`<div class="toolbar"><span class="prog">🔁 待清错题 ${wrongKeys.length} 道（重练答对即自动移出${pendN?' · 待交卷 '+pendN:''}）</span><button onclick="submitMod()">📄 交卷</button></div>`
+    +(lastMsg?`<div class="toolbar subok">${lastMsg}</div>`:'');
   if(!wrongKeys.length) html+=`<div class="qcard" style="color:var(--green);font-weight:600">🎉 没有待清错题！去标签页继续刷新题吧。</div>`;
   wrongKeys.forEach(k=>{
     const mi=MODS.findIndex(m=>k.startsWith(m.id+'-')); if(mi<0)return;
     const m=MODS[mi], i=+k.split('-')[1]-1, q=m.list()[i]; if(!q)return;
-    html+= m.selfcheck ? selfCheckCard(k,q,rec.answers[k]) : qCard(k,(m.id==='mock'?'摸底':'')+(i+1), q, rec.answers[k]);
+    html+= m.selfcheck ? selfCheckCard(k,q,rec.answers[k]) : qCard(k,(m.id==='mock'?'摸底':'')+(i+1), q, rec.answers[k], true);
   });
   viewEl.innerHTML=html;
   wrongKeys.forEach(k=>{ const a=rec.answers[k];

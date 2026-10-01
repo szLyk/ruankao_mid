@@ -71,6 +71,8 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
 th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
 th{background:#f1f5f9;white-space:nowrap}
 .feedback{margin-top:10px;font-size:14px}
+.ok{color:#059669;font-weight:700}
+.bad{color:#dc2626;font-weight:700}
 footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-size:12.5px}
 .mono{font-family:Consolas,Menlo,monospace}
 .topo{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px}
@@ -300,14 +302,19 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
   <div class="steps" id="subSteps"></div>
  </div>
  <div class="card">
-  <h2>随机练习（模拟考法）</h2>
+  <h2>随机练习（模拟考法 · 填写即时判分，无需点击）</h2>
   <div class="row"><button class="btn pri" onclick="quizNew()">🎲 出一道练习题</button><span id="quizQ" style="font-size:14.5px"></span></div>
   <div class="row" id="quizForm" style="display:none">
    <input id="qNet" style="width:150px" placeholder="网络地址">
    <input id="qBc" style="width:150px" placeholder="广播地址">
+   <input id="qFirst" style="width:150px" placeholder="可用范围·起">
+   <input id="qLast" style="width:150px" placeholder="可用范围·止">
    <input id="qH" style="width:110px" placeholder="可用主机数">
-   <button class="btn" onclick="quizCheck()">检查答案</button>
+   <input id="qMask" style="width:150px" placeholder="子网掩码">
+   <input id="qBlock" style="width:110px" placeholder="块长">
+   <button class="btn pri" id="quizSubmit" onclick="quizSubmit()">📄 交卷</button>
    <button class="btn" onclick="quizShow()">显示解答</button>
+   <span id="quizScore" style="font-size:13px;color:var(--mut)"></span>
   </div>
   <div class="feedback" id="quizFb"></div>
   <div class="steps" id="quizSteps" style="display:none"></div>
@@ -516,12 +523,17 @@ NETTOOL.genQuiz = function(){
   const d = 1 + Math.floor(Math.random()*254);
   return { ip: a + '.' + b + '.' + c + '.' + d, prefix: pf };
 };
-NETTOOL.checkQuiz = function(ip, pf, ansNet, ansBc, ansH){
+NETTOOL.checkQuiz = function(ip, pf, a){
   const r = NETTOOL.calcSubnet(ip, pf);
-  if(!r) return { ok:false };
+  if(!r) return { ok:false, r:null };
   const norm = s => String(s).trim().replace(/\s+/g,'');
-  return { ok: norm(ansNet)===r.net && norm(ansBc)===r.bcast && norm(ansH)===String(r.hosts),
-    okNet: norm(ansNet)===r.net, okBc: norm(ansBc)===r.bcast, okH: norm(ansH)===String(r.hosts), r: r };
+  const eq = (x,y) => norm(x) !== '' && norm(x) === String(y);
+  const f = {
+    net: eq(a.net, r.net), bc: eq(a.bc, r.bcast),
+    first: eq(a.first, r.first), last: eq(a.last, r.last),
+    hosts: eq(a.hosts, r.hosts), mask: eq(a.mask, r.mask), block: eq(a.block, r.block)
+  };
+  return { ok: f.net && f.bc && f.first && f.last && f.hosts && f.mask && f.block, r: r, net:f.net, bc:f.bc, first:f.first, last:f.last, hosts:f.hosts, mask:f.mask, block:f.block };
 };
 
 /* ================= 数据 ================= */
@@ -667,30 +679,67 @@ function doCalc(){
   function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
 }
 doCalc();
+/* 输入即算：IP 输到合法就自动刷新结果，免点「计算」 */
+document.getElementById('ipIn').addEventListener('input', () => { if(NETTOOL.parseIp(document.getElementById('ipIn').value) !== null) doCalc(); });
+document.getElementById('pfIn').addEventListener('change', doCalc);
 let quiz = null;
+const QUIZ_FIELDS = ['qNet','qBc','qFirst','qLast','qH','qMask','qBlock'];
 function quizNew(){
   quiz = NETTOOL.genQuiz();
-  document.getElementById('quizQ').innerHTML = '求 <b class="mono">'+quiz.ip+'/'+quiz.prefix+'</b> 的：网络地址 ／ 广播地址 ／ 可用主机数';
+  document.getElementById('quizQ').innerHTML = '求 <b class="mono">'+quiz.ip+'/'+quiz.prefix+'</b> 的：网络地址 ／ 广播地址 ／ 可用范围（起·止）／ 可用主机数 ／ 子网掩码 ／ 块长';
   document.getElementById('quizForm').style.display = 'flex';
-  ['qNet','qBc','qH'].forEach(id => document.getElementById(id).value = '');
+  QUIZ_FIELDS.forEach(id => { const el=document.getElementById(id); el.value=''; el.disabled=false; });
+  document.getElementById('quizSubmit').disabled = false;
   document.getElementById('quizFb').innerHTML = '';
   document.getElementById('quizSteps').style.display = 'none';
 }
 function quizCheck(){
   if(!quiz) return;
-  const res = NETTOOL.checkQuiz(quiz.ip, quiz.prefix,
-    document.getElementById('qNet').value, document.getElementById('qBc').value, document.getElementById('qH').value);
-  const mark = ok => ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>';
+  const val = id => document.getElementById(id).value;
+  const res = NETTOOL.checkQuiz(quiz.ip, quiz.prefix, {
+    net: val('qNet'), bc: val('qBc'), first: val('qFirst'), last: val('qLast'),
+    hosts: val('qH'), mask: val('qMask'), block: val('qBlock')
+  });
+  const mark = (ok, empty) => empty ? '<span style="color:#94a3b8">·</span>' : (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>');
   document.getElementById('quizFb').innerHTML =
-    '网络地址 ' + mark(res.okNet) + '　广播地址 ' + mark(res.okBc) + '　主机数 ' + mark(res.okH) +
-    (res.ok ? '　<b class="ok">全对！</b>' : '　有错就点【显示解答】看块长法步骤');
+    '网络地址 ' + mark(res.net, !val('qNet').trim()) + '　广播地址 ' + mark(res.bc, !val('qBc').trim()) +
+    '　可用范围 ' + mark(res.first, !val('qFirst').trim()) + mark(res.last, !val('qLast').trim()) +
+    '　主机数 ' + mark(res.hosts, !val('qH').trim()) + '　掩码 ' + mark(res.mask, !val('qMask').trim()) + '　块长 ' + mark(res.block, !val('qBlock').trim()) +
+    (res.ok ? '　<b class="ok">全对！</b>' : '　错的改一下就变 ✔；要看完整解答点【显示解答】');
 }
+/* 即时判分：每填一格自动检查，无需点击 */
+QUIZ_FIELDS.forEach(id => document.getElementById(id).addEventListener('input', quizCheck));
 function quizShow(){
   if(!quiz) return;
   const r = NETTOOL.calcSubnet(quiz.ip, quiz.prefix);
+  document.getElementById('qMask').value = r.mask;
   document.getElementById('qNet').value = r.net;
   document.getElementById('qBc').value = r.bcast;
+  document.getElementById('qFirst').value = r.first;
+  document.getElementById('qLast').value = r.last;
   document.getElementById('qH').value = r.hosts;
+  document.getElementById('qBlock').value = r.block;
+  document.getElementById('quizSteps').style.display = 'block';
+  document.getElementById('quizSteps').textContent = r.steps;
+}
+/* 交卷：锁定答题区，公布标准答案与解析，记入本场战绩 */
+let quizScoreN=0, quizScoreOk=0;
+function quizSubmit(){
+  if(!quiz) return;
+  const val = id => document.getElementById(id).value;
+  const res = NETTOOL.checkQuiz(quiz.ip, quiz.prefix, {
+    net: val('qNet'), bc: val('qBc'), first: val('qFirst'), last: val('qLast'),
+    hosts: val('qH'), mask: val('qMask'), block: val('qBlock')
+  });
+  QUIZ_FIELDS.forEach(id => document.getElementById(id).disabled = true);
+  document.getElementById('quizSubmit').disabled = true;
+  quizScoreN++; if(res.ok) quizScoreOk++;
+  document.getElementById('quizScore').textContent = '本场：已交 '+quizScoreN+' 题 · 对 '+quizScoreOk+' · 错 '+(quizScoreN-quizScoreOk);
+  const r = res.r;
+  document.getElementById('quizFb').innerHTML =
+    (res.ok ? '<b class="ok">🎉 交卷全对！</b>' : '<b class="bad">📄 已交卷——标准答案如下，对照左边的 ✘ 逐项订正：</b>') +
+    ' 网络地址 <b class="mono">'+r.net+'</b>　广播地址 <b class="mono">'+r.bcast+'</b>　可用范围 <b class="mono">'+r.first+' ~ '+r.last+'</b>　主机数 <b>'+r.hosts+'</b> 台　掩码 <b class="mono">'+r.mask+'</b>　块长 <b>'+r.block+'</b>' +
+    '　（点「🎲 出一道练习题」继续）';
   document.getElementById('quizSteps').style.display = 'block';
   document.getElementById('quizSteps').textContent = r.steps;
 }
