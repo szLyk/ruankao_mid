@@ -435,7 +435,23 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
    <div class="fcard"><b>TCP 流量/拥塞</b>发送窗 = min(rwnd, cwnd)<br>慢开始翻倍→门限后+1；超时：门限减半、cwnd=1；3个重复ACK→快重传快恢复</div>
    <div class="fcard"><b>数字话路</b>E1 = 32路×64k = 2.048Mbps（30话音）<br>T1 = 24路 = 1.544Mbps（美日）</div>
    <div class="fcard"><b>头部大小</b>UDP 固定 8B；TCP 最小 20B（可到60）<br>IPv6 基本头固定 40B；MAC 地址 48 位</div>
+   <div class="fcard"><b>TCP vs UDP（专项卷高频）</b>TCP：面向连接、可靠、<b>一对一</b>字节流，头20~60B<br>UDP：无连接、不可靠、<b>可一对多</b>报文，头固定8B；用于 DNS/DHCP/SNMP/RIP/流媒体</div>
+   <div class="fcard"><b>私网判定三问</b>① 第一段=10？② 第一段=172 且<b>第二段 16~31</b>（172.15/172.32 都是公网）？③ 前两段=192.168？其余为公网；127 回环、169.254 链路本地是特殊段</div>
+   <div class="fcard"><b>TCP 确认号 & 状态机（专项卷 nt-8/68/9/97）</b>确认号 N = "N−1 及之前的都收到了，请从 N 发"（<b>累计确认</b>）；ack = 对方 seq+1。挥手状态机：主动方 FIN_WAIT_1→FIN_WAIT_2→<b>TIME_WAIT</b>(等2MSL)；被动方 <b>CLOSE_WAIT</b>（收到FIN还能发数据）→<b>LAST_ACK</b></div>
   </div>
+ </div>
+ <div class="card">
+  <h2>应用层对比卡（错题沉淀 · nt-12/20/21/79/99/100）</h2>
+  <table>
+   <tr><th>考点</th><th>必背结论</th></tr>
+   <tr><td>DNS 两种查询</td><td>客户端→本地服务器 = <b>递归</b>（必须要答案）；本地→根/顶级/权威 = <b>迭代</b>（一级级问）</td></tr>
+   <tr><td>DNS 端口</td><td>解析 <b>UDP 53</b>；区域传送（主→辅）数据量大要可靠 → <b>TCP 53</b></td></tr>
+   <tr><td>DNS 记录类型</td><td>A=IPv4、AAAA=IPv6、<b>MX=邮件交换</b>、CNAME=别名、PTR=反向、NS=权威</td></tr>
+   <tr><td>DHCP 四步</td><td><b>DORA</b>：Discover广播→Offer→Request→ACK；UDP 67/68</td></tr>
+   <tr><td>邮件三协议</td><td>发=<b>SMTP 25</b>；收=<b>POP3 110</b>（下载到本机）/<b>IMAP 143</b>（留服务器、多设备同步）</td></tr>
+   <tr><td>远程登录</td><td>Telnet <b>23 明文</b>已被 SSH <b>22 加密</b>取代</td></tr>
+   <tr><td>Cookie vs Session</td><td>Cookie 存<b>客户端</b>（含会话标识）；Session 存<b>服务器</b></td></tr>
+  </table>
  </div>
  <div class="card">
   <h2>路由协议对比</h2>
