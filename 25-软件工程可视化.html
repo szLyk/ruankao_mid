@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>软件工程可视化 · 软件设计师</title>
+<style>
+:root{--acc:#2563eb;--bg:#f1f5f9;--card:#fff;--bd:#e2e8f0;--mut:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;background:var(--bg);color:#0f172a;line-height:1.7}
+header{background:#1e3a5f;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:9;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+h1{font-size:16.5px;font-weight:600}
+h1 small{font-size:12px;opacity:.75;font-weight:400}
+nav{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+nav button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#cbd5e1;padding:5px 13px;border-radius:16px;cursor:pointer;font-size:13px}
+nav button.on{background:#fff;color:#1e3a5f;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;font-size:13px;color:#92400e;margin-bottom:12px}
+h2{font-size:16px;margin-bottom:10px}
+h4{font-size:13.5px;margin:10px 0 6px;color:#334155}
+.kv{margin:7px 0;font-size:13.5px}
+.kv b{color:var(--acc)}
+.ctrl{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+.ctrl button,.btn{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:7px 16px;cursor:pointer;font-size:13.5px;font-family:inherit}
+.ctrl button:hover,.btn:hover{border-color:var(--acc);color:var(--acc)}
+.ctrl button.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.ctrl button.pri:hover{opacity:.9;color:#fff}
+.ctrl button.on{background:#e0e7ff;border-color:var(--acc);color:var(--acc);font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff}
+input:focus{outline:2px solid #bfdbfe}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rcell{background:#f8fafc;border:1px solid var(--bd);border-radius:10px;padding:9px 11px}
+.rcell b{display:block;font-size:11.5px;color:var(--mut);font-weight:600}
+.rcell span{font-size:14.5px;font-weight:700;font-family:Consolas,Menlo,monospace}
+.steps{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px 14px;font-family:Consolas,Menlo,monospace;font-size:13px;margin-top:10px;white-space:pre-wrap;line-height:1.9}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.fcard{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;font-size:13.5px}
+.fcard b{color:var(--acc);display:block;margin-bottom:4px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f1f5f9;white-space:nowrap}
+.feedback{margin-top:10px;font-size:14px}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+.mono{font-family:Consolas,Menlo,monospace}
+footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-size:12.5px}
+svg.cfg{width:100%;height:auto;background:#fff;border:1px solid var(--bd);border-radius:12px;display:block}
+.nd rect,.nd polygon{fill:#fff;stroke:#2563eb;stroke-width:2.5;cursor:pointer;transition:.15s}
+.nd.hl rect,.nd.hl polygon{fill:#eff6ff;stroke:#1d4ed8;stroke-width:3.5}
+.nd text{font-size:13px;font-weight:700;fill:#0f172a;pointer-events:none}
+.nd text.sub{font-size:10px;font-weight:400;fill:#64748b}
+.eg{stroke:#94a3b8;stroke-width:2;fill:none;cursor:pointer;transition:.15s}
+.eg.hl{stroke:#2563eb;stroke-width:3.5}
+.elab{font-size:11px;fill:#334155;paint-order:stroke;stroke:#fff;stroke-width:3px;font-weight:700;pointer-events:none}
+.warnbox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 12px;font-size:13.5px;color:#7f1d1d;margin-top:8px}
+.goodbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;font-size:13.5px;color:#065f46;margin-top:8px}
+.scale{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.sc{display:flex;align-items:center;gap:10px;border:1px solid var(--bd);border-radius:10px;background:#fff;padding:8px 12px;font-size:13.5px;cursor:pointer;transition:.15s;user-select:none}
+.sc:hover{border-color:var(--acc)}
+.sc b{font-size:12px;color:#fff;background:var(--acc);border-radius:7px;padding:2px 9px;flex-shrink:0}
+.sc .d{color:var(--mut);font-size:12.5px;display:none}
+.sc.open .d{display:inline}
+.sc.shuffled{background:#fffbeb}
+.sc.done{border-color:#16a34a;background:#f0fdf4}
+.sc.err{border-color:#dc2626;background:#fef2f2}
+.code{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px 14px;font-family:Consolas,Menlo,monospace;font-size:13px;white-space:pre;line-height:1.7;overflow-x:auto}
+</style>
+</head>
+<body>
+<header>
+ <h1>📐 软件工程可视化 <small>软件设计师 · 配套《10-讲义题库-软件工程》使用</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab 1 环路复杂度 ============ -->
+<section id="s-mccabe" class="on">
+ <div class="tip">📐 一句话：<b>V(G) = 线性独立路径数</b>。三种算法任选，<b>算完必须互验</b>——E−N+2、判定+1、封闭区域+1 三个结果对不上就是数错了。先点路径按钮看高亮，再开「回边陷阱」体验漏数后果。</div>
+ <div class="card">
+  <h2>例题程序与控制流图（点击节点/边可点亮点）</h2>
+  <div class="code">① read(x);
+② if (x > 0)        // 判定1 ◆
+③      y = 1;
+   else
+④      y = 2;
+⑤ while (y < 5)     // 判定2 ◆
+⑥      y = y + 1;
+⑦ print(y);         // 出口</div>
+  <svg class="cfg" id="cfg" viewBox="0 0 380 320"></svg>
+  <div class="ctrl">
+   <button class="pri" id="btnBack" onclick="toggleBack()">🔪 藏起回边 ⑥→⑤（模拟漏数）</button>
+   <button onclick="highlightPath(-1)">清除高亮</button>
+  </div>
+  <div id="pathBtns" class="ctrl"></div>
+  <div id="verdict"></div>
+ </div>
+ <div class="card">
+  <h2>三法计数器</h2>
+  <div class="res">
+   <div class="rcell"><b>公式① 边−节点+2</b><span id="cEN"></span></div>
+   <div class="rcell"><b>公式② 判定数+1</b><span id="cP"></span></div>
+   <div class="rcell"><b>公式③ 封闭区域+1</b><span id="cR"></span></div>
+   <div class="rcell"><b>边数 E（当前）</b><span id="cE"></span></div>
+   <div class="rcell"><b>节点数 N</b><span>7</span></div>
+   <div class="rcell"><b>判定节点（◆）</b><span>2</span></div>
+  </div>
+  <div class="kv" style="margin-top:10px"><b>独立路径（= V(G) 条，至少这么多个测试用例）：</b><span id="pathList"></span></div>
+ </div>
+ <div class="card">
+  <h2>出题自测（即时判分）</h2>
+  <div class="row"><button class="btn pri" onclick="mcNew()">🎲 出一道</button><span id="mcQ" style="font-size:14.5px"></span></div>
+  <div class="row" id="mcForm" style="display:none">
+   <input id="mcAns" style="width:130px" placeholder="V(G) = ?">
+   <button class="btn" onclick="mcShow()">显示答案</button>
+   <span style="color:var(--mut);font-size:13px">输入即判，无需回车</span>
+  </div>
+  <div class="feedback" id="mcFb"></div>
+  <div class="steps" id="mcSteps" style="display:none"></div>
+ </div>
+ <div class="card">
+  <h2>四个考试坑</h2>
+  <div class="grid2">
+   <div class="fcard"><b>① 回边别漏数</b>while 循环 ⑥→⑤ 的回头箭头也是一条边——E−N+2 最易漏，漏了就和判定数法对不上（点上面的「藏起回边」体验）</div>
+   <div class="fcard"><b>② 复合条件</b>a>0 && b>0 这类判定：给图就<b>按图数</b>；只给代码时一个 if/while 算 1 个判定</div>
+   <div class="fcard"><b>③ switch/case</b>每个 case 分支是一条出边——这种题用 <b>E−N+2</b> 最稳，别硬数判定</div>
+   <div class="fcard"><b>④ 经验上限 V(G) ≤ 10</b>超过难测试、易出错，应拆分模块——「McCabe 建议的复杂度上限」标准答案</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab 2 关键路径 ============ -->
+<section id="s-cp">
+ <div class="tip">🛤 一句话：<b>关键路径 = 从起点到终点耗时最长的路 = 总工期</b>；想提前完工只能压关键路径上的活动（非关键活动有余量，压了白压）。点路径按钮看高亮。</div>
+ <div class="card">
+  <h2>活动网络（单代号 AON：框=活动+历时，箭头=先后依赖）</h2>
+  <div class="kv"><b>活动表：</b>A(3天) B(5天) C(2天) D(4天) E(3天) F(2天)；依赖：A→B、A→C、B→D、B→E、C→D、D→F、E→F</div>
+  <svg class="cfg" id="cpv" viewBox="0 0 430 240"></svg>
+  <div class="ctrl" id="cpBtns"></div>
+  <div class="feedback" id="cpFb"></div>
+ </div>
+ <div class="card">
+  <h2>三条路径逐条算</h2>
+  <table>
+   <tr><th>路径</th><th>计算</th><th>总耗时</th><th>身份</th></tr>
+   <tr><td>A→B→D→F</td><td>3+5+4+2</td><td><b>14 天</b></td><td><b>关键路径（最长）= 总工期</b></td></tr>
+   <tr><td>A→B→E→F</td><td>3+5+3+2</td><td>13 天</td><td>非关键（余量 1 天）</td></tr>
+   <tr><td>A→C→D→F</td><td>3+2+4+2</td><td>11 天</td><td>非关键（余量 3 天）</td></tr>
+  </table>
+  <div class="kv" style="margin-top:8px"><b>想提前 2 天完工？</b>只能压 A/B/D/F（关键路径上的）；压 C 或 E 没用——它们所在的路径本来就短，压完总工期还是 14 天由别的路兜底。压缩后若关键路径转移到别条路，就要两条一起压。</div>
+ </div>
+</section>
+
+<!-- ============ Tab 3 耦合与内聚 ============ -->
+<section id="s-coh">
+ <div class="tip">🔗 两把尺子方向相反：<b>耦合越低越好</b>（模块间联系越弱越独立），<b>内聚越高越好</b>（模块内越专注越单一）。排序题最爱考「从低到高/从高到低」。点卡片看一句话解释；点【打乱自测】按正确顺序点回来。</div>
+ <div class="card">
+  <h2>模块独立性：耦合（模块之间，低→高，越低越好）</h2>
+  <div class="scale" id="coupling"></div>
+  <div class="kv" style="margin-top:8px"><b>口诀：</b>非直接 → 数据 → 标记 → 控制 → 外部 → 公共 → 内容（记「<b>非数据标控，外公内</b>」，越往后越糟）</div>
+ </div>
+ <div class="card">
+  <h2>模块独立性：内聚（模块之内，低→高，越高越好）</h2>
+  <div class="scale" id="cohesion"></div>
+  <div class="kv" style="margin-top:8px"><b>口诀：</b>偶然 → 逻辑 → 时间 → 过程 → 通信 → 顺序 → 功能（记「<b>偶逻时过通顺功</b>」，越往后越好）</div>
+ </div>
+ <div class="card">
+  <h2>排序自测</h2>
+  <div class="ctrl">
+   <button class="btn pri" onclick="shuffleScale('coupling')">🎲 打乱「耦合」来排序</button>
+   <button class="btn pri" onclick="shuffleScale('cohesion')">🎲 打乱「内聚」来排序</button>
+   <button class="btn" onclick="resetScales()">↺ 还原顺序</button>
+  </div>
+  <div class="feedback" id="sortFb">点上面的打乱按钮开始：按「从低到高」的顺序依次点击卡片。</div>
+ </div>
+</section>
+
+<!-- ============ Tab 4 测试与模型 ============ -->
+<section id="s-test">
+ <div class="tip">🧪 主线：<b>单元 → 集成 → 系统 → 验收</b>； Alpha 用户来开发方（内测）、Beta 发给用户（公测）。开发模型按「需求明不明确、有没有风险」选。</div>
+ <div class="card">
+  <h2>测试阶段与分层</h2>
+  <table>
+   <tr><th>阶段</th><th>测什么</th><th>谁来做</th><th>方法</th></tr>
+   <tr><td><b>单元测试</b></td><td>单个模块（函数/类）</td><td>开发者</td><td>白盒为主</td></tr>
+   <tr><td><b>集成测试</b></td><td>模块间<b>接口</b></td><td>开发方</td><td>自顶向下 / 自底向上 / 三明治</td></tr>
+   <tr><td><b>系统测试</b></td><td>整个系统（功能+性能+安全）</td><td>独立测试人员</td><td>黑盒为主</td></tr>
+   <tr><td><b>验收测试</b></td><td>需求是否满足</td><td><b>用户</b></td><td>Alpha（开发方现场）/ Beta（用户环境）</td></tr>
+  </table>
+  <h4>白盒 vs 黑盒</h4>
+  <table>
+   <tr><th></th><th>白盒（结构）</th><th>黑盒（功能）</th></tr>
+   <tr><td>看什么</td><td>代码内部逻辑</td><td>只看输入输出</td></tr>
+   <tr><td>方法</td><td>逻辑覆盖：语句 ⊂ 判定 ⊂ 条件/判定 ⊂ 路径；循环测试</td><td>等价类划分、边界值分析、错误推测、因果图</td></tr>
+  </table>
+ </div>
+ <div class="card">
+  <h2>开发模型速查（选择题高频）</h2>
+  <table>
+   <tr><th>模型</th><th>特征关键词</th><th>适用</th></tr>
+   <tr><td><b>瀑布模型</b></td><td>线性顺序、阶段评审、文档驱动</td><td>需求<b>明确且稳定</b></td></tr>
+   <tr><td><b>原型模型</b></td><td>快速造样品给用户试</td><td>需求<b>不明确</b>（探索需求）</td></tr>
+   <tr><td><b>增量模型</b></td><td>分批交付，核心先行</td><td>需要尽早出可用版本</td></tr>
+   <tr><td><b>螺旋模型</b></td><td>每圈都有<b>风险分析</b></td><td>大型、<b>高风险</b>项目</td></tr>
+   <tr><td><b>敏捷（Scrum等）</b></td><td>短迭代、拥抱变化、每日站会</td><td>需求多变、小团队快速交付</td></tr>
+  </table>
+  <h4>Alpha vs Beta（讲义 A7）</h4>
+  <div class="grid2">
+   <div class="fcard"><b>Alpha</b>用户<b>来开发方</b>测试，开发者在场记录问题——内测</div>
+   <div class="fcard"><b>Beta</b>软件<b>发给用户</b>在实际环境用，开发者不在场——公测；顺序：先 Alpha 后 Beta</div>
+  </div>
+ </div>
+</section>
+</main>
+<footer>学习主线：10-讲义题库-软件工程.md（讲义 + 白话详解 A5/A6/A7）→ 本页（可视化理解）→ 17-在线练习系统（软件工程 48 题 + 应用技术大题）</footer>
+
+<script>
+/* ================= 纯函数（独立可测） ================= */
+const SE = {};
+SE.vgByEN = (E, N) => E - N + 2;
+SE.vgByP = P => P + 1;
+SE.vgByRegion = R => R + 1;
+SE.mcGen = function(){
+  const V = 2 + Math.floor(Math.random()*8);           // 2~9
+  if (Math.random() < 0.5){
+    const N = 6 + Math.floor(Math.random()*7);         // 6~12
+    return { kind:'EN', E: V + N - 2, N: N, P: V - 1, ans: V };
+  }
+  return { kind:'P', E: V + 5, N: V + 3, P: V - 1, ans: V };
+};
+SE.mcCheck = function(q, ans){ return String(ans).trim() === String(q.ans); };
+
+/* ================= 导航 ================= */
+const SECTIONS = [['mccabe','📐 环路复杂度'],['cp','🛤 关键路径'],['coh','🔗 耦合与内聚'],['test','🧪 测试与模型']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0]==='mccabe') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= Tab1 环路复杂度 ================= */
+const MC_NODES = [
+ {id:1, x:100,  y:38,  shape:'rect',    label:'① 读x'},
+ {id:2, x:100,  y:108, shape:'diamond', label:'② x>0?'},
+ {id:3, x:225,  y:108, shape:'rect',    label:'③ y=1'},
+ {id:4, x:100,  y:178, shape:'rect',    label:'④ y=2'},
+ {id:5, x:162,  y:248, shape:'diamond', label:'⑤ y<5?'},
+ {id:6, x:285,  y:248, shape:'rect',    label:'⑥ y++'},
+ {id:7, x:45,   y:248, shape:'rect',    label:'⑦ 输出'}
+];
+const MC_EDGES = [
+ {id:'1-2', from:1, to:2},
+ {id:'2-3', from:2, to:3, label:'T', lx:160, ly:98},
+ {id:'2-4', from:2, to:4, label:'F', lx:88,  ly:152},
+ {id:'3-5', from:3, to:5},
+ {id:'4-5', from:4, to:5},
+ {id:'5-6', from:5, to:6, label:'T', lx:222, ly:240},
+ {id:'5-7', from:5, to:7, label:'F', lx:105, ly:240},
+ {id:'6-5', from:6, to:5, back:true, curve:'M285,226 C258,178 202,178 176,226'}
+];
+const MC_PATHS = [
+ {name:'P1', nodes:[1,2,3,5,7], edges:['1-2','2-3','3-5','5-7'], desc:'x>0 且循环走 0 次：①②③⑤⑦'},
+ {name:'P2', nodes:[1,2,4,5,7], edges:['1-2','2-4','4-5','5-7'], desc:'x≤0 且循环走 0 次：①②④⑤⑦'},
+ {name:'P3', nodes:[1,2,3,5,6,7], edges:['1-2','2-3','3-5','5-6','6-5','5-7'], desc:'x>0 且进一次循环：①②③⑤⑥⑤⑦'}
+];
+let mcShowBack = true;
+function nodePt(id){
+  const n = MC_NODES.find(n=>n.id===id);
+  const half = n.shape==='diamond' ? 34 : 30;
+  return {x:n.x, y:n.y, top:n.y-(n.shape==='diamond'?26:17), bottom:n.y+(n.shape==='diamond'?26:17),
+          left:n.x-half, right:n.x+half};
+}
+function edgePath(a, b){
+  if(a.x === b.x){ // 垂直边：从上往下
+    const [y1,y2] = a.y < b.y ? [a.bottom, b.top] : [a.top, b.bottom];
+    return 'M'+a.x+','+y1+' L'+b.x+','+y2;
+  }
+  if(a.y === b.y){ // 水平边：永远从 from 侧指向 to 侧
+    const [x1,x2] = a.x < b.x ? [a.right, b.left] : [a.left, b.right];
+    return 'M'+x1+','+a.y+' L'+x2+','+b.y;
+  }
+  return 'M'+a.x+','+a.bottom+' L'+b.x+','+b.top; // 斜边：a 底部 → b 顶部
+}
+function renderCFG(){
+  const parts = ['<defs><marker id="arr" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#64748b"/></marker></defs>'];
+  MC_EDGES.forEach(e=>{
+    if(e.back && !mcShowBack) return;
+    const a = nodePt(e.from), b = nodePt(e.to);
+    const d = e.back ? e.curve : edgePath(a, b);
+    parts.push('<path class="eg" id="e-'+e.id+'" data-id="'+e.id+'" d="'+d+'" marker-end="url(#arr)"/>');
+    if(e.label) parts.push('<text class="elab" x="'+e.lx+'" y="'+e.ly+'">'+e.label+'</text>');
+  });
+  parts.push('<text class="elab" x="285" y="170">回边 ⑥→⑤</text>');
+  parts.push('<text class="elab" x="30" y="295">（结束）</text>');
+  MC_NODES.forEach(n=>{
+    const inner = n.shape==='diamond'
+      ? '<polygon points="'+n.x+','+(n.y-26)+' '+(n.x+34)+','+n.y+' '+n.x+','+(n.y+26)+' '+(n.x-34)+','+n.y+'"/>'
+      : '<rect x="'+(n.x-32)+'" y="'+(n.y-17)+'" width="64" height="34" rx="8"/>';
+    parts.push('<g class="nd" id="n-'+n.id+'" data-id="'+n.id+'">'+inner+
+      '<text x="'+n.x+'" y="'+(n.y+4)+'" text-anchor="middle">'+n.label+'</text></g>');
+  });
+  document.getElementById('cfg').innerHTML = parts.join('');
+  MC_EDGES.forEach(e=>{
+    if(e.back && !mcShowBack) return;
+    const el = document.getElementById('e-'+e.id);
+    if(el) el.onclick = ()=>{ el.classList.toggle('hl'); };
+  });
+  MC_NODES.forEach(n=>{
+    const el = document.getElementById('n-'+n.id);
+    if(el) el.onclick = ()=>{ el.classList.toggle('hl'); };
+  });
+  updateCounts();
+}
+function highlightPath(i){
+  renderCFG();
+  if(i < 0) { document.getElementById('verdict').innerHTML=''; return; }
+  const p = MC_PATHS[i];
+  p.nodes.forEach(id=>document.getElementById('n-'+id).classList.add('hl'));
+  p.edges.forEach(id=>{ const el=document.getElementById('e-'+id); if(el) el.classList.add('hl'); });
+  document.getElementById('verdict').innerHTML =
+    '<div class="goodbox"><b>'+p.name+'：</b>'+p.desc+' —— 走完这条，再换一条「和它至少有一段不同」的路，凑满 V(G)=3 条就是基本路径测试。</div>';
+}
+function updateCounts(){
+  const E = mcShowBack ? 8 : 7, N = 7, P = 2, R = 2;
+  const vEN = SE.vgByEN(E,N), vP = SE.vgByP(P), vR = SE.vgByRegion(R);
+  document.getElementById('cEN').textContent = E+'−'+N+'+2 = '+vEN;
+  document.getElementById('cP').textContent  = P+'+1 = '+vP;
+  document.getElementById('cR').textContent  = R+'+1 = '+vR;
+  document.getElementById('cE').textContent  = E + (mcShowBack?'（含回边）':'（回边被藏起）');
+  document.getElementById('pathList').textContent = MC_PATHS.map(p=>p.name+' '+p.desc.split('：')[1]).join('；');
+  document.getElementById('verdict').innerHTML = mcShowBack
+    ? '<div class="goodbox">三法一致 ✓ V(G) = 3 —— 三条结果对得上，说明没数错。</div>'
+    : '<div class="warnbox">三法对不上了！E−N+2 = 2，但判定数法仍是 3 —— 这就是「<b>漏数回边</b>」的典型症状。while 循环那条回头箭头也是边，点【还原回边】恢复。</div>';
+  const bb = document.getElementById('btnBack');
+  bb.textContent = mcShowBack ? '🔪 藏起回边 ⑥→⑤（模拟漏数）' : '↺ 还原回边';
+  bb.classList.toggle('on', !mcShowBack);
+}
+function toggleBack(){
+  mcShowBack = !mcShowBack;
+  renderCFG();          // 内部会更新三法计数与判定框（一致 ✓ / 对不上警告）
+  MC_PATHS.forEach(p=>{ // 只清高亮，不清判定框
+    p.nodes.forEach(id=>{ const el=document.getElementById('n-'+id); if(el) el.classList.remove('hl'); });
+    p.edges.forEach(id=>{ const el=document.getElementById('e-'+id); if(el) el.classList.remove('hl'); });
+  });
+}
+(function(){
+  document.getElementById('pathBtns').innerHTML =
+    MC_PATHS.map((p,i)=>'<button class="btn" onclick="highlightPath('+i+')">'+p.name+' 路径高亮</button>').join('');
+})();
+renderCFG();
+
+/* 出题自测（即时判分） */
+let mcQuiz = null;
+function mcNew(){
+  mcQuiz = SE.mcGen();
+  const stem = mcQuiz.kind==='EN'
+    ? '某控制流图有 <b class="mono">'+mcQuiz.E+'</b> 条边、<b class="mono">'+mcQuiz.N+'</b> 个节点，V(G) = ?'
+    : '某程序有 <b class="mono">'+mcQuiz.P+'</b> 个判定节点，V(G) = ?';
+  document.getElementById('mcQ').innerHTML = stem;
+  document.getElementById('mcForm').style.display = 'flex';
+  document.getElementById('mcAns').value = '';
+  document.getElementById('mcFb').innerHTML = '';
+  document.getElementById('mcSteps').style.display = 'none';
+  document.getElementById('mcAns').focus();
+}
+function mcShow(){
+  if(!mcQuiz) return;
+  const f = document.getElementById('mcFb');
+  const v = mcQuiz.ans;
+  f.innerHTML = '<b>答案：V(G) = '+v+'</b>（判定 '+mcQuiz.P+' 个 + 1）';
+  const st = document.getElementById('mcSteps');
+  st.style.display = 'block';
+  st.textContent = '① V = E − N + 2 = '+mcQuiz.E+' − '+mcQuiz.N+' + 2 = '+v+'\n'+
+                   '② V = 判定数 + 1 = '+mcQuiz.P+' + 1 = '+v+'\n'+
+                   '③ 两法一致 → 独立路径 '+v+' 条 → 至少 '+v+' 个测试用例';
+}
+document.getElementById('mcAns').addEventListener('input', function(){
+  if(!mcQuiz) return;
+  const el = document.getElementById('mcFb');
+  if(this.value.trim()===''){ el.innerHTML=''; return; }
+  el.innerHTML = SE.mcCheck(mcQuiz, this.value)
+    ? '<span class="ok">✔ 对！</span>'
+    : '<span class="bad">✘ 再想想：判定 '+mcQuiz.P+' 个时，判定数法 = P+1；边数法记得「+2」。</span>';
+});
+
+/* ================= Tab2 关键路径 ================= */
+const CP_NODES = [
+ {id:'A', x:55,  y:120, dur:3},
+ {id:'B', x:165, y:45,  dur:5},
+ {id:'C', x:165, y:195, dur:2},
+ {id:'D', x:275, y:120, dur:4},
+ {id:'E', x:275, y:45,  dur:3},
+ {id:'F', x:385, y:120, dur:2}
+];
+const CP_EDGES = ['A-B','A-C','B-D','B-E','C-D','D-F','E-F'];
+const CP_PATHS = [
+ {name:'A-B-D-F', nodes:['A','B','D','F'], edges:['A-B','B-D','D-F'], sum:14, critical:true,  note:'最长 → 关键路径 = 总工期'},
+ {name:'A-B-E-F', nodes:['A','B','E','F'], edges:['A-B','B-E','E-F'], sum:13, critical:false, note:'余量 1 天'},
+ {name:'A-C-D-F', nodes:['A','C','D','F'], edges:['A-C','C-D','D-F'], sum:11, critical:false, note:'余量 3 天'}
+];
+function renderCP(){
+  const parts = [];
+  CP_EDGES.forEach(id=>{
+    const [f,t] = id.split('-');
+    const a = CP_NODES.find(n=>n.id===f), b = CP_NODES.find(n=>n.id===t);
+    parts.push('<path class="eg" id="ce-'+id+'" data-id="'+id+'" d="M'+(a.x+34)+','+a.y+' L'+(b.x-34)+','+b.y+'" marker-end="url(#arr2)"/>');
+  });
+  CP_NODES.forEach(n=>{
+    parts.push('<g class="nd" id="cn-'+n.id+'" data-id="'+n.id+'">'+
+      '<rect x="'+(n.x-34)+'" y="'+(n.y-19)+'" width="68" height="38" rx="8"/>'+
+      '<text x="'+n.x+'" y="'+(n.y-2)+'" text-anchor="middle">'+n.id+'</text>'+
+      '<text class="sub" x="'+n.x+'" y="'+(n.y+13)+'" text-anchor="middle">'+n.dur+'天</text></g>');
+  });
+  parts.push('<defs><marker id="arr2" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#64748b"/></marker></defs>');
+  document.getElementById('cpv').innerHTML = parts.join('');
+}
+function highlightCP(i){
+  renderCP();
+  CP_EDGES.forEach(id=>document.getElementById('ce-'+id).classList.remove('hl'));
+  CP_NODES.forEach(n=>document.getElementById('cn-'+n.id).classList.remove('hl'));
+  const p = CP_PATHS[i];
+  p.nodes.forEach(id=>document.getElementById('cn-'+id).classList.add('hl'));
+  p.edges.forEach(id=>document.getElementById('ce-'+id).classList.add('hl'));
+  document.getElementById('cpFb').innerHTML =
+    '<div class="'+(p.critical?'goodbox':'kv')+'"><b>'+p.name+' = '+p.sum+' 天</b> —— '+p.note+
+    (p.critical?'。想提前完工，只能压这条路上的活动！':'。压它的活动对总工期没影响。')+'</div>';
+}
+(function(){
+  document.getElementById('cpBtns').innerHTML =
+    CP_PATHS.map((p,i)=>'<button class="btn'+(p.critical?' pri':'')+'" onclick="highlightCP('+i+')">'+p.name+'（'+p.sum+'天）</button>').join('');
+})();
+renderCP();
+
+/* ================= Tab3 耦合与内聚 ================= */
+const SCALES = {
+  coupling: [
+    {name:'非直接耦合', d:'两模块间没有直接关系，信息经主模块传递'},
+    {name:'数据耦合',   d:'只传简单数据值（最佳可行状态）'},
+    {name:'标记耦合',   d:'传整个数据结构名（记录），对方只用其中一部分'},
+    {name:'控制耦合',   d:'传控制标志，指挥另一模块怎么走逻辑'},
+    {name:'外部耦合',   d:'通过环境变量、外部链接绑定'},
+    {name:'公共耦合',   d:'共用一块全局数据区，一改全乱'},
+    {name:'内容耦合',   d:'直接访问对方内部代码/数据，最坏，必须避免'}
+  ],
+  cohesion: [
+    {name:'偶然内聚', d:'毫无关系的代码凑在一个模块（「顺手放一起」）'},
+    {name:'逻辑内聚', d:'逻辑相似的功能凑一起（如所有输入处理打包）'},
+    {name:'时间内聚', d:'同一时间执行才凑一起（如初始化模块）'},
+    {name:'过程内聚', d:'按固定执行顺序串在一起'},
+    {name:'通信内聚', d:'操作同一个数据集的各部分'},
+    {name:'顺序内聚', d:'前一部分的输出就是后一部分的输入'},
+    {name:'功能内聚', d:'只干一件完整的事（最理想，如「计算利息」）'}
+  ]
+};
+let sortState = null;
+function renderScale(key, shuffled){
+  const box = document.getElementById(key);
+  box.innerHTML = SCALES[key].map((it,i)=>{
+    const idx = shuffled ? sortState.order[i] : i;
+    const item = SCALES[key][idx];
+    return '<div class="sc'+(shuffled?' shuffled':'')+'" data-key="'+key+'" data-idx="'+idx+'" onclick="pickScale(this)">'+
+      '<b>'+(idx+1)+'</b><span>'+item.name+'</span><span class="d">—— '+item.d+'</span></div>';
+  }).join('');
+}
+function pickScale(el){
+  const key = el.dataset.key, idx = +el.dataset.idx;
+  if(!sortState || sortState.key !== key){ el.classList.toggle('open'); return; }
+  const expect = sortState.clicked.length;
+  if(idx === expect){
+    sortState.clicked.push(idx);
+    el.classList.remove('err'); el.classList.add('done'); el.classList.add('open');
+    const fb = document.getElementById('sortFb');
+    if(sortState.clicked.length === 7){
+      fb.innerHTML = '<span class="ok">🎉 全部按序点亮！'+(key==='coupling'?'耦合从低到高':'内聚从低到高')+' —— 复述一遍口诀就记牢了。</span>';
+      sortState = null;
+    } else {
+      fb.innerHTML = '✔ 已点亮 '+sortState.clicked.length+'/7 —— 继续。';
+    }
+  } else {
+    el.classList.add('err');
+    setTimeout(()=>el.classList.remove('err'), 600);
+    document.getElementById('sortFb').innerHTML =
+      '<span class="bad">✘ 顺序不对——现在该点第 '+(expect+1)+' 个（按从低到高数）。</span>';
+  }
+}
+function shuffleScale(key){
+  let order;
+  do { order = [0,1,2,3,4,5,6].sort(()=>Math.random()-0.5); } while(order.every((v,i)=>v===i));
+  sortState = {key, order, clicked:[]};
+  renderScale(key, true);
+  document.getElementById('sortFb').innerHTML = '已打乱「'+(key==='coupling'?'耦合':'内聚')+'」——按<b>从低到高</b>的正确顺序依次点击卡片（点击可看解释）:';
+}
+function resetScales(){
+  sortState = null;
+  renderScale('coupling', false); renderScale('cohesion', false);
+  document.getElementById('sortFb').textContent = '已还原为标准顺序，点卡片看一句话解释。';
+}
+renderScale('coupling', false); renderScale('cohesion', false);
+</script>
+</body>
+</html>
