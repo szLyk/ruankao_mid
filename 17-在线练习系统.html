@@ -206,6 +206,7 @@ if(!rec.seeded){ // 注入摸底结果
 
 /* ============ 渲染 ============ */
 const LET=['A','B','C','D'];
+function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 let curTab='mock', filter='all', lastMsg='';
 /* 考试模式：点选只暂存到 pending（localStorage 单独存，与 AI 记录格式无关），交卷才判分入档 */
 let pending={}; try{ pending=JSON.parse(localStorage.getItem('rk_pending_v1')||'{}'); }catch(e){}
@@ -269,14 +270,14 @@ function qCard(key,no,q,a,retry){
   const right=answered&&a.correct;
   let h=`<div class="qcard"><div class="qhead"><span class="qno">${no}.</span><span class="mtag">${q.mod}</span>`
     +`<span class="rtag ${answered?(right?'done':'miss'):(rp?'miss':'')}">${answered?(right?'✔ 已答对':'✘ 曾答错（去🔁错题重练重做）'):(rp?'🔁 重练中——选好点「📄 交卷」':(pd?'⏳ 已选，待交卷':''))}</span></div>`
-    +`<div class="qtext">${q.q}</div><div class="opts">`;
+    +`<div class="qtext">${esc(q.q)}</div><div class="opts">`;
   q.o.forEach((o,k)=>{
     let cls=''; if(answered){ if(k===LET.indexOf(q.ans)) cls='right'; else if(a.chosen===LET[k]) cls='wrong'; }
     else if(pd && pending[key]===k) cls='picked';
     const dis=answered?' disabled':'', click=answered?'':' onclick="pick(\''+key+'\','+k+')"';
-    h+='<button class="opt '+cls+'"'+click+dis+'><span class="L">'+LET[k]+'.</span><span>'+o+'</span></button>';
+    h+='<button class="opt '+cls+'"'+click+dis+'><span class="L">'+LET[k]+'.</span><span>'+esc(o)+'</span></button>';
   });
-  h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${q.exp}</div>`;
+  h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${esc(q.exp)}</div>`;
   if(answered&&a.attempts>1) h+=`<div class="hint">已做 ${a.attempts} 次${right?'（本次已答对）':''}</div>`;
   return h+`</div>`;
 }

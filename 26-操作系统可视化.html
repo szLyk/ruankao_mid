@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>操作系统可视化 · 软件设计师</title>
+<style>
+:root{--acc:#059669;--bg:#f0fdf4;--bd:#d1fae5;--mut:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#0f172a;line-height:1.7}
+header{background:#064e3b;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:9}
+h1{font-size:16px;font-weight:600}
+h1 small{font-size:12px;opacity:.75;font-weight:400}
+nav{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+nav button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#a7f3d0;padding:5px 13px;border-radius:16px;cursor:pointer;font-size:13px;font-family:inherit}
+nav button.on{background:#fff;color:#064e3b;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:#ecfdf5;border:1px solid #6ee7b7;border-radius:10px;padding:8px 12px;font-size:13px;color:#065f46;margin-bottom:12px}
+h2{font-size:16px;margin-bottom:10px}
+h4{font-size:13.5px;margin:10px 0 6px;color:#334155}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff}
+input:focus{outline:2px solid #a7f3d0}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 16px;cursor:pointer;font-size:13.5px;font-family:inherit}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.btn.pri:hover{opacity:.9;color:#fff}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rcell{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:9px 11px}
+.rcell b{display:block;font-size:11.5px;color:var(--mut);font-weight:600}
+.rcell span{font-size:14.5px;font-weight:700;font-family:Consolas,monospace}
+.steps{background:#0f172a;color:#d1fae5;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:13px;margin-top:10px;white-space:pre-wrap;line-height:1.9}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+th,td{border:1px solid #e2e8f0;padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f0fdf4}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px;font-size:13.5px}
+.fcard b{color:var(--acc);display:block;margin-bottom:4px;font-size:13px}
+.state{display:inline-block;border-radius:10px;padding:14px 18px;font-weight:800;font-size:16px;color:#fff;margin:4px}
+.arrowlab{font-size:12px;color:#475569;padding:2px 8px;background:#f1f5f9;border-radius:8px;display:inline-block;margin:2px}
+.msg{border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;background:#fff;font-size:13.5px;display:flex;gap:10px;align-items:center;opacity:.22;transition:.35s}
+.msg.show{opacity:1}
+.msg .dir{font-weight:800;color:var(--acc);min-width:96px;flex-shrink:0}
+.msg .n{color:var(--mut);font-size:12px;margin-left:auto;text-align:right}
+footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-size:12.5px}
+.mono{font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+<header>
+ <h1>🖥 操作系统可视化 <small>软件设计师 · 全章知识点（进程/PV/死锁/存储/调度/设备文件）· 配套《13-讲义题库-操作系统》· 错题考点已标题号</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 进程与PV ============ -->
+<section id="s-pv" class="on">
+ <div class="tip">🚦 PV 三句话：<b>P = 申请资源（减1），V = 释放资源（加1）</b>；信号量初值 = <b>资源数</b>；互斥信号量初值恒为 <b>1</b>。P 后值&lt;0 → 进程睡眠；V 后值≤0 → 唤醒一个等待者。</div>
+ <div class="card">
+  <h2>P/V 操作模拟器（看值怎么变）</h2>
+  <div class="row">
+   <span>信号量当前值：<b class="mono" id="pvVal" style="font-size:20px">1</b></span>
+   <span style="color:var(--mut);font-size:13px">等待队列：<b id="pvWait">0</b> 人</span>
+  </div>
+  <svg viewBox="0 0 700 92" style="width:100%;max-width:700px" id="pvSvg"></svg>
+  <div class="row">
+   <button class="btn" onclick="pvDo(-1)">P（申请，减1）</button>
+   <button class="btn" onclick="pvDo(1)">V（释放，加1）</button>
+   <button class="btn" onclick="pvReset()">↺ 重置为1</button>
+   <button class="btn" onclick="pvSet()">设初值为 n…</button>
+   <input id="pvN" value="3" style="width:60px" title="初值 n">
+  </div>
+  <div class="steps" id="pvLog">初始信号量 = 1（互斥锁）</div>
+ </div>
+ <div class="card">
+  <h2>生产者-消费者全景图（三个信号量怎么牵制双方）</h2>
+  <svg viewBox="0 0 760 310" style="width:100%;max-width:740px">
+   <defs>
+    <marker id="fa" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0f172a"/></marker>
+    <marker id="fg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#059669"/></marker>
+    <marker id="fo" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#d97706"/></marker>
+   </defs>
+   <text x="380" y="34" text-anchor="middle" font-size="12.5" fill="#64748b">初值由来：初始缓冲区全空 → empty = n、full = 0；锁只有一把 → mutex = 1</text>
+   <rect x="20" y="160" width="140" height="64" rx="10" fill="#059669"/>
+   <text x="90" y="186" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">生产者</text>
+   <text x="90" y="206" text-anchor="middle" fill="#d1fae5" font-size="11">放产品</text>
+   <rect x="300" y="152" width="160" height="80" rx="10" fill="#fff" stroke="#0f172a" stroke-width="2"/>
+   <text x="380" y="174" text-anchor="middle" font-size="13" font-weight="700">缓冲区（n 格）</text>
+   <rect x="320" y="186" width="30" height="36" fill="#e2e8f0" stroke="#94a3b8"/>
+   <rect x="362" y="186" width="30" height="36" fill="#a7f3d0" stroke="#059669"/>
+   <rect x="404" y="186" width="30" height="36" fill="#e2e8f0" stroke="#94a3b8"/>
+   <rect x="600" y="160" width="140" height="64" rx="10" fill="#f59e0b"/>
+   <text x="670" y="186" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">消费者</text>
+   <text x="670" y="206" text-anchor="middle" fill="#fef3c7" font-size="11">取产品</text>
+   <line x1="160" y1="192" x2="294" y2="192" stroke="#0f172a" stroke-width="2" marker-end="url(#fa)"/>
+   <text x="227" y="182" text-anchor="middle" font-size="12" font-weight="700">放入产品</text>
+   <line x1="460" y1="192" x2="594" y2="192" stroke="#0f172a" stroke-width="2" marker-end="url(#fa)"/>
+   <text x="527" y="182" text-anchor="middle" font-size="12" font-weight="700">取走产品</text>
+   <line x1="95" y1="156" x2="328" y2="149" stroke="#059669" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#fg)"/>
+   <text x="200" y="122" text-anchor="middle" font-size="12" fill="#059669" font-weight="700">放之前 P(empty)：申请一个空格</text>
+   <line x1="665" y1="156" x2="384" y2="149" stroke="#d97706" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#fo)"/>
+   <text x="562" y="122" text-anchor="middle" font-size="12" fill="#b45309" font-weight="700">取之前 P(full)：申请一个满格</text>
+   <text x="380" y="262" text-anchor="middle" font-size="12.5" fill="#059669" font-weight="700">放之前：P(empty) 申请空格子　→　放完：V(full) 归还一个"满格"</text>
+   <text x="380" y="284" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="700">取之前：P(full) 申请满格子　→　取完：V(empty) 归还一个"空格"</text>
+   <text x="380" y="306" text-anchor="middle" font-size="12" fill="#334155">双方进缓冲区前还要 P(mutex)、出来 V(mutex) —— mutex=1，同一时间只许一人进</text>
+  </svg>
+  <h4>三个信号量初值（摸底Q18原考点）</h4>
+  <table>
+   <tr><th>信号量</th><th>初值</th><th>含义</th></tr>
+   <tr><td class="mono">mutex</td><td><b>1</b></td><td>互斥访问缓冲区（一把锁）</td></tr>
+   <tr><td class="mono">empty</td><td><b>n</b>（缓冲区容量）</td><td>"空格子"数量，生产者 P(empty)</td></tr>
+   <tr><td class="mono">full</td><td><b>0</b></td><td>"满格子"数量，消费者 P(full)</td></tr>
+  </table>
+  <div class="row" style="margin-top:10px">
+   <span>缓冲区容量 n =</span><input id="bufN" value="10" style="width:70px">
+   <button class="btn pri" onclick="bufCalc()">得出三个初值</button>
+  </div>
+  <div class="res" id="bufRes"></div>
+ </div>
+</section>
+
+<!-- ============ Tab2 进程状态 ============ -->
+<section id="s-state">
+ <div class="tip">🔄 五状态模型必背：<b>运行→阻塞是主动等事件；阻塞→就绪是被唤醒；就绪→运行要靠调度</b>。没有"阻塞→运行"、"就绪→阻塞"这两条线！</div>
+ <div class="card">
+  <h2>点击箭头看触发条件</h2>
+  <div style="text-align:center;margin:12px 0">
+   <svg viewBox="0 0 760 360" style="max-width:740px;width:100%">
+    <defs>
+     <marker id="a1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0f172a"/></marker>
+     <marker id="a2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#f59e0b"/></marker>
+     <marker id="a3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#dc2626"/></marker>
+     <marker id="a4" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#8b5cf6"/></marker>
+     <marker id="ag" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6366f1"/></marker>
+     <marker id="ag2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#94a3b8"/></marker>
+    </defs>
+    <text x="120" y="42" text-anchor="middle" font-size="12" fill="#94a3b8">（新建）提交</text>
+    <line x1="120" y1="52" x2="120" y2="94" stroke="#6366f1" stroke-width="2" marker-end="url(#ag)"/>
+    <text x="360" y="42" text-anchor="middle" font-size="12" fill="#94a3b8">完成退出</text>
+    <line x1="360" y1="94" x2="360" y2="52" stroke="#94a3b8" stroke-width="2" marker-end="url(#ag2)"/>
+    <rect x="60" y="100" width="120" height="60" rx="10" fill="#6366f1"/>
+    <text x="120" y="136" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">就绪</text>
+    <rect x="300" y="100" width="120" height="60" rx="10" fill="#059669"/>
+    <text x="360" y="136" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">运行</text>
+    <rect x="580" y="100" width="120" height="60" rx="10" fill="#dc2626"/>
+    <text x="640" y="136" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">阻塞</text>
+    <line x1="182" y1="118" x2="294" y2="118" stroke="#0f172a" stroke-width="2.4" marker-end="url(#a1)"/>
+    <line x1="182" y1="118" x2="294" y2="118" stroke="transparent" stroke-width="30" style="cursor:pointer" onclick="stPick(1)"/>
+    <text x="238" y="108" text-anchor="middle" font-size="12.5" font-weight="700" style="cursor:pointer" onclick="stPick(1)">① 调度选中</text>
+    <line x1="420" y1="118" x2="574" y2="118" stroke="#dc2626" stroke-width="2.4" marker-end="url(#a3)"/>
+    <line x1="420" y1="118" x2="574" y2="118" stroke="transparent" stroke-width="30" style="cursor:pointer" onclick="stPick(3)"/>
+    <text x="497" y="108" text-anchor="middle" font-size="12.5" font-weight="700" style="cursor:pointer" onclick="stPick(3)">③ 等待事件（I/O）</text>
+    <line x1="294" y1="176" x2="186" y2="176" stroke="#f59e0b" stroke-width="2.4" marker-end="url(#a2)"/>
+    <line x1="294" y1="176" x2="186" y2="176" stroke="transparent" stroke-width="30" style="cursor:pointer" onclick="stPick(2)"/>
+    <text x="240" y="166" text-anchor="middle" font-size="12.5" font-weight="700" style="cursor:pointer" onclick="stPick(2)">② 时间片到 / 被抢占</text>
+    <path d="M 640 162 L 640 226 L 120 226 L 120 168" fill="none" stroke="#8b5cf6" stroke-width="2.4" marker-end="url(#a4)"/>
+    <path d="M 640 162 L 640 226 L 120 226 L 120 168" fill="none" stroke="transparent" stroke-width="34" style="cursor:pointer" onclick="stPick(4)"/>
+    <text x="380" y="218" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8b5cf6" style="cursor:pointer" onclick="stPick(4)">④ 事件发生被唤醒（回到就绪排队，不能直接抢 CPU）</text>
+    <text x="380" y="262" text-anchor="middle" font-size="12" fill="#64748b">就绪/运行/阻塞在同一水平轴；①③正向走上方，②回程走下方，④从阻塞绕底部回到就绪</text>
+   </svg>
+  </div>
+  <div id="stDetail"><div class="steps">点击图中 ①②③④ 箭头或标签（也可点下方按钮）查看该转换的说明</div></div>
+  <h4>四条转换</h4>
+  <div>
+   <span class="arrowlab" onclick="stPick(1)" style="cursor:pointer">① 就绪→运行：被调度选中</span>
+   <span class="arrowlab" onclick="stPick(2)" style="cursor:pointer">② 运行→就绪：时间片到/被更高优先级抢占</span>
+   <span class="arrowlab" onclick="stPick(3)" style="cursor:pointer">③ 运行→阻塞：主动等事件（I/O、P操作失败）</span>
+   <span class="arrowlab" onclick="stPick(4)" style="cursor:pointer">④ 阻塞→就绪：事件发生被唤醒</span>
+  </div>
+  <h4>两大不存在的转换（选择题陷阱）</h4>
+  <div style="font-size:13.5px">✘ <b>阻塞→运行</b>：被唤醒只能进就绪排队，不能直接上 CPU；<br>✘ <b>就绪→阻塞</b>：阻塞是"运行中"主动等事件，就绪的进程根本没在跑，无从等待。</div>
+ </div>
+</section>
+
+<!-- ============ Tab3 页式地址转换 ============ -->
+<section id="s-page">
+ <div class="tip">📐 三步考试套路（按步给分）：<b>① 页大小 → ② 逻辑地址 ÷ 页大小 = 商(页号) 余(页内偏移) → ③ 查页表得物理块号 → 物理地址 = 块号×页大小 + 偏移</b>。</div>
+ <div class="card">
+  <h2>页式地址转换计算器</h2>
+  <div class="row">
+   <span>页大小</span>
+   <select id="pgSize"><option>512</option><option>1024</option><option selected>2048</option><option>4096</option></select>
+   <span>B</span>
+   <span style="width:14px"></span>
+   <span>逻辑地址</span><input id="logA" value="2053" style="width:100px">
+   <span>物理块号（页表给出）</span><input id="blkN" value="7" style="width:70px">
+   <button class="btn pri" onclick="pgCalc()">转换</button>
+  </div>
+  <div class="res" id="pgRes"></div>
+  <div class="steps" id="pgSteps"></div>
+ </div>
+ <div class="card">
+  <h2>🎲 随机练习（摸底Q20同款考法）</h2>
+  <div class="row"><button class="btn pri" onclick="pgQuizNew()">出一道题</button><span id="pgQuizQ" style="font-size:14.5px"></span></div>
+  <div class="row" id="pgQuizF" style="display:none">
+   <input id="qPg" style="width:90px" placeholder="页号">
+   <input id="qOff" style="width:110px" placeholder="页内偏移">
+   <input id="qPhys" style="width:130px" placeholder="物理地址">
+   <button class="btn" onclick="pgQuizCheck()">检查</button>
+   <button class="btn" onclick="pgQuizShow()">显示解答</button>
+  </div>
+  <div class="feedback" id="pgQuizFb" class="row"></div>
+  <div class="steps" id="pgQuizSteps" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab4 死锁 ============ -->
+<section id="s-dead">
+ <div class="tip">🔒 必背公式：<b>不死锁最少资源数 = n(m−1)+1</b>（n=进程数，m=每个进程最多需要量）。来历：最坏情况每个进程都拿到 m−1 个、还差 1 个——再多 1 个就能让某个进程跑完释放。</div>
+ <div class="card">
+  <h2>死锁资源计算器（摸底Q19原考点）</h2>
+  <div class="row">
+   <span>进程数 n =</span><input id="dlN" value="4" style="width:70px">
+   <span>每个进程最多需要 m =</span><input id="dlM" value="2" style="width:70px">
+   <button class="btn pri" onclick="dlCalc()">计算</button>
+  </div>
+  <div class="res" id="dlRes"></div>
+  <div class="steps" id="dlSteps"></div>
+ </div>
+ <div class="card">
+  <h2>死锁四大必要条件 + 处理策略</h2>
+  <div class="grid2">
+   <div class="fcard"><b>① 互斥</b>资源一次只能一个进程用</div>
+   <div class="fcard"><b>② 请求保持</b>拿着资源还要去申请别的</div>
+   <div class="fcard"><b>③ 不可剥夺</b>别人的不能抢</div>
+   <div class="fcard"><b>④ 循环等待</b>你等我、我等你成环</div>
+  </div>
+  <table style="margin-top:10px">
+   <tr><th>策略</th><th>时机</th><th>代表</th><th>代价</th></tr>
+   <tr><td><b>预防</b></td><td>事前</td><td>破坏四个条件之一（如：一次性申请全部资源→破请求保持）</td><td>资源利用率低</td></tr>
+   <tr><td><b>避免</b></td><td>运行中</td><td><b>银行家算法</b>（找到安全序列才分配）</td><td>每次分配要计算</td></tr>
+   <tr><td><b>检测+解除</b></td><td>事后</td><td>资源分配图化简，发现环→剥夺/撤销</td><td>已造成损失</td></tr>
+   <tr><td><b>鸵鸟策略</b></td><td>不管</td><td>Windows/Linux 实际采用</td><td>可能真死锁</td></tr>
+  </table>
+ </div>
+</section>
+
+<!-- ============ Tab5 调度与速查 ============ -->
+<section id="s-sched">
+ <div class="card">
+  <h2>调度算法对比（就绪队列模拟见 13 号讲义 D7）</h2>
+  <table>
+   <tr><th>算法</th><th>规则</th><th>优点</th><th>缺点/考点</th></tr>
+   <tr><td><b>FCFS 先来先服务</b></td><td>按到达顺序</td><td>公平简单</td><td>短作业被长作业拖死（护航效应）</td></tr>
+   <tr><td><b>SPF 短作业优先</b></td><td>运行时间最短者先</td><td><b>平均周转时间最小</b></td><td>长作业饥饿；运行时间难预知</td></tr>
+   <tr><td><b>HRN 高响应比</b></td><td>响应比=(等待+运行)/运行</td><td>兼顾长短作业</td><td>每次要计算</td></tr>
+   <tr><td><b>RR 时间片轮转</b></td><td>就绪队列轮流，片完排队尾</td><td><b>响应快，适合分时交互</b></td><td>片太小切换开销大</td></tr>
+   <tr><td><b>优先级</b></td><td>优先级高者先</td><td>能保证紧急任务</td><td>低优先级饥饿（可老化解决）</td></tr>
+  </table>
+  <h4>周转时间</h4>
+  <div style="font-size:13.5px">周转 = 完成 − 到达；带权周转 = 周转 ÷ 运行。<b>SPF 是"平均周转时间最小"的标准答案</b>（就绪队列已知运行时间时）。</div>
+ </div>
+ <div class="card">
+  <h2>页面置换（题12：Belady 异常）</h2>
+  <table>
+   <tr><th>算法</th><th>规则</th><th>考点</th></tr>
+   <tr><td><b>FIFO</b></td><td>先进先出淘汰</td><td><b>可能出现 Belady 异常</b>（页框变多缺页反而变多）</td></tr>
+   <tr><td><b>LRU</b></td><td>淘汰<b>最久未使用</b></td><td>过去≠将来，硬件开销大</td></tr>
+   <tr><td><b>OPT</b></td><td>淘汰<b>将来最久不用</b></td><td>理论最优、无法实现（作基准）</td></tr>
+   <tr><td><b>LFU</b></td><td>淘汰访问次数最少</td><td>考试偶见</td></tr>
+  </table>
+ </div>
+ <div class="card">
+  <h2>补遗速查（题3/10/11/14/16/17/18/23 对应考点）</h2>
+  <table>
+   <tr><th>进程 vs 线程（题3）</th></tr>
+   <tr><td>进程=<b>资源分配</b>的基本单位（有独立地址空间）；线程=<b>CPU 调度</b>的基本单位（共享进程的地址空间与资源，切换开销小）。同进程内线程崩溃可能影响整个进程。</td></tr>
+  </table>
+  <table style="margin-top:8px">
+   <tr><th></th><th>页式存储（题9）</th><th>段式存储（题10）</th></tr>
+   <tr><td>划分依据</td><td><b>固定大小</b>分页（物理划分，为了管理内存）</td><td>按<b>逻辑意义</b>分段（代码段/数据段，为用户视角）</td></tr>
+   <tr><td>大小</td><td>等长（由系统定）</td><td>不等长（由程序定）</td></tr>
+   <tr><td>碎片</td><td>有内部碎片（最后一页不满）</td><td>有外部碎片（段间空隙）</td></tr>
+   <tr><td>地址结构</td><td>页号 + 页内偏移（一维）</td><td>段号 + 段内偏移（二维，需段表查基址）</td></tr>
+  </table>
+  <table style="margin-top:8px">
+   <tr><th>虚存三件套（题11/23）</th></tr>
+   <tr><td><b>局部性原理</b>（虚存的理论基础）：程序倾向访问最近访问过的（时间局部性）和相邻的（空间局部性）地址 → 才敢只装部分页面进内存</td></tr>
+   <tr><td><b>抖动/颠簸</b>：页面<b>频繁调入调出</b>，CPU 大部分时间在换页而非计算——主因：<b>分配的页框太少 / 替换算法差 / 程序跳跃访问</b>（本质：驻留集小于工作集）</td></tr>
+  </table>
+  <table style="margin-top:8px">
+   <tr><th>磁盘与设备（题14/15/18）</th></tr>
+   <tr><td>磁盘存取时间 = <b>寻道时间（最耗时，磁头移动）</b> + 旋转延迟 + 传输时间。调度算法：FCFS / <b>SSTF 最短寻道</b>（可能饥饿）/ <b>SCAN 电梯</b>（扫到头折返）/ C-SCAN 单向扫。</td></tr>
+   <tr><td><b>DMA</b>：数据在<b>内存与设备间直接传送</b>，整块传输结束才中断 CPU 一次——CPU 只在开头/结尾介入（对比：中断方式每字节都打扰 CPU）。</td></tr>
+  </table>
+  <table style="margin-top:8px">
+   <tr><th>文件系统（题16/17）</th></tr>
+   <tr><td><b>多级索引</b>的目的：小文件用直接索引（快），大文件再挂一级/二级间接索引块（支持扩展）——兼顾<b>访问速度与文件大小上限</b>。<br><b>位示图</b>：每一位（0/1）表示一个磁盘块空闲/占用；块号 b → 第 ⌊b/(字长×8)⌋+1 个字的第 b mod (字长×8) 位（13号讲义公式）。空闲块管理还有：空闲表法、空闲链表法、成组链接法（Unix 用）。</td></tr>
+  </table>
+ </div>
+ <div class="card">
+  <h2>公式 + 速查卡</h2>
+  <div class="grid2">
+   <div class="fcard"><b>死锁</b>不死锁最少资源 = n(m−1)+1<br>例：4进程各需2个 → 5个</div>
+   <div class="fcard"><b>信号量初值</b>互斥 mutex=1；同步 empty=n、full=0<br>P减V加；P后&lt;0睡，V后≤0唤醒</div>
+   <div class="fcard"><b>页式转换</b>页号=地址÷页大小取整<br>偏移=余数；物理=块号×页大小+偏移</div>
+   <div class="fcard"><b>页大小与位移</b>1K=10位 2K=11位 4K=12位<br>逻辑地址结构=页号位+页内位移位</div>
+   <div class="fcard"><b>银行家算法</b>属于死锁"避免"（不是预防/检测）<br>安全序列存在才分配</div>
+   <div class="fcard"><b>调度两连答</b>响应快交互=时间片轮转<br>平均周转最小=短作业优先SPF</div>
+   <div class="fcard"><b>磁盘调度</b>SCAN电梯：沿一个方向扫到头折返<br>SSTF最短寻道优先（可能饥饿）</div>
+   <div class="fcard"><b>文件</b>多级索引：兼顾小文件直寻+大文件扩展<br>位示图法管理磁盘空间</div>
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：13-讲义题库-操作系统（讲义+白话详解D1-D7）→ 本页（可视化+出题）→ 17 系统「操作系统」24题 → 错题重练（错题考点已在卡片标题标出题号）。</footer>
+
+<script>
+/* ================= 纯函数（独立可测） ================= */
+const OSTOOL = {};
+OSTOOL.pageSplit = function(logical, pageSize){
+  if(!Number.isInteger(+logical) || +logical < 0 || !Number.isInteger(+pageSize) || +pageSize <= 0) return null;
+  const L = +logical, P = +pageSize;
+  return { page: Math.floor(L / P), off: L % P, P };
+};
+OSTOOL.physical = function(logical, pageSize, block){
+  const s = OSTOOL.pageSplit(logical, pageSize);
+  if(!s || !Number.isInteger(+block) || +block < 0) return null;
+  return { ...s, phys: (+block) * (+pageSize) + s.off };
+};
+OSTOOL.noDeadlockMin = function(n, m){
+  if(!Number.isInteger(+n) || +n < 1 || !Number.isInteger(+m) || +m < 1) return null;
+  return +n * (+m - 1) + 1;
+};
+OSTOOL.genQuiz = function(){
+  const sizes = [512, 1024, 2048, 4096];
+  const P = sizes[Math.floor(Math.random()*sizes.length)];
+  const max = P * 8;
+  const L = Math.floor(Math.random() * max);
+  const blk = Math.floor(Math.random() * 10);
+  return { logical: L, pageSize: P, block: blk };
+};
+OSTOOL.checkQuiz = function(q, aPage, aOff){
+  const r = OSTOOL.pageSplit(q.logical, q.pageSize);
+  return r && String(aPage).trim() === String(r.page) && String(aOff).trim() === String(r.off);
+};
+
+/* ================= 数据 ================= */
+const STATES = {
+ 1:{t:'① 就绪 → 运行', n:'<b>被调度选中</b>（获得 CPU 时间片）。就绪队列里排到你，CPU 一给你，你就从"准备好了"变成"正在跑"。', w:'调度程序；时间片轮转时每次片满也从这里重新开始'},
+ 2:{t:'② 运行 → 就绪', n:'<b>时间片用完</b>或被<b>更高优先级进程抢占</b>。不是你的错，只是该轮流了——回到就绪队列排尾巴。', w:'时间片轮转(RR)、优先级抢占'},
+ 3:{t:'③ 运行 → 阻塞', n:'<b>主动</b>等待某事件：发起 I/O 请求、P 操作失败（资源不够）等。注意"主动"——是进程自己要等，不是别人让它停。', w:'read() 磁盘、wait() 子进程、P(sem) 后值<0'},
+ 4:{t:'④ 阻塞 → 就绪', n:'<b>事件发生被唤醒</b>：I/O 完成、V 操作释放了资源。被唤醒只能回到<b>就绪</b>排队，不能直接抢 CPU（✘阻塞→运行是陷阱）。', w:'I/O 中断完成、V(sem) 唤醒一个等待者'}
+};
+
+/* ================= 导航 ================= */
+const SECTIONS = [['pv','🚦 进程与PV'],['state','🔄 进程状态'],['page','📐 页式地址转换'],['dead','🔒 死锁'],['sched','📋 调度与速查']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t===id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0]==='pv') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= PV 模拟器 ================= */
+let pv = { v:1, wait:0, log:['初始信号量 = 1（互斥锁）'] };
+function pvRender(){
+  document.getElementById('pvVal').textContent = pv.v;
+  document.getElementById('pvWait').textContent = pv.wait;
+  document.getElementById('pvLog').textContent = pv.log.slice(-6).join('\n');
+  // 可视化条：s>0 画 s 份"可用资源"；有等待者画"睡眠中"进程块
+  const v = pv.v, parts = [];
+  if(v > 0){ for(let i=0;i<v && i<8;i++) parts.push('<rect x="'+(20+i*54)+'" y="14" width="44" height="44" rx="8" fill="#059669"/><text x="'+(42+i*54)+'" y="42" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">资源</text>'); }
+  for(let i=0;i<pv.wait && i<8;i++) parts.push('<rect x="'+(20+i*54)+'" y="14" width="44" height="44" rx="8" fill="#dc2626"/><text x="'+(42+i*54)+'" y="36" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">进程</text><text x="'+(42+i*54)+'" y="50" text-anchor="middle" fill="#fecaca" font-size="10">睡眠中</text>');
+  if(v === 0 && pv.wait === 0) parts.push('<text x="20" y="42" font-size="13" fill="#b45309" font-weight="700">s = 0：资源刚好用完，下一个 P 将睡眠</text>');
+  parts.push('<text x="470" y="30" font-size="12.5" fill="#334155">'+(v>0 ? ('s = '+v+' → 还有 '+v+' 份资源可立即申请') : (v===0 ? 's = 0 → 无剩余资源' : ('s = '+v+' → 有 '+(-v)+' 个进程在排队睡觉')))+'</text>');
+  parts.push('<text x="470" y="50" font-size="11.5" fill="#64748b">s&gt;0 = 剩余资源数；s&lt;0 的绝对值 = 排队人数</text>');
+  document.getElementById('pvSvg').innerHTML = parts.join('');
+}
+function pvDo(delta){
+  if(delta < 0){ // P
+    const old = pv.v; pv.v--;
+    if(pv.v < 0){ pv.wait++; pv.log.push('P: '+old+' → '+pv.v+' <0 → 本进程【睡眠】，进等待队列'); }
+    else pv.log.push('P: '+old+' → '+pv.v+' ≥0 → 申请成功，继续运行');
+  } else { // V
+    const old = pv.v; pv.v++;
+    if(pv.v <= 0 && pv.wait > 0){ pv.wait--; pv.log.push('V: '+old+' → '+pv.v+' ≤0 → 释放成功，【唤醒】一个等待者'); }
+    else pv.log.push('V: '+old+' → '+pv.v+' → 释放成功，无等待者');
+  }
+  pvRender();
+}
+function pvReset(){ pv = { v:1, wait:0, log:['重置：信号量 = 1（互斥锁）'] }; pvRender(); }
+function pvSet(){
+  const n = parseInt(document.getElementById('pvN').value);
+  if(!Number.isInteger(n) || n < 0){ pv.log.push('无效初值'); pvRender(); return; }
+  pv = { v:n, wait:0, log:['设初值 = '+n+'（= 同步信号量"资源数"）'] }; pvRender();
+}
+pvRender();
+
+/* ================= 生产者消费者 ================= */
+function bufCalc(){
+  const n = parseInt(document.getElementById('bufN').value);
+  const r = document.getElementById('bufRes');
+  if(!Number.isInteger(n) || n < 1){ r.innerHTML = '<div class="rcell"><b>输入无效</b><span>请输入正整数</span></div>'; return; }
+  r.innerHTML = cell('mutex（互斥）', 1) + cell('empty（空格子）', n) + cell('full（满格子）', 0);
+  function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
+}
+bufCalc();
+
+/* ================= 状态转换 ================= */
+function stPick(i){
+  const s = STATES[i];
+  document.getElementById('stDetail').innerHTML = '<div class="steps">'+s.t+'\n'+s.n+'\n常见触发：'+s.w+'</div>';
+}
+
+/* ================= 页式转换 ================= */
+function pgCalc(){
+  const P = +document.getElementById('pgSize').value;
+  const r = OSTOOL.physical(document.getElementById('logA').value, P, document.getElementById('blkN').value);
+  const res = document.getElementById('pgRes'), st = document.getElementById('pgSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>请输入非负整数</span></div>'; st.textContent=''; return; }
+  res.innerHTML = cell('页大小', r.P+' B') + cell('页号（商）', r.page) + cell('页内偏移（余）', r.off) + cell('物理地址', r.phys);
+  st.textContent = '① 页大小 = '+r.P+' B\n'
+    + '② 逻辑地址 ÷ 页大小：'+ (+document.getElementById('logA').value) +' ÷ '+r.P+' = 商 '+r.page+' 余 '+r.off+'\n    → 页号 = '+r.page+'，页内偏移 = '+r.off+'\n'
+    + '③ 查页表：页号 '+r.page+' → 物理块号 '+document.getElementById('blkN').value+'\n'
+    + '④ 物理地址 = 块号×页大小 + 偏移 = '+document.getElementById('blkN').value+'×'+r.P+' + '+r.off+' = '+r.phys;
+  function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
+}
+pgCalc();
+let pgQuiz = null;
+function pgQuizNew(){
+  pgQuiz = OSTOOL.genQuiz();
+  document.getElementById('pgQuizQ').innerHTML = '页大小 <b class="mono">'+pgQuiz.pageSize+'B</b>，逻辑地址 <b class="mono">'+pgQuiz.logical+'</b>，页表查得该页在<b class="mono">物理块 '+pgQuiz.block+'</b> —— 求：页号 ／ 页内偏移 ／ <b>物理地址</b>';
+  document.getElementById('pgQuizF').style.display = 'flex';
+  document.getElementById('qPg').value = ''; document.getElementById('qOff').value = '';
+  document.getElementById('qPhys').value = '';
+  document.getElementById('pgQuizFb').textContent = '';
+  document.getElementById('pgQuizSteps').style.display = 'none';
+}
+function pgQuizCheck(){
+  if(!pgQuiz) return;
+  const r = OSTOOL.pageSplit(pgQuiz.logical, pgQuiz.pageSize);
+  const full = OSTOOL.physical(pgQuiz.logical, pgQuiz.pageSize, pgQuiz.block);
+  const mOk = String(document.getElementById('qPg').value).trim() === String(r.page);
+  const oOk = String(document.getElementById('qOff').value).trim() === String(r.off);
+  const pOk = String(document.getElementById('qPhys').value).trim() === String(full.phys);
+  document.getElementById('pgQuizFb').innerHTML =
+    '页号 '+(mOk?'<span class="ok">✔</span>':'<span class="bad">✘</span>')+
+    '　偏移 '+(oOk?'<span class="ok">✔</span>':'<span class="bad">✘</span>')+
+    '　物理地址 '+(pOk?'<span class="ok">✔</span>':'<span class="bad">✘</span>')+
+    (mOk&&oOk&&pOk ? '　<b class="ok">全对！四步法掌握 ✓</b>' : '　不会就点【显示解答】');
+}
+function pgQuizShow(){
+  if(!pgQuiz) return;
+  const full = OSTOOL.physical(pgQuiz.logical, pgQuiz.pageSize, pgQuiz.block);
+  document.getElementById('qPg').value = full.page;
+  document.getElementById('qOff').value = full.off;
+  document.getElementById('qPhys').value = full.phys;
+  document.getElementById('pgQuizSteps').style.display = 'block';
+  document.getElementById('pgQuizSteps').textContent =
+    '① 页大小 = '+pgQuiz.pageSize+' B\n'
+    + '② '+pgQuiz.logical+' ÷ '+pgQuiz.pageSize+' = 商 '+full.page+' 余 '+full.off+' → 页号 '+full.page+'，偏移 '+full.off+'\n'
+    + '③ 查页表：页号 '+full.page+' → 物理块 '+pgQuiz.block+'（题干已给）\n'
+    + '④ 物理地址 = '+pgQuiz.block+'×'+pgQuiz.pageSize+' + '+full.off+' = '+full.phys;
+}
+
+/* ================= 死锁 ================= */
+function dlCalc(){
+  const n = document.getElementById('dlN').value, m = document.getElementById('dlM').value;
+  const r = OSTOOL.noDeadlockMin(n, m);
+  const res = document.getElementById('dlRes'), st = document.getElementById('dlSteps');
+  if(r === null){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>请输入正整数</span></div>'; st.textContent=''; return; }
+  const N = +n, M = +m;
+  res.innerHTML = cell('不死锁最少资源数', r+' 个') + cell('最坏情况（各拿 m−1）', N*(M-1)) + cell('临界差', 1);
+  st.textContent = '公式：n(m−1)+1 = '+N+'×('+M+'−1)+1 = '+N+'×'+(M-1)+'+1 = '+r+'\n'
+    + '来历：最坏情况——每个进程都拿到 '+(M-1)+' 个还差 1 个（共占 '+N*(M-1)+' 个）\n'
+    + '此时系统还剩 '+r+' − '+N*(M-1)+' = 1 个 → 分给谁谁就能跑完并释放 → 不死锁\n'
+    + '对照：摸底Q19（4进程各需2个）→ 4×1+1 = 5 ✓';
+  function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
+}
+dlCalc();
+</script>
+</body>
+</html>

@@ -66,6 +66,18 @@ svg.cfg{width:100%;height:auto;background:#fff;border:1px solid var(--bd);border
 .sc.done{border-color:#16a34a;background:#f0fdf4}
 .sc.err{border-color:#dc2626;background:#fef2f2}
 .code{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px 14px;font-family:Consolas,Menlo,monospace;font-size:13px;white-space:pre;line-height:1.7;overflow-x:auto}
+
+/* ===== UML 类图 ===== */
+.uml{display:flex;gap:12px;flex-wrap:wrap}
+.ucard{flex:1 1 300px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:14px}
+.ucard h4{margin:0 0 8px;font-size:14px}
+.usvg{width:100%;height:170px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px}
+.ukv{font-size:13px;margin:7px 0}
+.ukv b{color:var(--acc)}
+.utab{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;margin-top:4px}
+.utab th,.utab td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:middle}
+.utab th{background:#f1f5f9}
+.legend-d{display:inline-block;width:14px;height:0;border-top:3px solid #0f172a;vertical-align:middle;margin-right:6px}
 </style>
 </head>
 <body>
@@ -178,13 +190,19 @@ svg.cfg{width:100%;height:auto;background:#fff;border:1px solid var(--bd);border
 
 <!-- ============ Tab 4 测试与模型 ============ -->
 <section id="s-test">
- <div class="tip">🧪 主线：<b>单元 → 集成 → 系统 → 验收</b>； Alpha 用户来开发方（内测）、Beta 发给用户（公测）。开发模型按「需求明不明确、有没有风险」选。</div>
+ <div class="tip">🧪 主线：<b>冒烟（构建后）→ 单元 → 集成 → 确认 → 系统 → 验收</b>；变更后再来一轮<b>回归</b>。Alpha 用户来开发方（内测）、Beta 发给用户（公测）。开发模型按「需求明不明确、有没有风险」选。</div>
  <div class="card">
   <h2>测试阶段与分层</h2>
   <table>
    <tr><th>阶段</th><th>测什么</th><th>谁来做</th><th>方法</th></tr>
    <tr><td><b>单元测试</b></td><td>单个模块（函数/类）</td><td>开发者</td><td>白盒为主</td></tr>
    <tr><td><b>集成测试</b></td><td>模块间<b>接口</b></td><td>开发方</td><td>自顶向下 / 自底向上 / 三明治</td></tr>
+   <tr><td colspan="4" style="background:#f8fafc;font-size:13px">
+     <b>桩 vs 驱动</b>（题22/34 配对考点）：把零件装成整机，邻居零件没做好就用"替身"——
+     <b>自顶向下</b>（上层已好，下层没写完）→ 替身站在下面 = <b>桩模块 stub</b>；
+     <b>自底向上</b>（底层已好，上层没写完）→ 替身在上面发起调用 = <b>驱动模块 driver</b>；
+     <b>三明治</b> = 两者都用。判断技巧：题干问"为被测模块编写什么"——被测是底层→驱动，被测是上层→桩。
+   </td></tr>
    <tr><td><b>系统测试</b></td><td>整个系统（功能+性能+安全）</td><td>独立测试人员</td><td>黑盒为主</td></tr>
    <tr><td><b>验收测试</b></td><td>需求是否满足</td><td><b>用户</b></td><td>Alpha（开发方现场）/ Beta（用户环境）</td></tr>
   </table>
@@ -192,10 +210,60 @@ svg.cfg{width:100%;height:auto;background:#fff;border:1px solid var(--bd);border
   <table>
    <tr><th></th><th>白盒（结构）</th><th>黑盒（功能）</th></tr>
    <tr><td>看什么</td><td>代码内部逻辑</td><td>只看输入输出</td></tr>
-   <tr><td>方法</td><td>逻辑覆盖：语句 ⊂ 判定 ⊂ 条件/判定 ⊂ 路径；循环测试</td><td>等价类划分、边界值分析、错误推测、因果图</td></tr>
+   <tr><td>方法</td><td>逻辑覆盖：语句 ⊂ 判定 ⊂ 条件/判定 ⊂ 路径；循环测试</td><td>等价类划分、边界值分析、<b>判定表</b>、错误推测、因果图</td></tr>
   </table>
  </div>
  <div class="card">
+  <h2>四组易混测试概念（近年新宠，逐对背）</h2>
+  <table>
+   <tr><th>测试</th><th>什么时候</th><th>干什么</th><th>题干关键词</th></tr>
+   <tr><td><b>冒烟测试</b></td><td>每次新构建后</td><td>先验<b>主流程能跑通</b>，不通就不用深入测</td><td>"构建完成后先验证基本可用"</td></tr>
+   <tr><td><b>确认测试</b></td><td>集成之后、系统验收前</td><td>验证软件<b>是否符合需求</b>——"做对了产品吗"</td><td>"验证是否满足需求规格"</td></tr>
+   <tr><td><b>验收测试</b></td><td>交付前</td><td><b>用户参与</b>的最终裁决；形式：Alpha / Beta</td><td>"用户参与""开发方现场/用户环境"</td></tr>
+   <tr><td><b>回归测试</b></td><td><b>代码变更后</b></td><td>重新执行<b>原有用例</b>，确认没把好的改坏</td><td>"缺陷修复后重新执行原有测试"</td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">记忆链：<b>冒烟（构建后）→ 确认（做对了吗）→ 验收（用户点头）→ 回归（改后再测）</b>。辨析：回归≠重新测试全部功能，重点是<b>受变更影响的部分+原有核心用例</b>；Alpha 与开发者<b>在场</b>，Beta 开发者<b>不在场</b>。</div>
+  <h4>软件维护四类型（题19/20 + 摸底Q61 双考点 ★）</h4>
+  <table>
+   <tr><th>类型</th><th>什么时候做</th><th>例子</th><th>占比</th></tr>
+   <tr><td><b>改正性</b></td><td>修 bug（交付后发现错误）</td><td>金额算错改代码</td><td>~17-21%</td></tr>
+   <tr><td><b>适应性</b></td><td><b>环境变了</b>跟着改（新OS/硬件/法规）</td><td>适配新操作系统版本（题20）</td><td>~18-25%</td></tr>
+   <tr><td><b>完善性</b> ★</td><td>软件没坏，用户想要<b>新功能/更好体验</b></td><td>加报表导出、界面美化</td><td><b>~50% 最大</b></td></tr>
+   <tr><td><b>预防性</b></td><td>未雨绸缪，为将来改造打基础</td><td>重构老代码提升可维护性</td><td>~4-5% 最小</td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">题干钩子：<b>"没坏但想更好"=完善性；"坏了修"=改正性；"环境变了跟"=适应性；"为将来"=预防性</b>。必背：占比最大=完善性(约50%)，最小=预防性。</div>
+  <h4>判定表（决策表）：四部分组成 ★ 送分必拿</h4>
+  <table>
+   <tr><th>组成</th><th>是什么</th><th>白话</th></tr>
+   <tr><td><b>条件桩</b></td><td>列出所有<b>条件</b>（只列名字）</td><td rowspan="2">桩=题目骨架<br>项=具体答案</td></tr>
+   <tr><td><b>条件项</b></td><td>条件的<b>取值组合</b>（是/否排列，n条件→2ⁿ列）</td></tr>
+   <tr><td><b>动作桩</b></td><td>列出所有<b>可能的动作</b>（只列名字）</td><td rowspan="2"></td></tr>
+   <tr><td><b>动作项</b></td><td>该组合下<b>实际采取的动作</b></td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">什么时候用：输入条件间有<b>依赖与组合约束</b>→ 因果图分析、<b>机械转化成判定表</b>（题37）。例：会员？金额&gt;1000？→ 2²=4 列组合，每列对应一个动作。<b>不包括流程图</b>（题30）；它也用作 SA 结构化分析中加工逻辑的说明工具（结构化语言/判定表/判定树三选一）。</div>
+  <h4>其他测试类型速记</h4>
+  <div style="font-size:13.5px"><b>压力测试</b>：超负荷（超过设计极限）看会怎样；<b>负载测试</b>：在设计负荷下看表现；<b>性能测试</b>：响应时间/吞吐量；<b>随机测试</b>：随机输入（蒙特卡洛思想），不作主要手段。</div>
+ </div>
+ <div class="card">
+  <h2>需求工程过程链（必背顺序 + 4 个高频坑）</h2>
+  <table>
+   <tr><th>① 获取</th><th>② 分析</th><th>③ 定义</th><th>④ 确认/评审</th><th>⑤ 管理（贯穿全程）</th></tr>
+   <tr>
+    <td>从用户/文档/现场收集原始需求</td>
+    <td>把"想要什么"变为<b>精确、无二义</b>的定义（建模）</td>
+    <td>产出 <b>SRS 需求规格说明书</b></td>
+    <td>专家<b>评审文档</b>找缺陷（不运行程序）</td>
+    <td><b>基线</b> + 变更控制</td>
+   </tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px"><b>4 个高频坑</b>：① SRS 是"<b>定义</b>"阶段的产物，不是分析（题7）；② "变精确无二义"="<b>分析</b>"的活动（题28）；③ "基线+变更控制"="<b>管理</b>"，且管理贯穿全过程而非链条最后一环之后（题44）；④ 带<b>数字指标</b>的需求（5000 并发、响应&lt;2s、可移植性、可靠性）= <b>非功能需求</b>（质量属性），摸底Q55。</div>
+  <table style="margin-top:8px">
+   <tr><th>功能需求（做什么）</th><th>非功能需求（做得怎么样 = 质量属性）</th></tr>
+   <tr><td>转账、退货、搜索、生成报表…</td><td>性能(响应/并发)、可靠性、安全性、易用性、可维护性、可移植性</td></tr>
+  </table>
+ </div>
+</div>
+<div class="card">
   <h2>开发模型速查（选择题高频）</h2>
   <table>
    <tr><th>模型</th><th>特征关键词</th><th>适用</th></tr>
@@ -210,6 +278,35 @@ svg.cfg{width:100%;height:auto;background:#fff;border:1px solid var(--bd);border
    <div class="fcard"><b>Alpha</b>用户<b>来开发方</b>测试，开发者在场记录问题——内测</div>
    <div class="fcard"><b>Beta</b>软件<b>发给用户</b>在实际环境用，开发者不在场——公测；顺序：先 Alpha 后 Beta</div>
   </div>
+ </div>
+</section>
+
+<section id="s-uml">
+ <div class="tip">🗂 类图六关系辨析钥匙：先问"<b>整体-部分吗</b>？"再问"<b>能分离吗</b>？"——不能分离=<b>组合</b>（实心菱形），能分离=<b>聚合</b>（空心菱形）。菱形永远画在<b>整体端</b>。大题③与⑤（设计模式）共用这套看图技能。</div>
+ <div class="card">
+  <h2>六种关系（图形 → 点击卡片看画法）</h2>
+  <div class="uml" id="umlgallery"></div>
+  <div class="ucard" id="umldetail" style="flex-basis:100%"></div>
+ </div>
+ <div class="card">
+  <h2>多重度怎么填（大题③常考 2-3 分）</h2>
+  <table class="utab">
+   <tr><th>题干原话</th><th>订单端</th><th>商品端</th></tr>
+   <tr><td>"一个订单包含 1 到多个商品"</td><td>1</td><td>1..*</td></tr>
+   <tr><td>"一个学生可选 0 到多门课"</td><td>0..*（学生端读自己）</td><td>0..*</td></tr>
+   <tr><td>"一个部门有 1 到 8 名经理"</td><td>1</td><td>1..8</td></tr>
+  </table>
+  <div class="ukv" style="margin-top:8px"><b>读法：</b>数字写在<b>对方类的那一端</b>——"订单 1 — 1..* 商品"读作"一个订单对应一到多个商品"。看到"一个 A 对应多个 B"→ B 端写 1..*。</div>
+ </div>
+ <div class="card">
+  <h2>用例图 include / extend（方向年年反着考）</h2>
+  <table class="utab">
+   <tr><th></th><th>&lt;&lt;include&gt;&gt; 包含</th><th>&lt;&lt;extend&gt;&gt; 扩展</th></tr>
+   <tr><td>执行时机</td><td>基用例<b>必然</b>执行被包含用例</td><td><b>有条件才</b>执行扩展用例</td></tr>
+   <tr><td>例子</td><td>"订单处理" 包含 "支付"</td><td>"查询" 可扩展 "导出报表"</td></tr>
+   <tr><td>箭头方向</td><td>虚线箭头 <b>基 → 被包含</b>（出基用例）</td><td>虚线箭头 <b>扩展 → 基</b>（进基用例）</td></tr>
+  </table>
+  <div class="ukv"><b>口诀：</b>include 箭头<b>出</b>基用例，extend 箭头<b>进</b>基用例。判别一句话：<b>每次都做=include，偶尔做=extend</b>。</div>
  </div>
 </section>
 </main>
@@ -232,7 +329,7 @@ SE.mcGen = function(){
 SE.mcCheck = function(q, ans){ return String(ans).trim() === String(q.ans); };
 
 /* ================= 导航 ================= */
-const SECTIONS = [['mccabe','📐 环路复杂度'],['cp','🛤 关键路径'],['coh','🔗 耦合与内聚'],['test','🧪 测试与模型']];
+const SECTIONS = [['mccabe','📐 环路复杂度'],['cp','🛤 关键路径'],['coh','🔗 耦合与内聚'],['test','🧪 测试与模型'],['uml','🗂 UML 类图']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
@@ -506,6 +603,51 @@ function resetScales(){
   document.getElementById('sortFb').textContent = '已还原为标准顺序，点卡片看一句话解释。';
 }
 renderScale('coupling', false); renderScale('cohesion', false);
+
+/* ================= UML 类图 ================= */
+const UREL = [
+ {kind:'gen', k:'泛化(继承)', en:'generalization', note:'实线 + 空心三角箭头，指向<b>父类</b>', ex:'轿车 —▷ 汽车："轿车是一种汽车"', exam:'is-a 关系；与"实现"共用三角，看线是实还是虚'},
+ {kind:'imp', k:'实现', en:'realization', note:'<b>虚线</b> + 空心三角箭头，指向<b>接口</b>', ex:'鸟类 —▷ 可飞接口："类实现了接口"', exam:'虚线三角=实现，实线三角=泛化——线型是唯一区别'},
+ {kind:'com', k:'组合', en:'composition', note:'实线 + <b>实心菱形</b>，菱形在<b>整体端</b>', ex:'◆ 房子 — 房间："房间不能脱离房子存在（同生共死）"', exam:'整体消失部分跟着消失=组合；菱形画整体端'},
+ {kind:'agg', k:'聚合', en:'aggregation', note:'实线 + <b>空心菱形</b>，菱形在<b>整体端</b>', ex:'◇ 球队 — 队员："队员可以离开球队（可分离）"', exam:'题48原考点："部分可脱离整体独立存在"=聚合'},
+ {kind:'asc', k:'关联', en:'association', note:'<b>实线</b>（可加箭头表导航方向），两端标多重度', ex:'学生 — 课程："学生选课，课程被选"', exam:'多重度 1、0..*、1..* 写在对方端（见下表）'},
+ {kind:'dep', k:'依赖', en:'dependency', note:'<b>虚线箭头</b>，指向被使用者', ex:'类A ..→ 类B："A 的方法参数里用到 B"', exam:'最弱关系：只是"用到"，不是长期持有'}
+];
+function usvg(kind, aLabel, bLabel){
+  // 画 A—B 两个类框 + 关系线（按 kind 变体）
+  const box = (x, t) => '<rect x="'+x+'" y="30" width="110" height="52" rx="6" fill="#fff" stroke="#64748b" stroke-width="1.6"/>' +
+    '<line x1="'+x+'" y1="48" x2="'+(x+110)+'" y2="48" stroke="#64748b" stroke-width="1.2"/>' +
+    '<text x="'+(x+55)+'" y="43" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0f172a">'+t+'</text>';
+  let line, head='';
+  const x1=118, x2=232, y=56;
+  if(kind==='gen')      { line='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#0f172a" stroke-width="1.8"/>'; head='<path d="M'+x2+','+y+' l-13,-7 v14 z" fill="#fff" stroke="#0f172a" stroke-width="1.6"/>'; }
+  else if(kind==='imp') { line='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#0f172a" stroke-width="1.8" stroke-dasharray="6 4"/>'; head='<path d="M'+x2+','+y+' l-13,-7 v14 z" fill="#fff" stroke="#0f172a" stroke-width="1.6"/>'; }
+  else if(kind==='com') { line='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#0f172a" stroke-width="1.8"/>'; head='<path d="M'+(x1+16)+','+y+' l10,-7 v14 z" fill="#0f172a"/>'; }
+  else if(kind==='agg') { line='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#0f172a" stroke-width="1.8"/>'; head='<path d="M'+(x1+16)+','+y+' l10,-7 v14 z" fill="#fff" stroke="#0f172a" stroke-width="1.6"/>'; }
+  else if(kind==='dep') { line='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#0f172a" stroke-width="1.8" stroke-dasharray="6 4"/>'; head='<path d="M'+x2+','+y+' l-10,-5 v10 z" fill="#0f172a"/>'; }
+  else                  { line='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#0f172a" stroke-width="1.8"/>'; }
+  return '<svg viewBox="0 0 350 112" style="width:100%;height:112px">' +
+    box(8,aLabel) + box(232,bLabel) + line + head + '</svg>';
+}
+(function(){
+  const g = document.getElementById('umlgallery');
+  const marks = {gen:'—▷', imp:'- -▷', com:'◆———', agg:'◇———', dep:'- -→', asc:'———'};
+  g.innerHTML = UREL.map((r,i) =>
+    '<div class="ucard" style="cursor:pointer" onclick="umlPick('+i+')"><h4>'+r.k+' <span style="color:#94a3b8;font-weight:400;font-size:12px">'+marks[r.kind]+'</span></h4>' +
+    usvg(r.kind, 'A', 'B') +
+    '<div style="font-size:12.5px;color:#475569" id="umi-'+i+'">'+r.note.replace(/<[^>]+>/g,'')+'</div></div>').join('');
+  window.umlPick = function(i){
+    const r = UREL[i];
+    document.getElementById('umldetail').innerHTML =
+      '<h4 style="font-size:15px">'+r.k+'（'+r.en+'）</h4>' +
+      usvg(r.kind, '整体/父/A', '部分/子/B') +
+      '<div class="ukv"><b>画法：</b>'+r.note+'</div>' +
+      '<div class="ukv"><b>例子：</b>'+r.ex+'</div>' +
+      '<div class="ukv"><b>考点：</b>'+r.exam+'</div>';
+  };
+  umlPick(3); // 默认展示聚合（题48考点）
+})();
+
 </script>
 </body>
 </html>
