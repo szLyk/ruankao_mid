@@ -10,7 +10,7 @@ BANKS = [
     ('10-讲义题库-软件工程.md', '软件工程', 'sw', 61),
     ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 52),
     ('12-讲义题库-数据库.md', '数据库', 'db', 43),
-    ('13-讲义题库-操作系统.md', '操作系统', 'os', 41),
+    ('13-讲义题库-操作系统.md', '操作系统', 'os', 47),
     ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 51),
     ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 44),
 ]
@@ -110,6 +110,40 @@ def heap_first_pop(arr):  # 大根堆取一次堆顶，返回层序字符串
         a[i], a[big] = a[big], a[i]; i = big
     return ','.join(map(str, a + [top]))
 
+def sstf_total(head, reqs):  # 最短寻道优先总移道数
+    cur, total, rest = head, 0, list(reqs)
+    while rest:
+        nxt = min(rest, key=lambda t: abs(t - cur))
+        total += abs(nxt - cur); cur = nxt; rest.remove(nxt)
+    return total
+
+def scan_order(head, up, reqs):  # 电梯调度服务顺序：先沿当前方向，再折返
+    ahead = sorted((t for t in reqs if (t >= head if up else t <= head)), reverse=not up)
+    behind = sorted((t for t in reqs if t not in ahead), reverse=up)
+    return ahead + behind
+
+def lru_misses(seq, frames):  # LRU 缺页模拟
+    mem, last, miss = [], {}, 0
+    for i, p in enumerate(seq):
+        last[p] = i
+        if p in mem: continue
+        miss += 1
+        if len(mem) < frames: mem.append(p)
+        else:
+            victim = min(mem, key=lambda m: last.get(m, -1))
+            mem[mem.index(victim)] = p
+    return miss
+
+def fifo_misses(seq, frames):
+    mem, q, miss = [], [], 0
+    for p in seq:
+        if p in mem: continue
+        miss += 1
+        if len(mem) < frames: mem.append(p); q.append(p)
+        else:
+            old = q.pop(0); q.append(p); mem[mem.index(old)] = p
+    return miss
+
 # (题干关键词, 期望子串)；期望值全部由公式/模拟现算
 M = [
     ('下三角（含对角线）按行压缩存储到一维数组', str(8*9//2)),                       # ds37 =36
@@ -133,6 +167,11 @@ M = [
     ('SQL 子查询中，`>ALL(…)` 表示', '最大值'),                                      # db30
     ('把"查询学生表"的权限授予用户 U1', 'GRANT SELECT ON 学生 TO U1'),               # db31
     ('数据库并发控制中，预防死锁的方法是', '一次封锁法'),                             # db43
+    ('采用最短寻道时间优先（SSTF）调度，磁头移动的磁道总数', str(sstf_total(20, [10,30,40,5,25]))),          # os43 =55
+    ('采用电梯调度（SCAN）算法，服务顺序', '→'.join(map(str, scan_order(50, True, [65,40,34,20,70,10])))),   # os44
+    ('块号 100 对应位示图的', '字 %d、位 %d' % (100//32, 100%32)),                    # os45 =字3、位4
+    ('采用 LRU 置换算法的缺页次数', str(lru_misses([4,3,2,1,4,3,5,4,3,2,1,5], 3))),  # os46 =10（同序列FIFO=9对照）
+    ('按短作业优先（SJF）调度，平均周转时间为', '%.2f' % ((2+6+14)/3)),               # os47 =7.33
 ]
 C = [  # 概念口径抽查：正确选项文本须含关键词
     ('V 模型的对应关系，集成测试', '详细设计'),
@@ -141,6 +180,7 @@ C = [  # 概念口径抽查：正确选项文本须含关键词
     ('部分可以脱离整体独立存在', '聚合'),
     ('数据仓库的基本特征', '联机增删改'),
     ('读者-写者问题中，正确的说法', '多个读者可以同时读'),
+    ('当前的安全序列是', 'P2→P3→P1'),
     ('使用快表（TLB）且命中时', '1 次'),
     ('操作系统中"高级调度"指的是', '作业调度'),
     ('单 CPU 系统中 n 个进程并发执行', '1'),
@@ -198,9 +238,9 @@ print('[数据] 17-练习数据.js 六库答案与 md 逐位一致: %s' % ('OK' 
 p00 = open('00-总计划.md', encoding='utf-8').read()
 p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 rd = open('README.md', encoding='utf-8').read()
-check(p00.count('510项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00, '00 总数引用异常')
-check('题库392' in p02 and '题库179' not in p02 and '题库279' not in p02, '02 题库数引用异常')
-check('392' in rd and '510' in rd and '179' not in rd and '279' not in rd, 'README 题库数引用异常')
+check(p00.count('516项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00, '00 总数引用异常')
+check('题库398' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02, '02 题库数引用异常')
+check('398' in rd and '516' in rd and '179' not in rd and '279' not in rd and '392' not in rd, 'README 题库数引用异常')
 check(all(f'（{n} 题）' in open(f, encoding='utf-8').read() for f, _, _, n in BANKS), '题库标题题数与期望不符')
 print('[引用] 00/02/README 总数与标签: %s' % ('OK' if not [f for f in fails if '引用' in f] else 'FAIL'))
 
@@ -210,4 +250,4 @@ if fails:
     print('审计未通过，%d 个问题:' % len(fails))
     for f in fails: print(' ✘', f)
     sys.exit(1)
-print('审计全部通过 ✅  六库 392 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
+print('审计全部通过 ✅  六库 398 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))

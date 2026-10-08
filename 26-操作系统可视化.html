@@ -120,6 +120,14 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </div>
   <div class="res" id="bufRes"></div>
  </div>
+ <div class="card">
+  <h2>⚠️ 顺序陷阱：先同步、后互斥（题 26 原考点）</h2>
+  <table>
+   <tr><th>生产者</th><th>消费者</th></tr>
+   <tr><td class="mono">P(empty) → P(mutex)<br>放入 → V(mutex) → V(full)</td><td class="mono">P(full) → P(mutex)<br>取出 → V(mutex) → V(empty)</td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">✘ 若写成 P(mutex) → P(empty)：先锁门、再等空格 → 消费者进不了门、腾不出空格 → <b>双方互等死锁</b>。口诀：<b>资源信号量（同步）在 P 一侧靠前，mutex（互斥）永远夹在中间</b>。</div>
+ </div>
 </section>
 
 <!-- ============ Tab2 进程状态 ============ -->
@@ -207,6 +215,22 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
  </div>
 </section>
 
+<!-- ============ Tab 页面置换 ============ -->
+<section id="s-rp">
+ <div class="tip">🔁 三算法一句话：<b>FIFO 只认进队顺序</b>（有 Belady 异常：页框变多缺页反而变多）；<b>LRU 淘汰"最久未使用"</b>（看过去）；OPT 淘汰"将来最久不用"（看未来，无法实现，仅作基准）。</div>
+ <div class="card">
+  <h2>FIFO / LRU 并排模拟器（题 30 · 题 46 同款手算）</h2>
+  <div class="row">
+   <span>访问序列</span><input id="rpSeq" value="4,3,2,1,4,3,5,4,3,2,1,5" style="width:270px" class="mono">
+   <span>页框数</span><select id="rpFrames"><option>2</option><option selected>3</option><option>4</option></select>
+   <button class="btn pri" onclick="rpRun()">模拟</button>
+   <button class="btn" onclick="rpLoad('1,2,3,4,1,2,5')">题30序列</button>
+   <button class="btn" onclick="rpLoad('4,3,2,1,4,3,5,4,3,2,1,5')">题46序列</button>
+  </div>
+  <div id="rpOut"></div>
+ </div>
+</section>
+
 <!-- ============ Tab4 死锁 ============ -->
 <section id="s-dead">
  <div class="tip">🔒 必背公式：<b>不死锁最少资源数 = n(m−1)+1</b>（n=进程数，m=每个进程最多需要量）。来历：最坏情况每个进程都拿到 m−1 个、还差 1 个——再多 1 个就能让某个进程跑完释放。</div>
@@ -264,7 +288,7 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </table>
  </div>
  <div class="card">
-  <h2>补遗速查（题3/10/11/14/16/17/18/23 对应考点）</h2>
+  <h2>补遗速查（旧题 3/9/10/11/14-18/23 · 新题 25-47 见下卡）</h2>
   <table>
    <tr><th>进程 vs 线程（题3）</th></tr>
    <tr><td>进程=<b>资源分配</b>的基本单位（有独立地址空间）；线程=<b>CPU 调度</b>的基本单位（共享进程的地址空间与资源，切换开销小）。同进程内线程崩溃可能影响整个进程。</td></tr>
@@ -292,6 +316,24 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </table>
  </div>
  <div class="card">
+  <h2>新题 25~47 考点速补（配合 13 号题库二刷）</h2>
+  <table>
+   <tr><th>考点（题号）</th><th>一句话结论</th></tr>
+   <tr><td>唤醒后去哪（25）</td><td>阻塞 →<b>就绪</b>重新排队；不存在"阻塞→运行"这条线</td></tr>
+   <tr><td>读者-写者（27）</td><td>读读兼容；写写互斥、读写互斥（写者独占）</td></tr>
+   <tr><td>线程独享（29）</td><td>独享：<b>栈、寄存器、程序计数器</b>；共享：代码段、数据段、打开文件</td></tr>
+   <tr><td>快表 TLB（32）</td><td>页表的高速缓存；命中时取一条数据只需访存 <b>1</b> 次</td></tr>
+   <tr><td>段页式（33）</td><td>逻辑地址 = 段号 + 段内页号 + 页内偏移（先分段、段内再分页）</td></tr>
+   <tr><td>页表大小（34）</td><td>32 位逻辑地址、4KB 页 → 页号 20 位 → 2²⁰ 项 ×4B = <b>4MB</b></td></tr>
+   <tr><td>SPOOLing（35）</td><td>磁盘缓冲把打印机等<b>独占设备</b>虚拟成<b>共享设备</b></td></tr>
+   <tr><td>I/O 方式（36）</td><td>查询 → 中断 → DMA → 通道，CPU 介入依次<b>减少</b></td></tr>
+   <tr><td>文件结构（37/38）</td><td><b>连续</b>可随机存取最快；链接只能顺链读；索引折中、多级支持大文件；描述信息在 <b>inode</b></td></tr>
+   <tr><td>调度三层次（39）</td><td>高级 = 作业调度、中级 = 交换（挂起/激活）、低级 = 进程调度</td></tr>
+   <tr><td>置换手算（30/46）</td><td>FIFO 看进队顺序、LRU 看"最近用过没"——上方「页面置换」页签可动手模拟</td></tr>
+   <tr><td>大题三件套（42-44/47）</td><td>安全序列：尚需≤可用→回收其全部（D8）；SSTF 看距离、SCAN 看方向（D9）；周转 = 完成 − 到达</td></tr>
+  </table>
+ </div>
+ <div class="card">
   <h2>公式 + 速查卡</h2>
   <div class="grid2">
    <div class="fcard"><b>死锁</b>不死锁最少资源 = n(m−1)+1<br>例：4进程各需2个 → 5个</div>
@@ -307,7 +349,7 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
 </section>
 
 </main>
-<footer>学习主线：13-讲义题库-操作系统（讲义+白话详解D1-D7）→ 本页（可视化+出题）→ 17 系统「操作系统」24题 → 错题重练（错题考点已在卡片标题标出题号）。</footer>
+<footer>学习主线：13-讲义题库-操作系统（讲义 + 白话详解 D1-D9）→ 本页（可视化 + 出题）→ 17 系统「操作系统」47题 → 错题重练（错题考点已在卡片标题标出题号）。</footer>
 
 <script>
 /* ================= 纯函数（独立可测） ================= */
@@ -338,6 +380,29 @@ OSTOOL.checkQuiz = function(q, aPage, aOff){
   const r = OSTOOL.pageSplit(q.logical, q.pageSize);
   return r && String(aPage).trim() === String(r.page) && String(aOff).trim() === String(r.off);
 };
+OSTOOL.fifoSim = function(seq, frames){
+  const mem = [], q = [], steps = []; let miss = 0;
+  seq.forEach(p => {
+    if(mem.includes(p)){ steps.push({page:p, miss:false, mem:mem.slice()}); return; }
+    miss++;
+    if(mem.length < frames){ mem.push(p); q.push(p); }
+    else { const old = q.shift(); q.push(p); mem[mem.indexOf(old)] = p; }
+    steps.push({page:p, miss:true, mem:mem.slice()});
+  });
+  return { steps, miss };
+};
+OSTOOL.lruSim = function(seq, frames){
+  const mem = [], last = {}, steps = []; let miss = 0;
+  seq.forEach((p,i) => {
+    last[p] = i;
+    if(mem.includes(p)){ steps.push({page:p, miss:false, mem:mem.slice()}); return; }
+    miss++;
+    if(mem.length < frames) mem.push(p);
+    else { let v = mem[0]; mem.forEach(m => { if(last[m] < last[v]) v = m; }); mem[mem.indexOf(v)] = p; }
+    steps.push({page:p, miss:true, mem:mem.slice()});
+  });
+  return { steps, miss };
+};
 
 /* ================= 数据 ================= */
 const STATES = {
@@ -348,7 +413,7 @@ const STATES = {
 };
 
 /* ================= 导航 ================= */
-const SECTIONS = [['pv','🚦 进程与PV'],['state','🔄 进程状态'],['page','📐 页式地址转换'],['dead','🔒 死锁'],['sched','📋 调度与速查']];
+const SECTIONS = [['pv','🚦 进程与PV'],['state','🔄 进程状态'],['page','📐 页式地址转换'],['rp','🔁 页面置换'],['dead','🔒 死锁'],['sched','📋 调度与速查']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t===id));
@@ -481,6 +546,44 @@ function dlCalc(){
   function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
 }
 dlCalc();
+
+/* ================= 页面置换模拟器 ================= */
+function rpParse(){
+  const seq = document.getElementById('rpSeq').value.split(/[^0-9]+/).filter(s => s !== '').map(Number);
+  const fr = parseInt(document.getElementById('rpFrames').value, 10);
+  if(seq.length === 0 || !Number.isInteger(fr) || fr < 1 || fr > 6) return null;
+  return { seq, fr };
+}
+function rpTable(name, r, seq, fr){
+  let h = '<div style="overflow-x:auto;margin-top:8px"><table><tr><th>'+name+'（缺 <b>'+r.miss+'</b> 次）</th>';
+  seq.forEach(p => h += '<th class="mono">'+p+'</th>');
+  h += '</tr>';
+  for(let s = 0; s < fr; s++){
+    h += '<tr><td>页框'+(s+1)+'</td>';
+    r.steps.forEach(st => h += '<td class="mono">'+(st.mem[s] !== undefined ? st.mem[s] : '')+'</td>');
+    h += '</tr>';
+  }
+  h += '<tr><td><b>本步</b></td>';
+  r.steps.forEach(st => h += '<td>'+(st.miss ? '<span class="bad">✘缺</span>' : '<span class="ok">✔</span>')+'</td>');
+  h += '</tr></table></div>';
+  return h;
+}
+function rpRun(){
+  const inp = rpParse(); const out = document.getElementById('rpOut');
+  if(!inp){ out.innerHTML = '<div class="steps">请输入数字序列（逗号/空格分隔），页框数 1~6</div>'; return; }
+  const f = OSTOOL.fifoSim(inp.seq, inp.fr), l = OSTOOL.lruSim(inp.seq, inp.fr);
+  const verdict = f.miss === l.miss
+    ? '本序列两算法缺页相同（都是 '+f.miss+' 次）——很常见，做题先看清问的是哪个算法'
+    : (f.miss > l.miss
+        ? 'FIFO（'+f.miss+'）比 LRU（'+l.miss+'）多缺 '+(f.miss-l.miss)+' 次'
+        : 'LRU（'+l.miss+'）比 FIFO（'+f.miss+'）多缺 '+(l.miss-f.miss)+' 次——题 46 正是这种情况');
+  out.innerHTML = rpTable('FIFO', f, inp.seq, inp.fr) + rpTable('LRU', l, inp.seq, inp.fr)
+    + '<div class="res" style="margin-top:8px"><div class="rcell"><b>FIFO 缺页</b><span>'+f.miss+'</span></div>'
+    + '<div class="rcell"><b>LRU 缺页</b><span>'+l.miss+'</span></div>'
+    + '<div class="rcell" style="grid-column:1/-1"><b>结论</b><span style="font-size:13px">'+verdict+'</span></div></div>';
+}
+function rpLoad(s){ document.getElementById('rpSeq').value = s; rpRun(); }
+rpRun();
 </script>
 </body>
 </html>
