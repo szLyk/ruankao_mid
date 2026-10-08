@@ -1,0 +1,979 @@
+{
+ "app": "rk-practice-v1",
+ "seeded": true,
+ "answers": {
+  "mock-2": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-3": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-4": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-5": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-6": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-7": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-10": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-11": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-12": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-13": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-14": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-15": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-16": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-17": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-18": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-19": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-20": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-22": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-23": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-24": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-25": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-26": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-27": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-28": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-29": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-30": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-31": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-32": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-33": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-34": {
+   "chosen": null,
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-35": {
+   "chosen": null,
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-37": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-38": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-41": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-43": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-46": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-49": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-53": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-54": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-55": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-57": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-58": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-59": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-64": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-65": {
+   "chosen": null,
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-66": {
+   "chosen": null,
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-67": {
+   "chosen": null,
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "mock-75": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-09-20",
+   "lastTs": "2026-09-20"
+  },
+  "sw-1": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-2": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-3": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-4": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-5": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-6": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-9": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-12": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-11": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.653Z",
+   "lastTs": "2026-10-08T06:52:45.653Z"
+  },
+  "sw-10": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-13": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-8": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-7": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-14": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-15": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-16": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-17": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-19": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-21": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-22": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-23": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-24": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-26": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-25": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-27": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.654Z",
+   "lastTs": "2026-10-08T06:52:45.654Z"
+  },
+  "sw-28": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-29": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-30": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-31": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-32": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-33": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-34": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-35": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-36": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-37": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-38": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-39": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-40": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-41": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-42": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.655Z",
+   "lastTs": "2026-10-08T06:52:45.655Z"
+  },
+  "sw-43": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.656Z",
+   "lastTs": "2026-10-08T06:52:45.656Z"
+  },
+  "sw-44": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.656Z",
+   "lastTs": "2026-10-08T06:52:45.656Z"
+  },
+  "sw-48": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.656Z",
+   "lastTs": "2026-10-08T06:52:45.656Z"
+  },
+  "sw-47": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.656Z",
+   "lastTs": "2026-10-08T06:52:45.656Z"
+  },
+  "sw-45": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.656Z",
+   "lastTs": "2026-10-08T06:52:45.656Z"
+  },
+  "sw-46": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:52:45.656Z",
+   "lastTs": "2026-10-08T06:52:45.656Z"
+  },
+  "sw-20": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:53:54.615Z",
+   "lastTs": "2026-10-08T06:53:54.615Z"
+  },
+  "sw-18": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-08T06:53:54.615Z",
+   "lastTs": "2026-10-08T06:53:54.615Z"
+  }
+ },
+ "history": [
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-1",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-2",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-3",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-4",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-5",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-6",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-9",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-12",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.653Z",
+   "k": "sw-11",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-10",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-13",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-8",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-7",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-14",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-15",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-16",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-17",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-19",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-21",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-22",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-23",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-24",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-26",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-25",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.654Z",
+   "k": "sw-27",
+   "c": "B",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-28",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-29",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-30",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-31",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-32",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-33",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-34",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-35",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-36",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-37",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-38",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-39",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-40",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-41",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.655Z",
+   "k": "sw-42",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.656Z",
+   "k": "sw-43",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.656Z",
+   "k": "sw-44",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.656Z",
+   "k": "sw-48",
+   "c": "B",
+   "ok": false
+  },
+  {
+   "t": "2026-10-08T06:52:45.656Z",
+   "k": "sw-47",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.656Z",
+   "k": "sw-45",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:52:45.656Z",
+   "k": "sw-46",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:53:54.615Z",
+   "k": "sw-20",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-08T06:53:54.615Z",
+   "k": "sw-18",
+   "c": "C",
+   "ok": false
+  }
+ ],
+ "daily": {
+  "2026-09-20": {
+   "done": 75,
+   "ok": 27
+  },
+  "2026-10-08": {
+   "done": 48,
+   "ok": 32
+  }
+ },
+ "lastUpdated": "2026-10-08T06:53:54.615Z"
+}
