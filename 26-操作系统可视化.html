@@ -613,7 +613,7 @@ OSTOOL.bmqGen = function(){
   const r=OSTOOL.bitmap(blk,w);
   return { stem:'位示图字长 <b>'+w+'</b> 位（字号、位号均从 0 起），块号 <b>'+blk+'</b> 位于第几个字第几位',
     clear:['bmqW','bmqB'], ans:{bmqW:r.word, bmqB:r.bit}, cmp:cmpNum,
-    steps:blk+' ÷ '+w+' = 商 <b>'+r.word+'</b> 余 <b>'+r.bit+'</b> → 字 '+r.word+'、位 '+r.bit+'\n若题目注明从 1 起编号，则各 +1' };
+    steps:blk+' ÷ '+w+' = 商 '+r.word+' 余 '+r.bit+' → 字 '+r.word+'、位 '+r.bit+'\n若题目注明从 1 起编号，则各 +1' };
 };
 OSTOOL.bkqGen = function(){
   const max=[3,4,5].map(()=>3+Math.floor(Math.random()*7));
