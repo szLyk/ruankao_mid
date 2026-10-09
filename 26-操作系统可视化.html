@@ -128,6 +128,15 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </table>
   <div style="font-size:13.5px;margin-top:8px">✘ 若写成 P(mutex) → P(empty)：先锁门、再等空格 → 消费者进不了门、腾不出空格 → <b>双方互等死锁</b>。口诀：<b>资源信号量（同步）在 P 一侧靠前，mutex（互斥）永远夹在中间</b>。</div>
  </div>
+ <div class="card">
+  <h2>🧩 前趋图看图出题（判断该 P 还是 V · 题库 Q52 同型）</h2>
+  <div class="row"><button class="btn pri" onclick="pvGNew()">出一道</button><span id="pvGscore">本次答对 0 / 0</span><span style="color:var(--mut);font-size:12.5px">橙色节点是提问对象；每条箭头一个信号量</span></div>
+  <svg viewBox="0 0 700 260" style="width:100%;max-width:700px;background:#fff;border:1px solid #e2e8f0;border-radius:10px" id="pvGraphSvg"></svg>
+  <div id="pvGq" style="font-size:14.5px;margin:8px 0 4px">点「出一道」开始——看图判断：给橙色节点配 P 还是 V？</div>
+  <div class="row" id="pvGopts"></div>
+  <div id="pvGfb" style="font-size:14px"></div>
+  <div class="steps" id="pvGexp" style="display:none"></div>
+ </div>
 </section>
 
 <!-- ============ Tab2 进程状态 ============ -->
@@ -403,6 +412,48 @@ OSTOOL.lruSim = function(seq, frames){
   });
   return { steps, miss };
 };
+/* ---- 前趋图看图出题（纯函数） ---- */
+const G_TPL = [
+ {pos:{A:[80,130],B:[320,60],C:[320,205],D:[600,130]}, edges:[['A','B'],['A','C'],['B','D'],['C','D']]},
+ {pos:{A:[80,130],B:[280,130],C:[470,130],D:[645,130]}, edges:[['A','B'],['B','C'],['C','D']]},
+ {pos:{A:[80,130],B:[420,55],C:[420,130],D:[420,205]}, edges:[['A','B'],['A','C'],['A','D']]},
+ {pos:{A:[80,55],B:[80,205],C:[370,130],D:[630,130]}, edges:[['A','C'],['B','C'],['C','D']]},
+ {pos:{A:[60,130],B:[240,60],C:[240,205],D:[440,60],E:[440,205],F:[640,130]}, edges:[['A','B'],['A','C'],['B','D'],['C','E'],['D','F'],['E','F']]},
+ {pos:{A:[80,130],B:[310,60],C:[310,205],D:[580,130]}, edges:[['A','B'],['A','C'],['B','C'],['B','D'],['C','D']]}
+];
+OSTOOL.pvGraphGen = function(){
+  const t = G_TPL[Math.floor(Math.random()*G_TPL.length)];
+  const idx = t.edges.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+  const edges = t.edges.map((e,i)=>({from:e[0], to:e[1], s:'S'+(idx[i]+1)}));
+  return { pos:t.pos, edges, nodes:Object.keys(t.pos) };
+};
+OSTOOL.pvGraphAnswer = function(g, n){
+  return {
+    before: g.edges.filter(e=>e.to===n).map(e=>'P('+e.s+')').sort(),
+    after:  g.edges.filter(e=>e.from===n).map(e=>'V('+e.s+')').sort()
+  };
+};
+OSTOOL.pvGraphOptions = function(g, n, phase){
+  const a = OSTOOL.pvGraphAnswer(g, n);
+  const correct = (phase==='before' ? a.before : a.after);
+  const cText = correct.length ? correct.join('、') : (phase==='before' ? '无需 P（没有前驱）' : '无需 V（没有后继）');
+  const inS = g.edges.filter(e=>e.to===n).map(e=>e.s).sort();
+  const outS = g.edges.filter(e=>e.from===n).map(e=>e.s).sort();
+  const wrong = [];
+  const add = arr => { const t = arr.join('、'); if(t && t!==cText && !wrong.includes(t)) wrong.push(t); };
+  if(phase==='before'){
+    if(inS.length){ add(inS.map(s=>'V('+s+')')); add(inS.map((s,i)=> i===0?'V('+s+')':'P('+s+')')); }
+    if(outS.length){ add(outS.map(s=>'P('+s+')')); add(outS.map(s=>'V('+s+')')); }
+  } else {
+    if(outS.length){ add(outS.map(s=>'P('+s+')')); add(outS.map((s,i)=> i===0?'P('+s+')':'V('+s+')')); }
+    if(inS.length){ add(inS.map(s=>'V('+s+')')); add(inS.map(s=>'P('+s+')')); }
+  }
+  add(['P(mutex)','V(mutex)']); add([correct.length?'V('+inS[0]+')':'P(S1)','P(mutex)']);
+  const opts = [cText, ...wrong.slice(0,3)];
+  for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+  return { correct: cText, opts };
+};
 
 /* ================= 数据 ================= */
 const STATES = {
@@ -584,6 +635,64 @@ function rpRun(){
 }
 function rpLoad(s){ document.getElementById('rpSeq').value = s; rpRun(); }
 rpRun();
+
+/* ================= 前趋图看图出题 ================= */
+let gq = null, gScore = { ok:0, n:0 };
+function pvGDraw(g, target){
+  const parts = [];
+  g.nodes.forEach(n => {
+    const x = g.pos[n][0], y = g.pos[n][1], isT = n === target;
+    parts.push('<rect x="'+(x-34)+'" y="'+(y-24)+'" width="68" height="48" rx="10" fill="'+(isT?'#d97706':'#059669')+'"/>'
+      + '<text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">'+n+'</text>');
+  });
+  g.edges.forEach(e => {
+    const x1 = g.pos[e.from][0], y1 = g.pos[e.from][1], x2 = g.pos[e.to][0], y2 = g.pos[e.to][1];
+    const L = Math.hypot(x2-x1, y2-y1), ux = (x2-x1)/L, uy = (y2-y1)/L;
+    const sx = x1+ux*42, sy = y1+uy*30, ex = x2-ux*44, ey = y2-uy*32;
+    parts.push('<line x1="'+sx+'" y1="'+sy+'" x2="'+ex+'" y2="'+ey+'" stroke="#0f172a" stroke-width="2.2" marker-end="url(#fa)"/>'
+      + '<text x="'+((sx+ex)/2)+'" y="'+((sy+ey)/2-7)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="#475569">'+e.s+'</text>');
+  });
+  document.getElementById('pvGraphSvg').innerHTML = parts.join('');
+}
+function pvGNew(){
+  const g = OSTOOL.pvGraphGen();
+  let phase = Math.random() < 0.5 ? 'before' : 'after';
+  let cand = g.nodes.filter(n => phase==='before' ? g.edges.some(e=>e.to===n) : g.edges.some(e=>e.from===n));
+  if(!cand.length){ phase = phase==='before' ? 'after' : 'before'; cand = g.nodes; }
+  const n = cand[Math.floor(Math.random()*cand.length)];
+  const { correct, opts } = OSTOOL.pvGraphOptions(g, n, phase);
+  gq = { g, n, phase, correct };
+  pvGDraw(g, n);
+  document.getElementById('pvGq').innerHTML = '图中节点 <b style="color:#d97706">'+n+'</b> '+(phase==='before'?'开始前':'完成后')+'应执行的操作是（点选项作答）：';
+  document.getElementById('pvGfb').innerHTML = '';
+  document.getElementById('pvGexp').style.display = 'none';
+  const box = document.getElementById('pvGopts'); box.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button'); b.className = 'btn'; b.textContent = o; b.style.fontFamily = 'Consolas,monospace';
+    b.onclick = () => pvGPick(b, o); box.appendChild(b);
+  });
+}
+function pvGPick(btn, o){
+  if(!gq) return;
+  gScore.n++;
+  const ok = o === gq.correct;
+  if(ok) gScore.ok++;
+  btn.style.borderColor = ok ? '#059669' : '#dc2626';
+  btn.style.fontWeight = '700';
+  document.getElementById('pvGfb').innerHTML = ok
+    ? '<span class="ok">✔ 答对了！</span>'
+    : '<span class="bad">✘ 不对。正确答案：'+gq.correct+'</span>';
+  document.getElementById('pvGscore').textContent = '本次答对 '+gScore.ok+' / '+gScore.n;
+  const a = OSTOOL.pvGraphAnswer(gq.g, gq.n);
+  let lines = '规则：每条箭头配一个信号量，起点完成后 V、终点开始前 P。逐箭头看：\n';
+  gq.g.edges.forEach(e => {
+    if(e.to === gq.n) lines += '  '+e.from+'→'+gq.n+'（'+e.s+'）：'+gq.n+' 是终点 → 开始前 P('+e.s+')\n';
+    else if(e.from === gq.n) lines += '  '+gq.n+'→'+e.to+'（'+e.s+'）：'+gq.n+' 是起点 → 完成后 V('+e.s+')\n';
+  });
+  lines += (gq.phase==='before' ? '∴ '+gq.n+' 开始前：' : '∴ '+gq.n+' 完成后：') + (gq.phase==='before' ? (a.before.join('、')||'无需 P') : (a.after.join('、')||'无需 V'));
+  const ex = document.getElementById('pvGexp'); ex.style.display = 'block'; ex.textContent = lines;
+}
+pvGNew();
 </script>
 </body>
 </html>
