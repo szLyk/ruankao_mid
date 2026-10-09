@@ -587,7 +587,7 @@ OSTOOL.dlqGen = function(){
   const ans=n*(m-1)+1;
   return { stem:n+' 个进程，每个最多需要 <b>'+m+'</b> 个资源。系统至少配置多少个资源必然不会死锁？',
     clear:['dlqA'], ans:{dlqA:ans}, cmp:cmpNum,
-    steps:'公式 n(m−1)+1 = '+n+'×('+m+'−1)+1 = '+n+'×'+(m-1)+'+1 = <b>'+ans+'</b>\n来历：最坏时每人攥着 m−1 个共 '+n*(m-1)+' 个全卡住，再来 1 个必有人凑齐跑完并释放' };
+    steps:'公式 n(m−1)+1 = '+n+'×('+m+'−1)+1 = '+n+'×'+(m-1)+'+1 = '+ans+'\n来历：最坏时每人攥着 m−1 个共 '+n*(m-1)+' 个全卡住，再来 1 个必有人凑齐跑完并释放' };
 };
 OSTOOL.dkqGen = function(){
   const head=Math.floor(Math.random()*60), up=Math.random()<0.5;
