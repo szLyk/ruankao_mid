@@ -242,6 +242,16 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </div>
   <div class="res" id="bvRes"></div>
   <div class="steps" id="bvSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="bvqNew()">🎲 出一道</button><span id="bvqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="bqOff" placeholder="偏移位数" style="width:90px">
+   <input id="bqPn" placeholder="页号位数" style="width:90px">
+   <input id="bqTb" placeholder="页表大小(如4MB)" style="width:140px">
+   <button class="btn" onclick="bvqCheck()">检查</button>
+   <button class="btn" onclick="bvqShow()">显示解答</button>
+  </div>
+  <div id="bvqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="bvqSteps" style="display:none"></div>
   <div style="font-size:13px;color:#64748b;margin-top:6px">⚠️ 坑：2KB 的偏移是 <b>11</b> 位（别把 4KB 的 12 位背串）；互验例：8448÷4096=2 余 256，而 8448 的二进制低 12 位 = 0001 0000 0000 = 256、高位 10 = 2，两法一致。</div>
  </div>
 </section>
@@ -274,6 +284,14 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </div>
   <div class="res" id="dlRes"></div>
   <div class="steps" id="dlSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="dlqNew()">🎲 出一道</button><span id="dlqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="dlqA" placeholder="最少资源数" style="width:110px">
+   <button class="btn" onclick="dlqCheck()">检查</button>
+   <button class="btn" onclick="dlqShow()">显示解答</button>
+  </div>
+  <div id="dlqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="dlqSteps" style="display:none"></div>
  </div>
  <div class="card">
   <h2>死锁四大必要条件 + 处理策略</h2>
@@ -301,6 +319,15 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </div>
   <div class="res" id="bkRes"></div>
   <div class="steps" id="bkSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="bkqNew()">🎲 出一道</button><span id="bkqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="bkqAv" placeholder="可用 Available" style="width:120px">
+   <input id="bkqNd" placeholder="尚需(如4,1,2)" style="width:130px">
+   <button class="btn" onclick="bkqCheck()">检查</button>
+   <button class="btn" onclick="bkqShow()">显示解答</button>
+  </div>
+  <div id="bkqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="bkqSteps" style="display:none"></div>
  </div>
 </section>
 
@@ -335,6 +362,15 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </div>
   <div class="res" id="dkRes"></div>
   <div class="steps" id="dkSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="dkqNew()">🎲 出一道</button><span id="dkqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="dkqSstf" placeholder="SSTF总移道" style="width:110px">
+   <input id="dkqScan" placeholder="SCAN总移道" style="width:110px">
+   <button class="btn" onclick="dkqCheck()">检查</button>
+   <button class="btn" onclick="dkqShow()">显示解答</button>
+  </div>
+  <div id="dkqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="dkqSteps" style="display:none"></div>
   <div style="font-size:12.5px;color:#64748b;margin-top:6px">注：SCAN 按"服务完本方向最后一个请求即折返"（LOOK）计移动数；若题目明确"移到磁盘尽头再折返"，需把到端点的距离计入。</div>
  </div>
  <div class="card">
@@ -345,6 +381,15 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
    <button class="btn pri" onclick="tnCalc()">算</button>
    <span id="tnOut" style="font-size:13.5px"></span>
   </div>
+  <div class="row" style="margin-top:6px"><button class="btn" onclick="tnqNew()">🎲 出一道</button><span id="tnqQ" style="font-size:13px"></span></div>
+  <div class="row">
+   <input id="tnqSjf" placeholder="SJF平均" style="width:90px">
+   <input id="tnqFc" placeholder="FCFS平均" style="width:90px">
+   <button class="btn" onclick="tnqCheck()">检查</button>
+   <button class="btn" onclick="tnqShow()">显示解答</button>
+  </div>
+  <div id="tnqFb" style="font-size:13px"></div>
+  <div class="steps" id="tnqSteps" style="display:none"></div>
   <h4>位示图定位（字号、位号均从 0 起）</h4>
   <div class="row">
    <span>块号</span><input id="bmBlk" value="100" style="width:64px">
@@ -354,6 +399,15 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
    <button class="btn pri" onclick="bmCalc()">定位</button>
    <span id="bmOut" style="font-size:13.5px"></span>
   </div>
+  <div class="row" style="margin-top:6px"><button class="btn" onclick="bmqNew()">🎲 出一道</button><span id="bmqQ" style="font-size:13px"></span></div>
+  <div class="row">
+   <input id="bmqW" placeholder="第几个字" style="width:90px">
+   <input id="bmqB" placeholder="第几位" style="width:90px">
+   <button class="btn" onclick="bmqCheck()">检查</button>
+   <button class="btn" onclick="bmqShow()">显示解答</button>
+  </div>
+  <div id="bmqFb" style="font-size:13px"></div>
+  <div class="steps" id="bmqSteps" style="display:none"></div>
  </div>
  <div class="card">
   <h2>页面置换（题12：Belady 异常）</h2>
@@ -511,6 +565,66 @@ OSTOOL.bitmap = function(blockNo, wordBits){
   const b = +blockNo, w = +wordBits;
   if(!Number.isInteger(b) || b < 0 || !Number.isInteger(w) || w < 1) return null;
   return { word: Math.floor(b/w), bit: b % w }; // 字号、位号均从 0 起
+};
+/* ---- 随机练习生成器（纯函数，返回 {stem, clear, ans, cmp?, steps}） ---- */
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function fmtB(b){ return b>=1073741824?(b/1073741824)+'GB':b>=1048576?(b/1048576)+'MB':b>=1024?(b/1024)+'KB':b+'B'; }
+function normSize(s){ const m=String(s).trim().replace(/\s+/g,'').toUpperCase().match(/^([0-9.]+)(B|KB|MB|GB)?$/);
+  if(!m) return NaN; const x=parseFloat(m[1]); return Math.round(x*(m[2]==='GB'?1073741824:m[2]==='MB'?1048576:m[2]==='KB'?1024:1)); }
+const cmpNum = (k,v,a)=>v!=='' && isFinite(+v) && Math.abs(parseFloat(v)-a) < 1e-9;
+const normTxt = s=>String(s).replace(/\s+/g,'').replace(/，/g,',').toUpperCase();
+
+OSTOOL.bvqGen = function(){
+  const bits=pick([16,32]), size=pick([1024,2048,4096,8192]), entry=pick([2,4,8]);
+  const r=OSTOOL.bitView(bits,size,entry);
+  return { stem:'逻辑地址 <b>'+bits+'</b> 位、页大小 <b>'+(size/1024)+'KB</b>、页表项 <b>'+entry+'B</b>：求偏移位数 / 页号位数 / 页表总大小',
+    clear:['bqOff','bqPn','bqTb'], ans:{bqOff:r.off, bqPn:r.pn, bqTb:fmtB(r.tableBytes)},
+    cmp:(k,v,a)=> k==='bqTb' ? normSize(v)===normSize(a) : cmpNum(k,v,a),
+    steps:'① 页大小 '+(size/1024)+'KB = 2^'+r.off+' → 偏移占低 '+r.off+' 位\n② 页号位 = '+bits+'−'+r.off+' = '+r.pn+' 位\n③ 页表 = 2^'+r.pn+' 项 × '+entry+'B = '+fmtB(r.tableBytes) };
+};
+OSTOOL.dlqGen = function(){
+  const n=3+Math.floor(Math.random()*5), m=2+Math.floor(Math.random()*4);
+  const ans=n*(m-1)+1;
+  return { stem:n+' 个进程，每个最多需要 <b>'+m+'</b> 个资源。系统至少配置多少个资源必然不会死锁？',
+    clear:['dlqA'], ans:{dlqA:ans}, cmp:cmpNum,
+    steps:'公式 n(m−1)+1 = '+n+'×('+m+'−1)+1 = '+n+'×'+(m-1)+'+1 = <b>'+ans+'</b>\n来历：最坏时每人攥着 m−1 个共 '+n*(m-1)+' 个全卡住，再来 1 个必有人凑齐跑完并释放' };
+};
+OSTOOL.dkqGen = function(){
+  const head=Math.floor(Math.random()*60), up=Math.random()<0.5;
+  const set=new Set(); while(set.size<5) set.add(Math.floor(Math.random()*100));
+  const reqs=[...set];
+  const d=OSTOOL.diskSched(head, up?'up':'down', reqs);
+  return { stem:'磁头在 <b>'+head+'</b> 号磁道、沿磁道号<b>'+(up?'增大':'减小')+'</b>方向。请求序列：'+reqs.join('、')+'。求 SSTF 与 SCAN（LOOK）总移道数',
+    clear:['dkqSstf','dkqScan'], ans:{dkqSstf:d.sstf.total, dkqScan:d.scan.total}, cmp:cmpNum,
+    steps:'SSTF（看距离）：'+[head,...d.sstf.order].join('→')+' = '+d.sstf.total+' 道\nSCAN（看方向，先'+(up?'增':'减')+'后折返）：'+[head,...d.scan.order].join('→')+' = '+d.scan.total+' 道' };
+};
+OSTOOL.tnqGen = function(){
+  const k=3+Math.floor(Math.random()*2);
+  const R=Array.from({length:k},()=>1+Math.floor(Math.random()*9));
+  const r=OSTOOL.turnaround(R);
+  return { stem:k+' 个作业<b>同时到达</b>，运行时间依次 '+R.join('、')+' 分钟。求 SJF 与 FCFS 的平均周转时间（两位小数）',
+    clear:['tnqSjf','tnqFc'], ans:{tnqSjf:Math.round(r.sjfAvg*100)/100, tnqFc:Math.round(r.fcfsAvg*100)/100},
+    cmp:(k,v,a)=>v!=='' && isFinite(+v) && Math.abs(parseFloat(v)-a)<0.005,
+    steps:'周转=完成−到达（到达全为0）\nSJF 顺序 '+[...R].sort((a,b)=>a-b).join('→')+'，完成时间 '+(()=>{let t=0,a=[];[...R].sort((x,y)=>x-y).forEach(x=>{t+=x;a.push(t)});return a.join('、')})()+'\nFCFS 顺序 '+R.join('→')+'\n平均 = 完成时间之和 ÷ '+k };
+};
+OSTOOL.bmqGen = function(){
+  const w=pick([8,16,32,64]);
+  const blk=Math.floor(Math.random()*w*16);
+  const r=OSTOOL.bitmap(blk,w);
+  return { stem:'位示图字长 <b>'+w+'</b> 位（字号、位号均从 0 起），块号 <b>'+blk+'</b> 位于第几个字第几位',
+    clear:['bmqW','bmqB'], ans:{bmqW:r.word, bmqB:r.bit}, cmp:cmpNum,
+    steps:blk+' ÷ '+w+' = 商 <b>'+r.word+'</b> 余 <b>'+r.bit+'</b> → 字 '+r.word+'、位 '+r.bit+'\n若题目注明从 1 起编号，则各 +1' };
+};
+OSTOOL.bkqGen = function(){
+  const max=[3,4,5].map(()=>3+Math.floor(Math.random()*7));
+  const alloc=max.map(m=>Math.floor(Math.random()*m));
+  const used=alloc.reduce((a,b)=>a+b,0);
+  const total=used+Math.floor(Math.random()*3);
+  const need=max.map((m,i)=>m-alloc[i]);
+  return { stem:'（按 P1、P2、P3）资源总数 <b>'+total+'</b>；最大需求 '+max.join('、')+'；已分配 '+alloc.join('、')+'。求可用资源与尚需向量',
+    clear:['bkqAv','bkqNd'], ans:{bkqAv:total-used, bkqNd:need.join(',')},
+    cmp:(k,v,a)=> k==='bkqNd' ? normTxt(v)===normTxt(a) : cmpNum(k,v,a),
+    steps:'可用 = 总数 − 已分配合计 = '+total+'−'+used+' = '+(total-used)+'\n尚需 = 最大 − 已分配 = '+need.join(', ')+'\n之后按"尚需≤可用→回收"走安全序列（见左侧计算器）' };
 };
 OSTOOL.genQuiz = function(){
   const sizes = [512, 1024, 2048, 4096];
@@ -908,6 +1022,41 @@ function bmCalc(){
     : '<span class="bad">输入无效</span>';
 }
 bmCalc();
+
+/* ================= 随机练习通用绑定（出题/检查/显示解答） ================= */
+function mkQuiz(pfx, gen){
+  let q = null;
+  window[pfx+'New'] = function(){
+    q = gen();
+    document.getElementById(pfx+'Q').innerHTML = q.stem;
+    (q.clear||[]).forEach(id=>{ const i = document.getElementById(id); if(i) i.value=''; });
+    document.getElementById(pfx+'Fb').innerHTML = '';
+    const s = document.getElementById(pfx+'Steps'); if(s) s.style.display='none';
+  };
+  window[pfx+'Check'] = function(){
+    if(!q) return;
+    let all = true, html = '';
+    Object.keys(q.ans).forEach(k=>{
+      const inp = document.getElementById(k); if(!inp) return;
+      const ok = q.cmp ? q.cmp(k, inp.value, q.ans[k]) : normTxt(inp.value)===normTxt(String(q.ans[k]));
+      all = all && ok;
+      html += '<span style="margin-right:12px">'+(inp.placeholder||k)+' '+(ok?'<span class="ok">✔</span>':'<span class="bad">✘</span>')+'</span>';
+    });
+    document.getElementById(pfx+'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+  };
+  window[pfx+'Show'] = function(){
+    if(!q) return;
+    Object.keys(q.ans).forEach(k=>{ const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
+    const s = document.getElementById(pfx+'Steps'); if(s){ s.style.display='block'; s.textContent = q.steps; }
+  };
+  window[pfx+'New']();
+}
+mkQuiz('bvq', OSTOOL.bvqGen);
+mkQuiz('dlq', OSTOOL.dlqGen);
+mkQuiz('bkq', OSTOOL.bkqGen);
+mkQuiz('dkq', OSTOOL.dkqGen);
+mkQuiz('tnq', OSTOOL.tnqGen);
+mkQuiz('bmq', OSTOOL.bmqGen);
 </script>
 </body>
 </html>
