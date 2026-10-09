@@ -10,7 +10,7 @@ BANKS = [
     ('10-讲义题库-软件工程.md', '软件工程', 'sw', 61),
     ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 52),
     ('12-讲义题库-数据库.md', '数据库', 'db', 43),
-    ('13-讲义题库-操作系统.md', '操作系统', 'os', 47),
+    ('13-讲义题库-操作系统.md', '操作系统', 'os', 55),
     ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 51),
     ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 44),
 ]
@@ -144,6 +144,14 @@ def fifo_misses(seq, frames):
             old = q.pop(0); q.append(p); mem[mem.index(old)] = p
     return miss
 
+def pv_seq(init, ops):  # PV 序列模拟，返回 (终值, 等待队列人数)
+    v, wait = init, 0
+    for op in ops:
+        v += -1 if op == 'P' else 1
+        if op == 'P' and v < 0: wait += 1
+        elif op == 'V' and v <= 0 and wait > 0: wait -= 1
+    return v, wait
+
 # (题干关键词, 期望子串)；期望值全部由公式/模拟现算
 M = [
     ('下三角（含对角线）按行压缩存储到一维数组', str(8*9//2)),                       # ds37 =36
@@ -172,6 +180,8 @@ M = [
     ('块号 100 对应位示图的', '字 %d、位 %d' % (100//32, 100%32)),                    # os45 =字3、位4
     ('采用 LRU 置换算法的缺页次数', str(lru_misses([4,3,2,1,4,3,5,4,3,2,1,5], 3))),  # os46 =10（同序列FIFO=9对照）
     ('按短作业优先（SJF）调度，平均周转时间为', '%.2f' % ((2+6+14)/3)),               # os47 =7.33
+    ('此时 S 的值和等待队列中的进程数分别是', '%d 和 %d' % pv_seq(2, ['P','P','P','V','V'])),                # os48 =1 和 0
+    ('当前值为 −3，此时执行一次 V(S)，则', 'S=−%d，唤醒一个等待进程' % abs(pv_seq(-3, ['V'])[0])),          # os55 =S=−2，唤醒一个
 ]
 C = [  # 概念口径抽查：正确选项文本须含关键词
     ('V 模型的对应关系，集成测试', '详细设计'),
@@ -181,6 +191,11 @@ C = [  # 概念口径抽查：正确选项文本须含关键词
     ('数据仓库的基本特征', '联机增删改'),
     ('读者-写者问题中，正确的说法', '多个读者可以同时读'),
     ('当前的安全序列是', 'P2→P3→P1'),
+    ('连续执行两次 P(mutex) 而中间没有 V', '第一次成功、第二次阻塞'),
+    ('再尝试放入第 6 个', '生产者阻塞在 P(empty)'),
+    ('则 D 开始前应执行', 'P(s3)、P(s4)'),
+    ('任何时刻最多允许 100 个购票者进入', '100'),
+    ('两空处应填', 'P(empty)…V(full)'),
     ('使用快表（TLB）且命中时', '1 次'),
     ('操作系统中"高级调度"指的是', '作业调度'),
     ('单 CPU 系统中 n 个进程并发执行', '1'),
@@ -238,9 +253,9 @@ print('[数据] 17-练习数据.js 六库答案与 md 逐位一致: %s' % ('OK' 
 p00 = open('00-总计划.md', encoding='utf-8').read()
 p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 rd = open('README.md', encoding='utf-8').read()
-check(p00.count('516项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00, '00 总数引用异常')
-check('题库398' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02, '02 题库数引用异常')
-check('398' in rd and '516' in rd and '179' not in rd and '279' not in rd and '392' not in rd, 'README 题库数引用异常')
+check(p00.count('524项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00, '00 总数引用异常')
+check('题库406' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02, '02 题库数引用异常')
+check('406' in rd and '524' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd, 'README 题库数引用异常')
 check(all(f'（{n} 题）' in open(f, encoding='utf-8').read() for f, _, _, n in BANKS), '题库标题题数与期望不符')
 print('[引用] 00/02/README 总数与标签: %s' % ('OK' if not [f for f in fails if '引用' in f] else 'FAIL'))
 
@@ -250,4 +265,4 @@ if fails:
     print('审计未通过，%d 个问题:' % len(fails))
     for f in fails: print(' ✘', f)
     sys.exit(1)
-print('审计全部通过 ✅  六库 398 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
+print('审计全部通过 ✅  六库 406 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
