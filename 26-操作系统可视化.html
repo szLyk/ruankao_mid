@@ -222,6 +222,28 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   <div class="feedback" id="pgQuizFb" class="row"></div>
   <div class="steps" id="pgQuizSteps" style="display:none"></div>
  </div>
+ <div class="card">
+  <h2>🔬 位视角速通：页大小 ↔ 偏移位数（题 34 同款）</h2>
+  <div class="tip">一句话：<b>页大小 = 2ᵏ → 页内偏移恒占低 k 位</b>，逻辑地址剩下的高位全是页号位。除法视角（÷页大小取余）和位视角必须算出同一个答案，可互相验算。</div>
+  <table>
+   <tr><th>页大小</th><th>2 的幂</th><th>偏移位数</th></tr>
+   <tr><td class="mono">1KB</td><td class="mono">2¹⁰</td><td class="mono">10 位</td></tr>
+   <tr><td class="mono">2KB</td><td class="mono">2¹¹</td><td class="mono">11 位</td></tr>
+   <tr><td class="mono">4KB</td><td class="mono">2¹²</td><td class="mono"><b>12 位</b>（最常考）</td></tr>
+   <tr><td class="mono">8KB</td><td class="mono">2¹³</td><td class="mono">13 位</td></tr>
+  </table>
+  <div class="row" style="margin-top:10px">
+   <span>逻辑地址</span><input id="bvBits" value="32" style="width:60px"><span>位</span>
+   <span>页大小</span>
+   <select id="bvSize"><option value="1024">1KB</option><option value="2048">2KB</option><option value="4096" selected>4KB</option><option value="8192">8KB</option></select>
+   <span>页表项</span>
+   <select id="bvEntry"><option value="2">2B</option><option value="4" selected>4B</option><option value="8">8B</option></select>
+   <button class="btn pri" onclick="bvCalc()">切分</button>
+  </div>
+  <div class="res" id="bvRes"></div>
+  <div class="steps" id="bvSteps"></div>
+  <div style="font-size:13px;color:#64748b;margin-top:6px">⚠️ 坑：2KB 的偏移是 <b>11</b> 位（别把 4KB 的 12 位背串）；互验例：8448÷4096=2 余 256，而 8448 的二进制低 12 位 = 0001 0000 0000 = 256、高位 10 = 2，两法一致。</div>
+ </div>
 </section>
 
 <!-- ============ Tab 页面置换 ============ -->
@@ -376,6 +398,18 @@ OSTOOL.physical = function(logical, pageSize, block){
 OSTOOL.noDeadlockMin = function(n, m){
   if(!Number.isInteger(+n) || +n < 1 || !Number.isInteger(+m) || +m < 1) return null;
   return +n * (+m - 1) + 1;
+};
+OSTOOL.bitView = function(addrBits, pageSize, entryBytes){
+  const B = +addrBits, P = +pageSize;
+  if(!Number.isInteger(B) || B < 1 || B > 64) return null;
+  if(!Number.isInteger(P) || P <= 0 || (P & (P-1)) !== 0) return null; // 页大小必须是 2 的幂
+  let k = 0; while((1 << k) < P) k++;
+  const pn = B - k;
+  if(pn < 1) return null;
+  const entries = Math.pow(2, pn);
+  const r = { off: k, pn, entries, tableBytes: null };
+  if(Number.isInteger(+entryBytes) && +entryBytes > 0) r.tableBytes = entries * (+entryBytes);
+  return r;
 };
 OSTOOL.genQuiz = function(){
   const sizes = [512, 1024, 2048, 4096];
@@ -693,6 +727,26 @@ function pvGPick(btn, o){
   const ex = document.getElementById('pvGexp'); ex.style.display = 'block'; ex.textContent = lines;
 }
 pvGNew();
+
+/* ================= 位视角切分 ================= */
+function bvCalc(){
+  const r = OSTOOL.bitView(document.getElementById('bvBits').value,
+                           +document.getElementById('bvSize').value,
+                           +document.getElementById('bvEntry').value);
+  const res = document.getElementById('bvRes'), st = document.getElementById('bvSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>地址位数 1~64，页大小必须是 2 的幂</span></div>'; st.textContent=''; return; }
+  const fmt = b => b >= 1073741824 ? (b/1073741824)+'GB' : b >= 1048576 ? (b/1048576)+'MB' : b >= 1024 ? (b/1024)+'KB' : b+'B';
+  res.innerHTML = cell('偏移位数（低位）', r.off+' 位') + cell('页号位数（高位）', r.pn+' 位')
+    + cell('页表项数', '2^'+r.pn+' = '+r.entries.toLocaleString('en-US'))
+    + cell('页表总大小', fmt(r.tableBytes));
+  st.textContent = '① 页大小 = 2^'+r.off+' → 页内偏移占低 '+r.off+' 位\n'
+    + '② 逻辑地址总位数 − 偏移位 = 页号位：'+document.getElementById('bvBits').value+' − '+r.off+' = '+r.pn+' 位\n'
+    + '③ 页表项数 = 2^页号位 = 2^'+r.pn+' = '+r.entries.toLocaleString('en-US')+' 项\n'
+    + '④ 页表大小 = 项数 × 每项 '+document.getElementById('bvEntry').value+'B = '+fmt(r.tableBytes)
+    + '（对照题库 Q34：32位/4KB/4B → 4MB；除法视角互验见上方随机练习）';
+  function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
+}
+bvCalc();
 </script>
 </body>
 </html>
