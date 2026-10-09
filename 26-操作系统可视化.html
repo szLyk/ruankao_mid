@@ -291,6 +291,17 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
    <tr><td><b>鸵鸟策略</b></td><td>不管</td><td>Windows/Linux 实际采用</td><td>可能真死锁</td></tr>
   </table>
  </div>
+ <div class="card">
+  <h2>🧮 银行家安全序列计算器（题 42 / 13 号 D8 同款）</h2>
+  <div class="row">
+   <span>资源总数</span><input id="bkTotal" value="10" style="width:56px">
+   <span>各进程最大需求</span><input id="bkMax" value="8,3,4" style="width:110px">
+   <span>已分配</span><input id="bkAlloc" value="4,2,2" style="width:96px">
+   <button class="btn pri" onclick="bkCalc()">判断</button>
+  </div>
+  <div class="res" id="bkRes"></div>
+  <div class="steps" id="bkSteps"></div>
+ </div>
 </section>
 
 <!-- ============ Tab5 调度与速查 ============ -->
@@ -307,6 +318,42 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </table>
   <h4>周转时间</h4>
   <div style="font-size:13.5px">周转 = 完成 − 到达；带权周转 = 周转 ÷ 运行。<b>SPF 是"平均周转时间最小"的标准答案</b>（就绪队列已知运行时间时）。</div>
+ </div>
+ <div class="card">
+  <h2>🧭 磁盘调度手算器（题 43/44 同款，三种算法对比）</h2>
+  <div class="row">
+   <span>当前磁道</span><input id="dkHead" value="20" style="width:56px">
+   <span>SCAN 方向</span><select id="dkDir"><option value="up">增大</option><option value="down">减小</option></select>
+   <span>请求序列</span><input id="dkReq" value="10,30,40,5,25" style="width:160px">
+   <button class="btn pri" onclick="dkCalc()">计算三种算法</button>
+  </div>
+  <svg id="dkSvg" viewBox="0 0 720 240" style="width:100%;max-width:720px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-top:6px"></svg>
+  <div class="row" style="margin-top:6px">
+   <button class="btn" onclick="dkDraw('fcfs')">看 FCFS</button>
+   <button class="btn" onclick="dkDraw('sstf')">看 SSTF</button>
+   <button class="btn" onclick="dkDraw('scan')">看 SCAN</button>
+  </div>
+  <div class="res" id="dkRes"></div>
+  <div class="steps" id="dkSteps"></div>
+  <div style="font-size:12.5px;color:#64748b;margin-top:6px">注：SCAN 按"服务完本方向最后一个请求即折返"（LOOK）计移动数；若题目明确"移到磁盘尽头再折返"，需把到端点的距离计入。</div>
+ </div>
+ <div class="card">
+  <h2>🧮 周转时间与位示图速算（题 47 / 题 45 同款）</h2>
+  <h4>周转时间（各作业同时到达）</h4>
+  <div class="row">
+   <span>各作业运行时间</span><input id="tnRun" value="8,4,2" style="width:120px">
+   <button class="btn pri" onclick="tnCalc()">算</button>
+   <span id="tnOut" style="font-size:13.5px"></span>
+  </div>
+  <h4>位示图定位（字号、位号均从 0 起）</h4>
+  <div class="row">
+   <span>块号</span><input id="bmBlk" value="100" style="width:64px">
+   <span>字长</span>
+   <select id="bmBits"><option>8</option><option>16</option><option selected>32</option><option>64</option></select>
+   <span>位</span>
+   <button class="btn pri" onclick="bmCalc()">定位</button>
+   <span id="bmOut" style="font-size:13.5px"></span>
+  </div>
  </div>
  <div class="card">
   <h2>页面置换（题12：Belady 异常）</h2>
@@ -410,6 +457,60 @@ OSTOOL.bitView = function(addrBits, pageSize, entryBytes){
   const r = { off: k, pn, entries, tableBytes: null };
   if(Number.isInteger(+entryBytes) && +entryBytes > 0) r.tableBytes = entries * (+entryBytes);
   return r;
+};
+OSTOOL.banker = function(total, maxArr, allocArr){
+  if(!Array.isArray(maxArr) || !maxArr.length || maxArr.length !== allocArr.length) return null;
+  if(maxArr.some(x=>!Number.isInteger(x)||x<0) || allocArr.some(x=>!Number.isInteger(x)||x<0)) return null;
+  const need = maxArr.map((m,i)=>m-allocArr[i]);
+  const used = allocArr.reduce((a,b)=>a+b,0);
+  if(need.some(x=>x<0) || used > total) return null;
+  const avail = total - used;
+  const done = new Array(maxArr.length).fill(false), seq = [], steps = [];
+  let availNow = avail;
+  for(let round=0; round<maxArr.length; round++){
+    let pick = -1;
+    for(let i=0;i<maxArr.length;i++) if(!done[i] && need[i] <= availNow){ pick = i; break; }
+    if(pick < 0) return { safe:false, need, avail };
+    steps.push('P'+(pick+1)+'（尚需 '+need[pick]+' ≤ 可用 '+availNow+'）→ 假设完成，回收 '+allocArr[pick]+'，可用变 '+(availNow+allocArr[pick]));
+    availNow += allocArr[pick]; done[pick] = true; seq.push(pick+1);
+  }
+  return { safe:true, seq, need, avail, steps };
+};
+OSTOOL.diskSched = function(head, dir, reqs){
+  if(!Number.isInteger(+head) || +head < 0) return null;
+  const orig = reqs.map(Number);
+  if(!orig.length || orig.some(x=>!Number.isInteger(x)||x<0)) return null;
+  const dist = (a,b)=>Math.abs(a-b);
+  let c = +head, fcfsTotal = 0;
+  orig.forEach(t=>{ fcfsTotal += dist(c,t); c = t; });
+  const R = [...new Set(orig)].sort((a,b)=>a-b);
+  c = +head; const rest = R.slice(), sstfOrder = []; let sstfTotal = 0;
+  while(rest.length){
+    let pick = rest[0];
+    rest.forEach(t=>{ if(dist(c,t) < dist(c,pick)) pick = t; });
+    sstfTotal += dist(c,pick); c = pick; sstfOrder.push(pick); rest.splice(rest.indexOf(pick),1);
+  }
+  const up = dir !== 'down';
+  const ahead = R.filter(t=> up ? t >= +head : t <= +head);
+  const behind = R.filter(t=> !ahead.includes(t));
+  const scanOrder = up ? [...ahead].sort((a,b)=>a-b).concat([...behind].sort((a,b)=>b-a))
+                       : [...ahead].sort((a,b)=>b-a).concat([...behind].sort((a,b)=>a-b));
+  c = +head; let scanTotal = 0;
+  scanOrder.forEach(t=>{ scanTotal += dist(c,t); c = t; });
+  return { head:+head, fcfs:{order:orig,total:fcfsTotal}, sstf:{order:sstfOrder,total:sstfTotal}, scan:{order:scanOrder,total:scanTotal} };
+};
+OSTOOL.turnaround = function(runtimes){
+  const R = runtimes.map(Number);
+  if(!R.length || R.some(x=>!isFinite(x)||x<0)) return null;
+  const sum = a=>a.reduce((x,y)=>x+y,0);
+  let t = 0; const fc = R.map(r=>{ t += r; return t; });
+  t = 0; const sj = [...R].sort((a,b)=>a-b).map(r=>{ t += r; return t; });
+  return { fcfsAvg: sum(fc)/R.length, sjfAvg: sum(sj)/R.length };
+};
+OSTOOL.bitmap = function(blockNo, wordBits){
+  const b = +blockNo, w = +wordBits;
+  if(!Number.isInteger(b) || b < 0 || !Number.isInteger(w) || w < 1) return null;
+  return { word: Math.floor(b/w), bit: b % w }; // 字号、位号均从 0 起
 };
 OSTOOL.genQuiz = function(){
   const sizes = [512, 1024, 2048, 4096];
@@ -747,6 +848,66 @@ function bvCalc(){
   function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
 }
 bvCalc();
+
+/* ================= 银行家 / 磁盘调度 / 周转 / 位示图 ================= */
+function bkCalc(){
+  const total = +document.getElementById('bkTotal').value;
+  const maxArr = document.getElementById('bkMax').value.split(/[^0-9]+/).filter(s=>s!=='').map(Number);
+  const allocArr = document.getElementById('bkAlloc').value.split(/[^0-9]+/).filter(s=>s!=='').map(Number);
+  const r = OSTOOL.banker(total, maxArr, allocArr);
+  const res = document.getElementById('bkRes'), st = document.getElementById('bkSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>两个列表长度一致、已分配≤最大、已分配合计≤总数</span></div>'; st.textContent=''; return; }
+  res.innerHTML = cell('尚需 Need（最大−已分配）', r.need.join(', ')) + cell('可用 Available', r.avail)
+    + (r.safe ? cell('安全序列', 'P'+r.seq.join(' → P')) : cell('结论','不安全（可能死锁）'));
+  st.textContent = r.safe
+    ? '逐步验证：\n'+r.steps.map((s,i)=>(i+1)+'. '+s).join('\n')+'\n∴ 全部进程都能完成 → 存在安全序列'
+    : '任何未完成进程的尚需都 > 可用 → 找不到安全序列（不安全 ≠ 必死锁，考试按"可能死锁"答）';
+  function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
+}
+bkCalc();
+let dkData = null;
+function dkCalc(){
+  const reqs = document.getElementById('dkReq').value.split(/[^0-9]+/).filter(s=>s!=='').map(Number);
+  dkData = OSTOOL.diskSched(document.getElementById('dkHead').value, document.getElementById('dkDir').value, reqs);
+  const res = document.getElementById('dkRes');
+  if(!dkData){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>磁道号须为非负整数</span></div>'; document.getElementById('dkSteps').textContent=''; return; }
+  res.innerHTML = cell('FCFS 合计', dkData.fcfs.total+' 道') + cell('SSTF 合计', dkData.sstf.total+' 道') + cell('SCAN 合计', dkData.scan.total+' 道');
+  dkDraw('sstf');
+  function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
+}
+function dkDraw(algo){
+  if(!dkData) return;
+  const d = dkData[algo];
+  const name = {fcfs:'FCFS（按到达顺序）', sstf:'SSTF（每步去最近）', scan:'SCAN（只看方向）'}[algo];
+  const pts = [dkData.head, ...d.order];
+  const lo = Math.min(...pts)-5, hi = Math.max(...pts)+5;
+  const X = t => 40+(t-lo)/((hi-lo)||1)*640, Y = i => 40+i*(176/Math.max(1,pts.length-1));
+  let p = '<text x="14" y="22" font-size="13" font-weight="700" fill="#334155">'+name+'：共 '+d.total+' 道</text>';
+  p += '<polyline points="'+pts.map((t,i)=>X(t)+','+Y(i)).join(' ')+'" fill="none" stroke="#059669" stroke-width="2.4"/>';
+  pts.forEach((t,i)=>{
+    p += '<circle cx="'+X(t)+'" cy="'+Y(i)+'" r="9" fill="'+(i===0?'#d97706':'#059669')+'"/>'
+       + '<text x="'+X(t)+'" y="'+(Y(i)+3.5)+'" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">'+t+'</text>';
+  });
+  document.getElementById('dkSvg').innerHTML = p;
+  const seg = [];
+  for(let i=1;i<pts.length;i++) seg.push(pts[i-1]+'→'+pts[i]+'（'+Math.abs(pts[i]-pts[i-1])+'）');
+  document.getElementById('dkSteps').textContent = pts.length > 1 ? seg.join(' → ')+' → 合计 '+d.total+' 道' : '无请求需要服务';
+}
+dkCalc();
+function tnCalc(){
+  const r = OSTOOL.turnaround(document.getElementById('tnRun').value.split(/[^0-9.]+/).filter(s=>s!==''));
+  document.getElementById('tnOut').innerHTML = r
+    ? 'SJF 平均周转 <b class="ok">'+(Math.round(r.sjfAvg*100)/100)+'</b> 分钟 ｜ FCFS <b>'+(Math.round(r.fcfsAvg*100)/100)+'</b> 分钟（周转=完成−到达；同时到达时 SJF 必最小）'
+    : '<span class="bad">输入无效</span>';
+}
+tnCalc();
+function bmCalc(){
+  const r = OSTOOL.bitmap(document.getElementById('bmBlk').value, +document.getElementById('bmBits').value);
+  document.getElementById('bmOut').innerHTML = r
+    ? '位于第 <b class="ok">'+r.word+'</b> 个字的第 <b class="ok">'+r.bit+'</b> 位（全 0 起；题目若注明从 1 起则各 +1）'
+    : '<span class="bad">输入无效</span>';
+}
+bmCalc();
 </script>
 </body>
 </html>
