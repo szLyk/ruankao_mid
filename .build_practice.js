@@ -169,7 +169,7 @@ const banks = BANKS.map(b => {
   const qs = parseBank(b.f, b.id, b.name);
   return { id: b.id, name: b.name, qs };
 });
-const expect = { '软件工程': 61, '数据结构与算法': 52, '数据库': 49, '操作系统': 55, '组成原理与网络': 51, '程序语言与背诵类': 44, '网络真题专项': 100 };
+const expect = { '软件工程': 64, '数据结构与算法': 55, '数据库': 49, '操作系统': 57, '组成原理与网络': 54, '程序语言与背诵类': 47, '网络真题专项': 100 };
 for (const b of banks) if (expect[b.name] !== b.qs.length) throw new Error(`${b.name}: 期望${expect[b.name]}题，实得${b.qs.length}`);
 
 const at = parseBigQ(), eng = parseEng(), net = NET12;

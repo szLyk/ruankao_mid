@@ -38,7 +38,8 @@ input:focus{outline:2px solid #bfdbfe}
 .steps{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px 14px;font-family:Consolas,Menlo,monospace;font-size:13px;margin-top:10px;white-space:pre-wrap;line-height:1.9}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
 .fcard{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;font-size:13.5px}
-.fcard b{color:var(--acc);display:block;margin-bottom:4px;font-size:13px}
+.fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
 th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
 th{background:#f1f5f9;white-space:nowrap}
@@ -329,7 +330,7 @@ SE.mcGen = function(){
 SE.mcCheck = function(q, ans){ return String(ans).trim() === String(q.ans); };
 
 /* ================= 导航 ================= */
-const SECTIONS = [['mccabe','📐 环路复杂度'],['cp','🛤 关键路径'],['coh','🔗 耦合与内聚'],['test','🧪 测试与模型'],['uml','🗂 UML 类图']];
+const SECTIONS = [['mccabe','📐 环路复杂度'],['cp','🛤 关键路径'],['coh','🔗 耦合与内聚'],['test','🧪 测试与模型'],['uml','🗂 UML 类图'],['more','📌 补遗速查']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
@@ -649,5 +650,40 @@ function usvg(kind, aLabel, bLabel){
 })();
 
 </script>
+<section id="s-more">
+ <div class="tip">📌 本页签收拢"题库考过但前面页签没收"的散考点——考前 30 分钟快速过一遍即可。</div>
+ <div class="card">
+  <h2>过程模型与质量补遗</h2>
+  <div class="grid2">
+   <div class="fcard"><b>喷泉模型（题6 同族）</b>面向<b>对象</b>、迭代、<b>无间隙</b>（阶段可重叠）——见"面向对象+迭代"关键词就选它</div>
+   <div class="fcard"><b>RUP 四阶段（题27）</b>初始 → 细化 → 构造 → <b>移交</b>；用例驱动、以架构为中心、迭代增量</div>
+   <div class="fcard"><b>V 模型（题21 同族）</b>开发测试左右对应：需求↔验收测试、概要设计↔系统测试、详细设计↔单元测试</div>
+   <div class="fcard"><b>CMM 五级（题18）</b>初始 → 可重复 → 已定义 → <b>已管理</b> → 优化；CMMI 是其整合升级版（阶段式/连续式）</div>
+   <div class="fcard"><b>ISO 9126 六特性（题35）</b>功能性、可靠性、易用性、效率、<b>可维护性、可移植性</b>（+使用质量四属性）</div>
+   <div class="fcard"><b>IDEAL 模型（题32）</b> Initiating → Diagnosing → Establishing → Acting → <b>Learning</b>（过程改进五阶段）</div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>项目与配置管理补遗</h2>
+  <div class="grid2">
+   <div class="fcard"><b>甘特图（题26）</b>横轴时间条状图——<b>直观但看不出任务依赖</b>；PERT 图能看依赖与关键路径</div>
+   <div class="fcard"><b>风险（题25）</b>风险暴露 = 概率 × 损失；应对四策：<b>避免/转移/减轻/接受</b></div>
+   <div class="fcard"><b>配置管理（题43）</b>四活动：配置项标识、版本控制、<b>变更控制</b>、配置审计；<b>基线</b>=正式评审通过的稳定版本</div>
+   <div class="fcard"><b>OO 三特性（题41）</b>封装（藏细节）、继承（复用+扩展）、<b>多态</b>（同一消息不同对象不同行为）；<b>重载</b>=编译期、<b>重写</b>=运行期</div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>UML 与杂项补遗</h2>
+  <div class="grid2">
+   <div class="fcard"><b>顺序图 vs 通信图（题60/61）</b>同构可互转：顺序图按<b>时间轴</b>、通信图按<b>对象组织</b>（消息编号）</div>
+   <div class="fcard"><b>状态图（题59）</b>单个对象在生命周期中的<b>状态迁移</b>（事件触发）；与活动图区分：活动图=工作流</div>
+   <div class="fcard"><b>构件图 vs 部署图</b>构件图=软件构件及依赖；<b>部署图=硬件拓扑+软件部署</b>（口诀：构件管软件、部署管硬件）</div>
+   <div class="fcard"><b>DFD 父子图平衡（大题①）</b>子图外部输入输出=父图对应加工；编号 1→1.1/1.2；只进不出=黑洞、只出不进=奇迹</div>
+   <div class="fcard"><b>规模度量</b>LOC 代码行；功能点 FP（按信息域计数调整）；生产率=规模÷工作量</div>
+   <div class="fcard"><b>逆向/再工程</b>逆向工程=从代码<b>恢复设计与规格</b>；再工程=逆向+正向（恢复设计后重构）；CASE=计算机辅助软件工程工具</div>
+  </div>
+ </div>
+</section>
+
 </body>
 </html>
