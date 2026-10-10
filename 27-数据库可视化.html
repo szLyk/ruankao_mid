@@ -33,7 +33,8 @@ th,td{border:1px solid #e5e7eb;padding:7px 10px;text-align:left;vertical-align:t
 th{background:#f5f3ff}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
 .fcard{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;font-size:13.5px}
-.fcard b{color:var(--acc);display:block;margin-bottom:4px;font-size:13px}
+.fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 .mono{font-family:Consolas,monospace}
 .mode{display:inline-block;border-radius:10px;padding:12px 14px;font-weight:700;font-size:14px;color:#fff;margin:3px;cursor:pointer;transition:.15s}
 .mode:hover{transform:translateY(-2px)}
@@ -113,7 +114,18 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
 
 <!-- ============ Tab4 事务与并发 ============ -->
 <section id="s-tx">
- <div class="tip">💼 ACID 对号：<b>原子性=全做或全不做</b>、一致性=状态合法、隔离性=并发互不干扰、持续性=提交永久生效。并发三问题：<b>丢失修改、脏读（读到未提交）、不可重复读（两次读不一致）</b>（题13-15）。</div>
+ <div class="tip">💼 ACID 对号：<b>原子性=全做或全不做</b>、一致性=状态合法、隔离性=并发互不干扰、持续性=提交永久生效（题13）。并发<b>四</b>问题：<b>丢失修改、脏读、不可重复读、幻读</b>——时间线逐个看下面的表。</div>
+ <div class="card">
+  <h2>并发四问题：画时间线就懂（题13-15 + 幻读，高频）</h2>
+  <table>
+   <tr><th>问题</th><th>30 秒时间线</th><th>特征一句话</th></tr>
+   <tr><td><b>丢失修改</b></td><td>T1 读 x=100，T2 读 x=100；T1 写回 <b>110</b>，T2 写回 <b>105</b> → 110 被 T2 覆盖丢失</td><td><b>两个写互相覆盖</b></td></tr>
+   <tr><td><b>脏读</b></td><td>T1 改 x=105（<b>未提交</b>），T2 读走 105；T1 <b>回滚</b> → T2 手里的 105 从未存在过</td><td><b>读到了未提交</b>的数据</td></tr>
+   <tr><td><b>不可重复读</b></td><td>T1 读 x=100；T2 改成 105 <b>并提交</b>；T1 再读变 105 → 同一事务两次读值不同</td><td>两次读之间被别人 <b>UPDATE</b></td></tr>
+   <tr><td><b>幻读</b></td><td>T1 统计"成绩&gt;90"得 <b>5 行</b>；T2 <b>INSERT</b> 一行 95 分并提交；T1 再统计得 <b>6 行</b></td><td>两次读之间被别人 <b>INSERT/DELETE</b>，行<b>数</b>变了</td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">易混分界：<b>同一行的值变了</b>=不可重复读；<b>多出/少了行</b>=幻读。口诀：<b>改丢=丢失修改、读脏=脏读、读变=不可重复读、行变=幻读</b>。</div>
+ </div>
  <div class="card">
   <h2>S/X 锁兼容矩阵（题16）</h2>
   <table>
@@ -121,12 +133,32 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
    <tr><td><b>S</b></td><td><span class="lockcell" style="background:#059669">✔ 兼容</span> 可多读</td><td><span class="lockcell" style="background:#dc2626">✘ 冲突</span></td></tr>
    <tr><td><b>X</b></td><td><span class="lockcell" style="background:#dc2626">✘ 冲突</span></td><td><span class="lockcell" style="background:#dc2626">✘ 冲突</span></td></tr>
   </table>
-  <div style="font-size:13.5px;margin-top:8px">记忆：<b>S 与 S 相容（大家都能读），X 谁都不容</b>。两阶段锁协议 2PL（先加锁阶段后解锁阶段）→ 保证<b>可串行化</b>，但<b>不预防死锁</b>（题17）；死锁预防靠<b>一次封锁法 / 顺序封锁法</b>（题43）。</div>
+  <div style="font-size:13.5px;margin-top:8px">记忆：<b>S 与 S 相容（大家都能读），X 谁都不容</b>。两阶段锁协议 2PL（先加锁阶段后解锁阶段）→ 保证<b>可串行化</b>，但<b>不预防死锁</b>（题17）。</div>
+ </div>
+ <div class="card">
+  <h2>三级封锁协议 → 各防什么（高频）</h2>
+  <table>
+   <tr><th>级别</th><th>规则</th><th>防住</th></tr>
+   <tr><td><b>1 级</b></td><td>修改前加 X 锁、<b>事务结束才放</b>（读不加锁）</td><td>丢失修改</td></tr>
+   <tr><td><b>2 级</b></td><td>1 级 + 读前加 S 锁、<b>读完即可放</b></td><td>丢失修改 + <b>脏读</b></td></tr>
+   <tr><td><b>3 级</b></td><td>1 级 + 读前加 S 锁、<b>事务结束才放</b></td><td>丢失修改 + 脏读 + <b>不可重复读</b></td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">记法：<b>X 锁一律到事务结束；S 锁越晚放防得越多</b>——读完就放=2 级，撑到事务结束=3 级。</div>
+ </div>
+ <div class="card">
+  <h2>活锁 vs 死锁（题43 扩展）</h2>
+  <table>
+   <tr><th></th><th>活锁</th><th>死锁</th></tr>
+   <tr><td>现象</td><td>某事务<b>永远轮不上</b>锁（总被别人抢先，单个饿死）</td><td><b>两个以上事务互相等待</b>对方的锁，全体卡死</td></tr>
+   <tr><td>应对</td><td>先来先服务排队</td><td><b>预防</b>：一次封锁法 / 顺序封锁法（题43）；<b>诊断</b>：<b>等待图</b>（事务=点、等待=边，<b>出现回路=死锁</b>）、超时法</td></tr>
+  </table>
  </div>
  <div class="card">
   <h2>恢复与新技术速查（题26/32/33/42）</h2>
   <div class="grid2">
    <div class="fcard"><b>原子性靠什么（题32）</b>日志 + <b>UNDO 回滚</b>（故障时反向撤销未完成事务）</div>
+   <div class="fcard"><b>UNDO vs REDO 判定</b>日志里<b>没 commit 的 → UNDO</b> 撤销（当没发生过）；<b>commit 了但没落盘的 → REDO</b> 重做（必须算数）</div>
+   <div class="fcard"><b>三类故障</b>事务故障（只伤本事务）/ 系统故障（断电，内存丢磁盘在）/ 介质故障（磁盘坏，靠备份副本）</div>
    <div class="fcard"><b>检查点 Checkpoint（题33）</b>定期把日志/数据落盘——故障恢复时<b>检查点之前的不用重做</b>，缩小扫描范围</div>
    <div class="fcard"><b>2PC 两阶段提交（题26）</b>协调者先问全体"能提交吗"再下令提交——保证<b>分布式事务原子性</b></div>
    <div class="fcard"><b>数据仓库四特征（题42）</b>面向主题、<b>集成</b>、相对稳定、反映历史变化（面向分析 OLAP，非 OLTP）</div>
@@ -245,6 +277,7 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   <h2>分布式 + 多表连接速记（题26、28）</h2>
   <div style="font-size:13.5px">
    <b>2PC 两阶段提交</b>：第一阶段协调者问所有参与者"能否提交"，全部同意后第二阶段才正式提交——保证<b>分布式事务的原子性</b>（题26）。<br>
+   <b>分布式透明性三级（题48，高频）</b>：<b>分片透明</b>（不用知道数据怎么分片，<b>级别最高</b>）&gt; <b>位置透明</b>（不用知道数据在哪个场地）&gt; <b>局部数据模型透明</b>（不用知道局部用什么 DBMS）——对用户越"省心"，透明级别越高。<br>
    <b>外连接</b>（题28）：学生 10 行（2 人无选课）LEFT JOIN 选课 8 行 → 结果 <b>10 行</b>（没选课的学生也保留，选课列填 NULL）。内连接才是 8 行。
   </div>
  </div>

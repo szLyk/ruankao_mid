@@ -277,7 +277,7 @@ function qCard(key,no,q,a,retry){
     const dis=answered?' disabled':'', click=answered?'':' onclick="pick(\''+key+'\','+k+')"';
     h+='<button class="opt '+cls+'"'+click+dis+'><span class="L">'+LET[k]+'.</span><span>'+esc(o)+'</span></button>';
   });
-  h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${esc(q.exp)}</div>`;
+  h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${esc(q.exp).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>')}</div>`;
   if(answered&&a.attempts>1) h+=`<div class="hint">已做 ${a.attempts} 次${right?'（本次已答对）':''}</div>`;
   return h+`</div>`;
 }

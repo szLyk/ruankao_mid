@@ -80,7 +80,7 @@ function parseBank(file, modId, modName) {
   if (bad.length) throw new Error(`${file}: ${bad.length} 题解析异常: ` + bad.map(b => b.id + `(选项${b.o.length},答${b.ans||'无'})`).join(','));
   const ids = qs.map(x => x.id);
   for (let i = 0; i < ids.length; i++) if (ids[i] !== i + 1) throw new Error(`${file}: 题号不连续 at ${ids[i]}`);
-  return qs.map(x => ({ id: x.id, mod: modName, q: x.q, o: x.o, ans: x.ans, exp: x.exp }));
+  return qs.map(x => ({ id: x.id, mod: modName, q: x.q, o: x.o, ans: x.ans, exp: x.exp.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>') }));
 }
 
 // ---------- 2b. 应用技术大题（16 md）----------
@@ -169,7 +169,7 @@ const banks = BANKS.map(b => {
   const qs = parseBank(b.f, b.id, b.name);
   return { id: b.id, name: b.name, qs };
 });
-const expect = { '软件工程': 61, '数据结构与算法': 52, '数据库': 43, '操作系统': 55, '组成原理与网络': 51, '程序语言与背诵类': 44, '网络真题专项': 100 };
+const expect = { '软件工程': 61, '数据结构与算法': 52, '数据库': 49, '操作系统': 55, '组成原理与网络': 51, '程序语言与背诵类': 44, '网络真题专项': 100 };
 for (const b of banks) if (expect[b.name] !== b.qs.length) throw new Error(`${b.name}: 期望${expect[b.name]}题，实得${b.qs.length}`);
 
 const at = parseBigQ(), eng = parseEng(), net = NET12;
