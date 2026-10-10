@@ -46,6 +46,7 @@ th{background:#f5f3ff}
 .rung{border:2px solid #ddd6fe;border-radius:10px;padding:8px 16px;cursor:pointer;background:#fff;font-weight:700;font-size:14px}
 .rung.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .lockcell{padding:6px 14px;border-radius:8px;font-weight:700;color:#fff;display:inline-block}
+.erg{cursor:pointer}.erg:hover{opacity:.8}
 footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-size:12.5px}
 </style>
 </head>
@@ -165,6 +166,71 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
 <section id="s-er">
  <div class="tip">🌐 E-R 三符号：<b>矩形=实体、椭圆=属性、菱形=联系（标 1:1/1:n/m:n）</b>。转换规则：<b>m:n 独立成表（两端主键+联系属性做组合键）；1:n 并入 n 端；1:1 并入任一端</b>（题23/24/36/37）。</div>
  <div class="card">
+  <h2>🎯 E-R 图长这样（点击图形看考点）</h2>
+  <svg viewBox="0 0 960 330" style="width:100%;max-width:960px;font-family:'Microsoft YaHei',sans-serif">
+   <g class="erg" onclick="erPick('attr')">
+    <line x1="110" y1="81" x2="118" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="228" y1="81" x2="192" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="748" y1="81" x2="802" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="888" y1="81" x2="868" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+    <ellipse cx="97" cy="55" rx="45" ry="26" fill="#ddd6fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="97" y="60" text-anchor="middle" font-size="13" text-decoration="underline">学号</text>
+    <ellipse cx="232" cy="55" rx="45" ry="26" fill="#ddd6fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="232" y="60" text-anchor="middle" font-size="13">姓名</text>
+    <ellipse cx="742" cy="55" rx="48" ry="26" fill="#ddd6fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="742" y="60" text-anchor="middle" font-size="13" text-decoration="underline">课程号</text>
+    <ellipse cx="892" cy="55" rx="48" ry="26" fill="#ddd6fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="892" y="60" text-anchor="middle" font-size="13">课程名</text>
+   </g>
+   <g class="erg" onclick="erPick('ent')">
+    <rect x="60" y="140" width="130" height="52" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <text x="125" y="171" text-anchor="middle" font-size="16" font-weight="700">学生</text>
+    <rect x="770" y="140" width="130" height="52" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <text x="835" y="171" text-anchor="middle" font-size="16" font-weight="700">课程</text>
+   </g>
+   <g class="erg" onclick="erPick('rel')">
+    <line x1="190" y1="166" x2="360" y2="166" stroke="#475569" stroke-width="2"/>
+    <line x1="600" y1="166" x2="770" y2="166" stroke="#475569" stroke-width="2"/>
+    <polygon points="480,118 600,166 480,214 360,166" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+    <text x="480" y="172" text-anchor="middle" font-size="16" font-weight="700">选修</text>
+    <text x="272" y="152" text-anchor="middle" font-size="16" font-weight="800" font-style="italic" fill="#dc2626">m</text>
+    <text x="686" y="152" text-anchor="middle" font-size="16" font-weight="800" font-style="italic" fill="#dc2626">n</text>
+    <line x1="480" y1="214" x2="480" y2="249" stroke="#94a3b8" stroke-width="1.5"/>
+    <ellipse cx="480" cy="275" rx="45" ry="26" fill="#ddd6fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="480" y="280" text-anchor="middle" font-size="13">成绩</text>
+   </g>
+  </svg>
+  <div class="steps" id="erDetail">点击 学生/课程（矩形）、椭圆属性、选修菱形（含 m/n 和成绩）看对应考点</div>
+ </div>
+ <div class="card">
+  <h2>🎯 特殊画法对照（题36/37 同款图形）</h2>
+  <svg viewBox="0 0 960 190" style="width:100%;max-width:960px;font-family:'Microsoft YaHei',sans-serif">
+   <g class="erg" onclick="erPick2('mv')">
+    <rect x="40" y="70" width="110" height="46" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <text x="95" y="98" text-anchor="middle" font-size="15" font-weight="700">职工</text>
+    <line x1="150" y1="93" x2="238" y2="93" stroke="#475569" stroke-width="2"/>
+    <ellipse cx="300" cy="93" rx="62" ry="28" fill="#ddd6fe" stroke="#7c3aed" stroke-width="1.5"/>
+    <ellipse cx="300" cy="93" rx="50" ry="19" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="300" y="98" text-anchor="middle" font-size="13">联系电话</text>
+    <text x="190" y="155" text-anchor="middle" font-size="12.5" fill="#64748b">题36：电话有多个 → 画双椭圆</text>
+   </g>
+   <g class="erg" onclick="erPick2('weak')">
+    <rect x="520" y="70" width="100" height="46" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <text x="570" y="98" text-anchor="middle" font-size="15" font-weight="700">职工</text>
+    <line x1="620" y1="93" x2="640" y2="93" stroke="#475569" stroke-width="2"/>
+    <polygon points="720,49 800,93 720,137 640,93" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+    <polygon points="720,63 780,93 720,123 660,93" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <text x="720" y="98" text-anchor="middle" font-size="13" font-weight="700">拥有</text>
+    <line x1="800" y1="93" x2="852" y2="93" stroke="#475569" stroke-width="2"/>
+    <rect x="852" y="62" width="100" height="62" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="859" y="69" width="86" height="48" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="902" y="98" text-anchor="middle" font-size="15" font-weight="700">家属</text>
+    <text x="737" y="155" text-anchor="middle" font-size="12.5" fill="#64748b">题37：弱实体=双矩形，联系=双菱形</text>
+   </g>
+  </svg>
+  <div class="steps" id="erDetail2">点击左边双椭圆（多值属性）或右边双矩形/双菱形（弱实体）看说明</div>
+ </div>
+ <div class="card">
   <h2>E-R 考点四连（题23-25、36、37）</h2>
   <table>
    <tr><th>考点</th><th>答案要点</th></tr>
@@ -278,6 +344,19 @@ function nfPick(i){
   document.querySelectorAll('.rung').forEach((el,k)=>el.classList.toggle('on', k===i));
 }
 nfPick(0);
+
+/* ================= E-R 图点击说明 ================= */
+const ERD={
+ ent:'<b>矩形 = 实体</b>（学生、课程）：一个实体 → 一张基本表，如 学生(学号,姓名)。',
+ attr:'<b>椭圆 = 属性</b>。主码属性加<b>下划线</b>（图中 学号/课程号 划线）；普通属性不划（姓名/课程名/成绩）。',
+ rel:'<b>菱形 = 联系</b>（题23），连线端标 m / n。<b>m:n 转关系模式（题24）：独立成第三个表</b>——选修(学号,课程号,成绩)，主键 = (学号,课程号) 组合；<b>联系自己的属性（成绩）也放进该表</b>。对照：1:n 并入 n 端、1:1 并入任一端，不另建表。'
+};
+function erPick(k){document.getElementById('erDetail').innerHTML=ERD[k];}
+const ERD2={
+ mv:'<b>多值属性（题36）</b>：一个属性可能取多个值（座机+手机若干）→ 图上画<b>双椭圆</b>；转关系模式时<b>单独拆一张表</b>（如 职工电话(工号,电话)），不能塞进原表一列。',
+ weak:'<b>弱实体（题37）</b>：没有自己的主键、依附别的实体存在（家属依附职工）→ 画<b>双矩形</b>，与强实体的联系画<b>双菱形</b>；弱实体的键 = <b>所依附实体（职工）的主键</b> + 自己的区分属性（如 与职工的关系/姓名）。'
+};
+function erPick2(k){document.getElementById('erDetail2').innerHTML=ERD2[k];}
 </script>
 </body>
 </html>
