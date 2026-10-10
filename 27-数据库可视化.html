@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数据库可视化 · 软件设计师</title>
+<style>
+:root{--acc:#7c3aed;--bg:#f5f3ff;--bd:#ddd6fe;--mut:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",sans-serif;background:#fafafa;color:#0f172a;line-height:1.7}
+header{background:#4c1d95;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:9}
+h1{font-size:16px;font-weight:600}
+h1 small{font-size:12px;opacity:.75;font-weight:400}
+nav{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+nav button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#ddd6fe;padding:5px 13px;border-radius:16px;cursor:pointer;font-size:13px;font-family:inherit}
+nav button.on{background:#fff;color:#4c1d95;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:10px;padding:8px 12px;font-size:13px;color:#5b21b6;margin-bottom:12px}
+h2{font-size:16px;margin-bottom:10px}
+h4{font-size:13.5px;margin:10px 0 6px;color:#334155}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 16px;cursor:pointer;font-size:13.5px;font-family:inherit}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.btn.pri:hover{opacity:.9;color:#fff}
+input{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff}
+.steps{background:#1e1b4b;color:#e0e7ff;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:13px;margin-top:10px;white-space:pre-wrap;line-height:1.9}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+th,td{border:1px solid #e5e7eb;padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f5f3ff}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.fcard{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;font-size:13.5px}
+.fcard b{color:var(--acc);display:block;margin-bottom:4px;font-size:13px}
+.mono{font-family:Consolas,monospace}
+.mode{display:inline-block;border-radius:10px;padding:12px 14px;font-weight:700;font-size:14px;color:#fff;margin:3px;cursor:pointer;transition:.15s}
+.mode:hover{transform:translateY(-2px)}
+.mode.sel{outline:3px solid #1e1b4b}
+.sym{display:inline-flex;flex-direction:column;align-items:center;border:1px solid #e5e7eb;border-radius:10px;padding:10px 14px;cursor:pointer;background:#fff;min-width:86px}
+.sym:hover{border-color:var(--acc)}
+.sym .s{font-size:26px;font-weight:800;color:var(--acc)}
+.sym .n{font-size:12px;color:#475569}
+.ladder{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.rung{border:2px solid #ddd6fe;border-radius:10px;padding:8px 16px;cursor:pointer;background:#fff;font-weight:700;font-size:14px}
+.rung.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.lockcell{padding:6px 14px;border-radius:8px;font-weight:700;color:#fff;display:inline-block}
+footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+ <h1>🗄 数据库可视化 <small>软件设计师 · 全章知识点（模式/关系代数/范式/事务/SQL/E-R）· 配套《12-讲义题库-数据库》· 43 题全对齐</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 三级模式 ============ -->
+<section id="s-mode" class="on">
+ <div class="tip">🏛 三级模式两句话：<b>外模式=视图（用户看）、概念模式=基本表（全局逻辑）、内模式=存储文件（物理）</b>；两级映射保证两种独立性——<b>外/概念映射→逻辑独立性，概念/内映射→物理独立性</b>（题1、2 原考点）。</div>
+ <div class="card">
+  <h2>点击任意一层/映射看说明（题1 · 题2）</h2>
+  <div style="text-align:center">
+   <span class="mode" style="background:#7c3aed" onclick="mdPick(0)">外模式（用户级）</span><br>
+   <span style="font-size:12px;color:#64748b">↑↓ 外模式/概念模式映像 → <b>逻辑独立性</b></span><br>
+   <span class="mode" style="background:#2563eb" onclick="mdPick(1)">概念模式（模式）</span><br>
+   <span style="font-size:12px;color:#64748b">↑↓ 概念模式/内模式映像 → <b>物理独立性</b></span><br>
+   <span class="mode" style="background:#0891b2" onclick="mdPick(2)">内模式（物理级）</span>
+  </div>
+  <div class="steps" id="mdDetail">点击上方任意一层看：它是什么、对应什么、考试怎么考</div>
+ </div>
+</section>
+
+<!-- ============ Tab2 关系代数 ============ -->
+<section id="s-ra">
+ <div class="tip">🔣 记号口诀：<b>σ 选行（WHERE）、π 选列（SELECT，自动去重）、⋈ 连接（公共属性配对）、÷ "全部"类查询</b>。题3考 σ 下标=对第几列选行；题4"选修了全部课程"=÷。</div>
+ <div class="card">
+  <h2>六大运算符（点击看实例演算）</h2>
+  <div id="raGallery" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  <div class="steps" id="raDetail" style="margin-top:10px">点击任意运算符看迷你实例</div>
+ </div>
+ <div class="card">
+  <h2>🎲 符号识别练习（题3/38 同款考法）</h2>
+  <div class="row"><button class="btn pri" onclick="raQuizNew()">出一道</button><span id="raqQ" style="font-size:15px"></span></div>
+  <div id="raqO" style="font-size:14.5px;margin:6px 0;line-height:1.9"></div>
+  <div class="row" id="raqF" style="display:none">
+   <input id="raqA" placeholder="填写选项字母 A-D" style="width:150px">
+   <button class="btn" onclick="raQuizCheck()">检查</button>
+   <button class="btn" onclick="raQuizShow()">显示答案</button>
+  </div>
+  <div id="raqFb" style="font-size:14px"></div>
+ </div>
+</section>
+
+<!-- ============ Tab3 范式 ============ -->
+<section id="s-nf">
+ <div class="tip">📐 判范式流程（题8-12、34、35 的万能钥匙）：①属性都原子了吗（1NF）→ ②消除非主属性对码的<b>部分依赖</b>（2NF）→ ③消除<b>传递依赖</b>（3NF）→ ④每个决定因素都含码（BCNF）。经典例子：<span class="mono">R(学号,课程号,姓名,成绩)</span>，学号→姓名 = 部分依赖。</div>
+ <div class="card">
+  <h2>范式阶梯（点击每一级）</h2>
+  <div class="ladder">
+   <span class="rung on" onclick="nfPick(0)">1NF</span> →
+   <span class="rung" onclick="nfPick(1)">2NF</span> →
+   <span class="rung" onclick="nfPick(2)">3NF</span> →
+   <span class="rung" onclick="nfPick(3)">BCNF</span>
+  </div>
+  <div class="steps" id="nfDetail"></div>
+  <h4>候选键：属性闭包三步（题12、35 同款）</h4>
+  <div style="font-size:13.5px">R(A,B,C)，F={A→B, B→C}：①只出现在箭头<b>左边</b>的属性先进候选（A）②从 A 出发闭包：A→B→C，得 {A,B,C} 全覆盖 ③<b>A 就是候选键</b>。口诀：<b>只出左边的入候选，闭包盖全属性即成立</b>。</div>
+ </div>
+</section>
+
+<!-- ============ Tab4 事务与并发 ============ -->
+<section id="s-tx">
+ <div class="tip">💼 ACID 对号：<b>原子性=全做或全不做</b>、一致性=状态合法、隔离性=并发互不干扰、持续性=提交永久生效。并发三问题：<b>丢失修改、脏读（读到未提交）、不可重复读（两次读不一致）</b>（题13-15）。</div>
+ <div class="card">
+  <h2>S/X 锁兼容矩阵（题16）</h2>
+  <table>
+   <tr><th>已持有 ↓ / 申请 →</th><th>S（共享锁·读）</th><th>X（排他锁·写）</th></tr>
+   <tr><td><b>S</b></td><td><span class="lockcell" style="background:#059669">✔ 兼容</span> 可多读</td><td><span class="lockcell" style="background:#dc2626">✘ 冲突</span></td></tr>
+   <tr><td><b>X</b></td><td><span class="lockcell" style="background:#dc2626">✘ 冲突</span></td><td><span class="lockcell" style="background:#dc2626">✘ 冲突</span></td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">记忆：<b>S 与 S 相容（大家都能读），X 谁都不容</b>。两阶段锁协议 2PL（先加锁阶段后解锁阶段）→ 保证<b>可串行化</b>，但<b>不预防死锁</b>（题17）；死锁预防靠<b>一次封锁法 / 顺序封锁法</b>（题43）。</div>
+ </div>
+ <div class="card">
+  <h2>恢复与新技术速查（题26/32/33/42）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>原子性靠什么（题32）</b>日志 + <b>UNDO 回滚</b>（故障时反向撤销未完成事务）</div>
+   <div class="fcard"><b>检查点 Checkpoint（题33）</b>定期把日志/数据落盘——故障恢复时<b>检查点之前的不用重做</b>，缩小扫描范围</div>
+   <div class="fcard"><b>2PC 两阶段提交（题26）</b>协调者先问全体"能提交吗"再下令提交——保证<b>分布式事务原子性</b></div>
+   <div class="fcard"><b>数据仓库四特征（题42）</b>面向主题、<b>集成</b>、相对稳定、反映历史变化（面向分析 OLAP，非 OLTP）</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab5 SQL 速查 ============ -->
+<section id="s-sql">
+ <div class="tip">📝 SQL 题一半是"背句式"：<b>分组过滤必 HAVING、模糊匹配 LIKE %/_、授权 GRANT、改数据 UPDATE、删数据留表 DELETE、删表才 DROP</b>。</div>
+ <div class="card">
+  <h2>高频句式对照（题18-21、27、29-31、39-41）</h2>
+  <table>
+   <tr><th>题目要求</th><th>句式关键</th></tr>
+   <tr><td>每门课平均分≥85（题18）</td><td class="mono">GROUP BY 课程 HAVING AVG(成绩)&gt;=85</td></tr>
+   <tr><td>姓张且恰好3个字（题29）</td><td class="mono">WHERE 姓名 LIKE '张__'</td></tr>
+   <tr><td>&gt;ALL(子查询)（题30）</td><td>大于子查询的<b>最大值</b>（&gt;ANY=大于最小值）</td></tr>
+   <tr><td>授权查询（题31）</td><td class="mono">GRANT SELECT ON 学生 TO U1</td></tr>
+   <tr><td>改数据（题39）</td><td class="mono">UPDATE 课程 SET 课程名='数据库' WHERE 课程号='C1'</td></tr>
+   <tr><td>删数据保留表（题20）</td><td class="mono">DELETE FROM 表</td></tr>
+   <tr><td>易混：删表结构（题20）</td><td class="mono">DROP TABLE</td></tr>
+   <tr><td>外键声明（题27）</td><td class="mono">FOREIGN KEY(学号) REFERENCES 学生表(学号)</td></tr>
+   <tr><td>两表联合查姓名（题40）</td><td class="mono">SELECT 姓名 FROM 学生 JOIN 选课 ON … WHERE 课程号='C1'</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>COUNT(*) vs COUNT(列)（题19）</b>COUNT(*) 数行数（含 NULL）；COUNT(列) 只数<b>非空</b>值</div>
+   <div class="fcard"><b>视图 VIEW（题21）</b>虚表：简化查询、安全性、逻辑独立性；<b>不会提高存储效率</b></div>
+   <div class="fcard"><b>B+树索引（题22）</b>矮胖→磁盘 IO 少；叶子结点链表→<b>范围查询</b>快</div>
+   <div class="fcard"><b>触发器 Trigger（题41）</b>INSERT/UPDATE/DELETE 时<b>自动执行</b>，用于复杂完整性约束</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab6 E-R 与分布式 ============ -->
+<section id="s-er">
+ <div class="tip">🌐 E-R 三符号：<b>矩形=实体、椭圆=属性、菱形=联系（标 1:1/1:n/m:n）</b>。转换规则：<b>m:n 独立成表（两端主键+联系属性做组合键）；1:n 并入 n 端；1:1 并入任一端</b>（题23/24/36/37）。</div>
+ <div class="card">
+  <h2>E-R 考点四连（题23-25、36、37）</h2>
+  <table>
+   <tr><th>考点</th><th>答案要点</th></tr>
+   <tr><td>联系用什么表示（题23）</td><td><b>菱形</b></td></tr>
+   <tr><td>m:n 联系转关系模式（题24）</td><td><b>独立成一个关系模式</b>：属性=两端主键+联系自身属性，主键=两端主键组合</td></tr>
+   <tr><td>合并 E-R 图冲突（题25）</td><td>"字符 vs 整数"=<b>属性冲突</b>；三类冲突：属性冲突 / 命名冲突（同名异义、异名同义）/ 结构冲突</td></tr>
+   <tr><td>多值属性（题36：多个电话）</td><td>属性画<b>双椭圆</b>；或单独拆出一个关系模式</td></tr>
+   <tr><td>弱实体（题37）</td><td><b>没有自己的主键、依赖别的实体存在</b>（如"家属"依附"职工"），用双矩形表示，联系用双菱形</td></tr>
+  </table>
+ </div>
+ <div class="card">
+  <h2>分布式 + 多表连接速记（题26、28）</h2>
+  <div style="font-size:13.5px">
+   <b>2PC 两阶段提交</b>：第一阶段协调者问所有参与者"能否提交"，全部同意后第二阶段才正式提交——保证<b>分布式事务的原子性</b>（题26）。<br>
+   <b>外连接</b>（题28）：学生 10 行（2 人无选课）LEFT JOIN 选课 8 行 → 结果 <b>10 行</b>（没选课的学生也保留，选课列填 NULL）。内连接才是 8 行。
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：12-讲义题库-数据库（讲义+白话详解C1-C3）→ 本页（可视化+出题）→ 17 系统「数据库」43题 → 错题重练。大题②的根基也在本模块（04 模板 + 16 卷②）。</footer>
+
+<script>
+/* ================= 导航 ================= */
+const SECTIONS = [['mode','🏛 三级模式'],['ra','🔣 关系代数'],['nf','📐 范式阶梯'],['tx','💼 事务与并发'],['sql','📝 SQL 速查'],['er','🌐 E-R 与新技术']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t===id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0]==='mode') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= 三级模式 ================= */
+const MODES = [
+ {t:'外模式（用户级）', n:'对应<b>视图 VIEW</b>', d:'单个用户能看到的<b>局部数据</b>。一个数据库可有多个外模式——每个用户一张"私人视图"。', e:'题1原题："单个用户所见的是（）"→ 外模式'},
+ {t:'概念模式（模式）', n:'对应<b>基本表</b>', d:'全体用户的<b>全局逻辑结构</b>，一个数据库只有一个。', e:'把表结构改了但通过调整映像让应用程序不动 → 逻辑独立性'},
+ {t:'内模式（物理级）', n:'对应<b>存储文件</b>', d:'数据在磁盘上<b>怎么存</b>（B+树、哈希、顺序）。', e:'换了存储结构、表没动 → 物理独立性（题2）'}
+];
+function mdPick(i){
+  const m = MODES[i];
+  document.getElementById('mdDetail').innerHTML = '<b>'+m.t+'</b> — '+m.n+'\n'+m.d+'\n考试联系：'+m.e;
+  document.querySelectorAll('.mode').forEach((el,k)=>el.classList.toggle('sel', k===i));
+}
+mdPick(0);
+
+/* ================= 关系代数 ================= */
+const RA = [
+ {s:'σ', n:'选择（行）', ex:'σ_年龄>20 (学生) = 从学生表挑出年龄大于 20 的<b>行</b>', note:'下标是条件，选的是<b>行</b>（题3：σ₃>\'5\'(R) = 第3列值>5的行）。SQL 对应 WHERE。'},
+ {s:'π', n:'投影（列）', ex:'π_专业 (学生) = 只保留"专业"这一<b>列</b>，<b>自动去重</b>', note:'π 选列（题38）。SQL 对应 SELECT 列。'},
+ {s:'⋈', n:'自然连接', ex:'R ⋈ S：按公共属性（B,C）相等配对两表，并<b>去掉重复的公共列</b>', note:'题5。SQL 对应 NATURAL JOIN / JOIN ON。'},
+ {s:'÷', n:'除', ex:'查询"选修了<b>全部</b>课程的学生"：学生 ⋈ 选课 ÷ 课程', note:'题4。看到"全部/所有"就选 ÷——R÷S = R 中与 S 的<b>每个</b>元组都关联的部分。'},
+ {s:'×', n:'笛卡尔积', ex:'R × S = R 每行配 S 每行，行数 = R行数 × S行数', note:'无条件全组合（题28 的"10×8=80 行"就是先做笛卡尔积再筛选的思路）。'},
+ {s:'−', n:'差', ex:'A − B = 在 A 里但不在 B 里', note:'"没选修XX课的学生"= 全体学生 − 选了的学生。'}
+];
+(function(){
+  const g = document.getElementById('raGallery');
+  g.innerHTML = RA.map((r,i)=>'<span class="sym" onclick="raPick('+i+')"><span class="s">'+r.s+'</span><span class="n">'+r.n+'</span></span>').join('');
+})();
+function raPick(i){
+  const r = RA[i];
+  document.getElementById('raDetail').innerHTML = r.s+'（'+r.n+'）\n例：'+r.ex+'\n考点：'+r.note;
+}
+raPick(0);
+
+/* ---- 符号识别小练习 ---- */
+const RAQ = [
+ {q:'σ（西格玛）在关系代数中表示（　）。', o:['选择（按条件挑行）','投影（挑列）','自然连接','除'], a:'A'},
+ {q:'π（派）在关系代数中表示（　）。', o:['选择','投影（挑列，自动去重）','并','差'], a:'B'},
+ {q:'⋈ 在关系代数中表示（　）。', o:['笛卡尔积','投影','自然连接（按公共属性配对）','选择'], a:'C'},
+ {q:'查询"选修了全部课程的学生"应使用的运算是（　）。', o:['投影','选择','差','除（÷）'], a:'D'},
+ {q:'"没选修数据库课的学生"最适合用（　）运算。', o:['差（全体 − 选了的人）','自然连接','投影','除'], a:'A'}
+];
+let raq = null;
+function raQuizNew(){
+  raq = RAQ[Math.floor(Math.random()*RAQ.length)];
+  document.getElementById('raqQ').innerHTML = raq.q;
+  document.getElementById('raqO').innerHTML = raq.o.map((t,i)=>'<div><b>'+'ABCD'[i]+'.</b> '+t+'</div>').join('');
+  document.getElementById('raqF').style.display = 'flex';
+  document.getElementById('raqA').value = '';
+  document.getElementById('raqFb').innerHTML = '';
+}
+function raQuizAns(){ return raq.a + '. ' + raq.o['ABCD'.indexOf(raq.a)]; }
+function raQuizCheck(){
+  if(!raq) return;
+  const v = document.getElementById('raqA').value.trim().toUpperCase();
+  document.getElementById('raqFb').innerHTML = (v===raq.a) ? '<span class="ok">✔ 正确</span>' : '<span class="bad">✘ 不对，正确答案 '+raQuizAns()+'</span>';
+}
+function raQuizShow(){
+  if(!raq) return;
+  document.getElementById('raqFb').innerHTML = '正确答案：<b class="ok">'+raQuizAns()+'</b>';
+}
+
+/* ================= 范式阶梯 ================= */
+const NF = [
+ {t:'1NF（第一范式）', n:'属性不可再分（原子性）', d:'每个字段都是最小单元——"电话"字段里不能塞"座机;手机"两个值。关系数据库<b>默认满足</b> 1NF。', e:'反例：某行"联系电话"填"010-123, 138xxxx" → 违反 1NF'},
+ {t:'2NF（第二范式）', n:'消除非主属性对码的<b>部分依赖</b>', d:'R(学号,课程号,姓名,成绩)，码=(学号,课程号)。姓名只依赖学号（码的一半）→ 部分依赖 → <b>不满足 2NF</b>。拆成 学生(学号,姓名) + 选课(学号,课程号,成绩) 即满足。', e:'题9原题："消除部分依赖后属于（）"→ 2NF'},
+ {t:'3NF（第三范式）', n:'消除非主属性对码的<b>传递依赖</b>', d:'R(学号,系名,系主任)：学号→系名、系名→系主任 → 系主任<b>传递</b>依赖学号 → 不满足 3NF。拆成 学生(学号,系名) + 系(系名,系主任)。', e:'题10原题（该关系存在什么问题）→ 传递依赖，需拆分'},
+ {t:'BCNF（巴斯-科德范式）', n:'<b>每个决定因素都包含码</b>', d:'比 3NF 更严：不光非主属性，<b>主属性之间</b>的依赖也要消灭。3NF 下仍有主属性依赖时升级 BCNF。', e:'题11："BCNF 要求（）"→ 每个决定因素都包含码'}
+];
+function nfPick(i){
+  const n = NF[i];
+  document.getElementById('nfDetail').innerHTML = n.t+' — '+n.n+'\n'+n.d+'\n考试联系：'+n.e;
+  document.querySelectorAll('.rung').forEach((el,k)=>el.classList.toggle('on', k===i));
+}
+nfPick(0);
+</script>
+</body>
+</html>
