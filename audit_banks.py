@@ -7,12 +7,12 @@
 import re, math, sys
 
 BANKS = [
-    ('10-讲义题库-软件工程.md', '软件工程', 'sw', 61),
-    ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 52),
-    ('12-讲义题库-数据库.md', '数据库', 'db', 43),
-    ('13-讲义题库-操作系统.md', '操作系统', 'os', 55),
-    ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 51),
-    ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 44),
+    ('10-讲义题库-软件工程.md', '软件工程', 'sw', 64),
+    ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 55),
+    ('12-讲义题库-数据库.md', '数据库', 'db', 49),
+    ('13-讲义题库-操作系统.md', '操作系统', 'os', 57),
+    ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 54),
+    ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 47),
 ]
 fails, checked = [], 0
 
@@ -220,6 +220,19 @@ C = [  # 概念口径抽查：正确选项文本须含关键词
     ('之间存在依赖与组合约束', '因果图'),
     ('数据报分片后，正确的是', '目的主机重组'),
     ('同时存在 192.168.1.0/24 与 192.168.1.64/26', '/26'),
+    ('父图中某加工有 1 个输入流', '父子图平衡'),
+    ('展示系统硬件拓扑结构', '部署图'),
+    ('逆向工程是指', '从现有代码恢复出设计'),
+    ('空指针域共有', 'n+1'),
+    ('按位置区分的非空子串个数', 'n(n+1)/2'),
+    ('插入一行满足该条件的新记录', '幻读'),
+    ('封锁请求总是被其他事务抢先', '活锁'),
+    ('诊断死锁的常用方法', '等待图'),
+    ('下一条要执行指令的内存地址', 'PC'),
+    ('变址寄存器的内容 + 指令中的形式地址', '变址寻址'),
+    ('冗余表决系统中，单个模块可靠性为 R', '3R²(1-R)+R³'),
+    ('两两之间保密通信', 'n(n-1)/2'),
+    ('按采样定理要不失真地数字化', '8kHz'),
 ]
 norm = lambda s: s.replace('（  ）', '')
 for kw, want in M + C:
@@ -253,9 +266,9 @@ print('[数据] 17-练习数据.js 六库答案与 md 逐位一致: %s' % ('OK' 
 p00 = open('00-总计划.md', encoding='utf-8').read()
 p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 rd = open('README.md', encoding='utf-8').read()
-check(p00.count('524项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00, '00 总数引用异常')
-check('题库406' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02, '02 题库数引用异常')
-check('406' in rd and '524' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd, 'README 题库数引用异常')
+check(p00.count('544项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00, '00 总数引用异常')
+check('题库426' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02 and '题库406' not in p02, '02 题库数引用异常')
+check('426' in rd and '544' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd and '406' not in rd, 'README 题库数引用异常')
 check(all(f'（{n} 题）' in open(f, encoding='utf-8').read() for f, _, _, n in BANKS), '题库标题题数与期望不符')
 print('[引用] 00/02/README 总数与标签: %s' % ('OK' if not [f for f in fails if '引用' in f] else 'FAIL'))
 
@@ -265,4 +278,4 @@ if fails:
     print('审计未通过，%d 个问题:' % len(fails))
     for f in fails: print(' ✘', f)
     sys.exit(1)
-print('审计全部通过 ✅  六库 406 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
+print('审计全部通过 ✅  六库 426 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
