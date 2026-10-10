@@ -154,10 +154,55 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   </table>
  </div>
  <div class="card">
+  <h2>🧯 UNDO/REDO 判定与检查点四事务图（高频考图，点击 T1-T4）</h2>
+  <div style="font-size:13.5px;margin-bottom:8px">判定只问一条：<b>日志里有没有 &lt;T, commit&gt; 记录</b>（不是看数据落没落盘——数据页上没有"属于谁"的标记，只有日志能判）。没 commit → <b style="color:#dc2626">UNDO</b> 撤销（<b>反向</b>写<b>旧值</b>，保<b>原子性</b>）；有 commit → <b style="color:#2563eb">REDO</b> 重做（<b>正向</b>写<b>新值</b>，保<b>持久性</b>）。敢全量重做靠<b>幂等</b>：同一个值写几遍结果不变，分不清落没落盘就照日志全来。</div>
+  <svg viewBox="0 0 960 255" style="width:100%;max-width:960px;font-family:'Microsoft YaHei',sans-serif">
+   <line x1="470" y1="20" x2="470" y2="235" stroke="#9333ea" stroke-width="2" stroke-dasharray="6 4"/>
+   <text x="470" y="14" text-anchor="middle" font-size="13" font-weight="700" fill="#9333ea">检查点（日志+数据落盘）</text>
+   <line x1="790" y1="20" x2="790" y2="235" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+   <text x="790" y="248" text-anchor="middle" font-size="13" font-weight="700" fill="#dc2626">故障发生</text>
+   <g class="erg" onclick="ckPick(0)">
+    <rect x="80" y="38" width="330" height="24" rx="7" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+    <text x="245" y="55" text-anchor="middle" font-size="13.5" font-weight="700">T1</text>
+    <circle cx="410" cy="50" r="8" fill="#059669"/>
+    <text x="410" y="30" text-anchor="middle" font-size="11.5" fill="#059669">提交</text>
+    <text x="812" y="55" font-size="13" font-weight="700" fill="#059669">无需处理</text>
+   </g>
+   <g class="erg" onclick="ckPick(1)">
+    <rect x="180" y="90" width="460" height="24" rx="7" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="410" y="107" text-anchor="middle" font-size="13.5" font-weight="700">T2</text>
+    <circle cx="640" cy="102" r="8" fill="#059669"/>
+    <text x="640" y="82" text-anchor="middle" font-size="11.5" fill="#059669">提交</text>
+    <text x="812" y="107" font-size="13" font-weight="700" fill="#2563eb">REDO 重做</text>
+   </g>
+   <g class="erg" onclick="ckPick(2)">
+    <rect x="530" y="142" width="260" height="24" rx="7" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+    <text x="660" y="159" text-anchor="middle" font-size="13.5" font-weight="700">T3</text>
+    <text x="790" y="163" text-anchor="middle" font-size="15" font-weight="900" fill="#dc2626">✕</text>
+    <text x="812" y="159" font-size="13" font-weight="700" fill="#dc2626">UNDO 撤销</text>
+   </g>
+   <g class="erg" onclick="ckPick(3)">
+    <rect x="80" y="194" width="710" height="24" rx="7" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+    <text x="435" y="211" text-anchor="middle" font-size="13.5" font-weight="700">T4</text>
+    <text x="790" y="215" text-anchor="middle" font-size="15" font-weight="900" fill="#dc2626">✕</text>
+    <text x="812" y="211" font-size="13" font-weight="700" fill="#dc2626">UNDO 撤销</text>
+   </g>
+  </svg>
+  <div class="steps" id="ckDetail">点击 T1-T4 任意事务：它处于什么状态、恢复时怎么处理、为什么</div>
+  <h4>三类故障 × 恢复手段（题32 同源考点）</h4>
+  <table>
+   <tr><th>故障</th><th>丢什么</th><th>恢复手段</th></tr>
+   <tr><td><b>事务故障</b>（死锁被杀/违反约束）</td><td>什么都没丢</td><td>只对该事务 <b>UNDO</b>，不影响别人（"病得轻"）</td></tr>
+   <tr><td><b>系统故障</b>（断电/宕机）</td><td>内存全丢，磁盘完好</td><td>扫日志：未提交的 <b>UNDO</b> + 已提交未落盘的 <b>REDO</b>（"两个都要"）</td></tr>
+   <tr><td><b>介质故障</b>（磁盘坏）</td><td>数据本身没了</td><td>重装<b>后备副本</b> + 日志 <b>REDO</b>，<b>不 UNDO</b>（"数据没了"靠备份重做已提交的）</td></tr>
+  </table>
+  <div style="font-size:13.5px;margin-top:8px">易错点：①判定看 <b>commit 日志</b>，不看数据落没落盘（也看不了）；②UNDO <b>反向</b>写<b>旧值</b>、REDO <b>正向</b>写<b>新值</b>，方向和值别配错对；③<b>WAL=先写日志、后写数据</b>（日志是恢复唯一依据，必须先落盘）；④恢复顺序<b>先 UNDO 后 REDO</b>。</div>
+ </div>
+ <div class="card">
   <h2>恢复与新技术速查（题26/32/33/42）</h2>
   <div class="grid2">
    <div class="fcard"><b>原子性靠什么（题32）</b>日志 + <b>UNDO 回滚</b>（故障时反向撤销未完成事务）</div>
-   <div class="fcard"><b>UNDO vs REDO 判定</b>日志里<b>没 commit 的 → UNDO</b> 撤销（当没发生过）；<b>commit 了但没落盘的 → REDO</b> 重做（必须算数）</div>
+   <div class="fcard"><b>UNDO vs REDO 判定</b>只看日志里<b>有没有 commit</b>：没有 → <b>UNDO</b>（反向写旧值·保<b>原子性</b>·当没发生过）；有 → <b>REDO</b>（正向写新值·保<b>持久性</b>·必须算数）</div>
    <div class="fcard"><b>三类故障</b>事务故障（只伤本事务）/ 系统故障（断电，内存丢磁盘在）/ 介质故障（磁盘坏，靠备份副本）</div>
    <div class="fcard"><b>检查点 Checkpoint（题33）</b>定期把日志/数据落盘——故障恢复时<b>检查点之前的不用重做</b>，缩小扫描范围</div>
    <div class="fcard"><b>2PC 两阶段提交（题26）</b>协调者先问全体"能提交吗"再下令提交——保证<b>分布式事务原子性</b></div>
@@ -284,7 +329,7 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
 </section>
 
 </main>
-<footer>学习主线：12-讲义题库-数据库（讲义+白话详解C1-C3）→ 本页（可视化+出题）→ 17 系统「数据库」43题 → 错题重练。大题②的根基也在本模块（04 模板 + 16 卷②）。</footer>
+<footer>学习主线：12-讲义题库-数据库（讲义+白话详解C1-C7）→ 本页（可视化+出题）→ 17 系统「数据库」43题 → 错题重练。大题②的根基也在本模块（04 模板 + 16 卷②）。</footer>
 
 <script>
 /* ================= 导航 ================= */
@@ -390,6 +435,19 @@ const ERD2={
  weak:'<b>弱实体（题37）</b>：没有自己的主键、依附别的实体存在（家属依附职工）→ 画<b>双矩形</b>，与强实体的联系画<b>双菱形</b>；弱实体的键 = <b>所依附实体（职工）的主键</b> + 自己的区分属性（如 与职工的关系/姓名）。'
 };
 function erPick2(k){document.getElementById('erDetail2').innerHTML=ERD2[k];}
+
+/* ================= 检查点四事务图 ================= */
+const CK = [
+ {t:'T1：检查点之前已提交', v:'<span class="ok">无需处理</span>（不 UNDO 也不 REDO）', d:'提交发生在检查点之前 → 它的修改已随检查点<b>强制落盘</b>，重启后数据本来就在磁盘上。最易错：考试图里把它误选成 REDO。'},
+ {t:'T2：检查点之后提交', v:'<span style="color:#2563eb;font-weight:700">REDO 重做</span>（正向写新值）', d:'日志里有 commit → <b>已提交必须算数</b>（持久性）。正向扫描把新值重写一遍。哪怕数据可能已落盘也照做——写新值是<b>幂等</b>的，做几遍结果一样，多做多不错。'},
+ {t:'T3：检查点后开始、故障时未提交', v:'<span class="bad">UNDO 撤销</span>（反向写旧值）', d:'日志里没有 commit → <b>当没发生过</b>（原子性）。反向扫描写回旧值——它的脏页可能已被缓冲区提前换出写到磁盘上，必须擦掉。'},
+ {t:'T4：检查点前开始、故障时未提交', v:'<span class="bad">UNDO 撤销</span>（反向写旧值）', d:'同 T3：<b>只看提交没提交</b>，什么时候开始不重要。未提交一律 UNDO。'}
+];
+function ckPick(i){
+  const c = CK[i];
+  document.getElementById('ckDetail').innerHTML = '<b>'+c.t+'</b>\n判定：'+c.v+'\n为什么：'+c.d;
+  document.querySelectorAll('svg g.erg rect').forEach(()=>{});
+}
 </script>
 </body>
 </html>
