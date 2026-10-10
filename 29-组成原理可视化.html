@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>组成原理可视化 · 软件设计师</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.7;color:#0f172a;background:#f8fafc}
+:root{--acc:#0891b2;--bg:#ecfeff;--bd:#a5f3fc;--mut:#64748b}
+header{position:sticky;top:0;z-index:9;background:#164e63;color:#fff;padding:12px 16px}
+h1{font-size:16px;font-weight:600}h1 small{font-size:12px;opacity:.75;display:block}
+nav{margin-top:8px}nav button{border:none;border-radius:16px;padding:5px 12px;margin-right:6px;margin-bottom:6px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:12.5px}
+nav button.on{background:#fff;color:#164e63;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:var(--bg);border:1px solid var(--bd);color:#155e75;padding:8px 12px;border-radius:10px;font-size:13px;margin-bottom:14px}
+h2{font-size:16px;margin-bottom:10px}h4{font-size:13.5px;color:#334155;margin:10px 0 6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select,textarea{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--bd)}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.btn.pri:hover{opacity:.88;color:#fff}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rcell{background:#f8fafc;border-radius:10px;padding:8px 10px}
+.rcell b{display:block;font-size:11.5px;color:var(--mut)}
+.rcell span{font-size:14.5px;font-weight:700;font-family:Consolas,monospace}
+.steps{background:#0f172a;color:#a5f3fc;font-family:Consolas,monospace;font-size:13px;padding:12px 14px;border-radius:10px;white-space:pre-wrap;line-height:1.9;margin-top:10px;display:none}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
+th{background:var(--bg)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:8px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
+.fcard b{color:var(--acc)}
+.mono{font-family:Consolas,monospace}
+footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
+svg text{font-family:"Microsoft YaHei",sans-serif}
+.bits span{display:inline-block;border:1px solid #94a3b8;border-radius:4px;padding:2px 6px;margin-right:2px;font-family:Consolas,monospace;font-size:14px;background:#f8fafc}
+</style>
+</head>
+<body>
+<header>
+ <h1>⚙️ 组成原理可视化 <small>软件设计师 · 全章知识点（数制编码 / 校验码 / 流水线 / 存储与 Cache / 可靠性 / CPU 总线）· 配套《14-讲义题库-组成原理与网络》· 题号已标注 · 网络部分见 24 号课件</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 数制与编码 ============ -->
+<section id="s-num" class="on">
+ <div class="tip">口诀：<b>补码范围 −2ⁿ⁻¹ ~ 2ⁿ⁻¹−1</b>（题2），比原/反码多表示一个最小负数；<b>移码 = 补码符号位取反</b>，浮点阶码用它（题3、55）。</div>
+
+ <div class="card">
+  <h2>🔢 四码转换器（原码 / 反码 / 补码 / 移码，8 位）</h2>
+  <div class="row">
+   <span>十进制 x</span><input id="nmX" value="-1" style="width:90px">
+   <button class="btn pri" onclick="nmCalc()">转换</button>
+   <span style="font-size:12.5px;color:var(--mut)">或输 8 位二进制反推</span>
+   <input id="nmBits" placeholder="如 11111111" style="width:130px">
+   <button class="btn" onclick="nmRev()">反推</button>
+  </div>
+  <div class="res" id="nmRes"></div>
+  <div class="steps" id="nmSteps"></div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>范围对比（题2、35）</b>8 位原码 −127~+127（±0 两种）；反码 −127~+127；补码 <b>−128~+127</b>；移码 −128~+127</div>
+   <div class="fcard"><b>移码（题55）</b>[x]移 = 补码符号位取反；保序（可当无符号比大小）→ <b>浮点阶码专用</b></div>
+   <div class="fcard"><b>浮点数（题3、36）</b><b>阶码定范围、尾数定精度</b>；对阶：小阶向大阶看齐（尾数右移、丢低位可能损精度）</div>
+   <div class="fcard"><b>IEEE 754 单精度（题4）</b>1 位符号 + 8 位阶码（移码）+ 23 位尾数（隐含整数位 1）</div>
+  </div>
+  <svg viewBox="0 0 700 90" style="width:100%;max-width:680px;margin-top:8px">
+   <rect x="10" y="18" width="70" height="40" fill="#0891b2"/><text x="45" y="43" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">符号 1</text>
+   <rect x="80" y="18" width="160" height="40" fill="#0e7490"/><text x="160" y="43" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">阶码 8（移码）</text>
+   <rect x="240" y="18" width="340" height="40" fill="#155e75"/><text x="410" y="43" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">尾数 23（隐含最高位 1）</text>
+   <text x="45" y="78" text-anchor="middle" font-size="11.5" fill="#64748b">±</text>
+   <text x="160" y="78" text-anchor="middle" font-size="11.5" fill="#64748b">定范围（题3）</text>
+   <text x="410" y="78" text-anchor="middle" font-size="11.5" fill="#64748b">定精度（题3）</text>
+  </svg>
+ </div>
+
+ <div class="card">
+  <h2>🎲 数制编码随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="nqNew()">🎲 出一道</button><span id="nqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="nqA" placeholder="答案" style="width:130px">
+   <button class="btn" onclick="nqCheck()">检查</button>
+   <button class="btn" onclick="nqShow()">显示解答</button>
+  </div>
+  <div id="nqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="nqSteps" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab2 校验码 ============ -->
+<section id="s-check">
+ <div class="tip">口诀：<b>海明 2^r ≥ n+r+1</b>（题5、37），校验位放 2^i 位，可纠 1 位错；奇偶校验码距 2，<b>只能检 1 位错不能纠</b>（题6）；CRC 码字 = 信息码 + 模 2 除余数（题34、56）。</div>
+
+ <div class="card">
+  <h2>🩺 海明码计算器 + 随机出题（题5、37）</h2>
+  <div class="row">
+   <span>数据位 n</span><input id="hmN" value="8" style="width:70px">
+   <button class="btn pri" onclick="hmCalc()">求校验位</button>
+   <b id="hmR" class="mono"></b>
+  </div>
+  <div class="steps" id="hmSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="hmqNew()">🎲 出一道</button><span id="hmqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="hmqA" placeholder="校验位 r" style="width:100px">
+   <button class="btn" onclick="hmqCheck()">检查</button>
+   <button class="btn" onclick="hmqShow()">显示解答</button>
+  </div>
+  <div id="hmqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="hmqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>➗ CRC 模 2 除计算器（题34、56）</h2>
+  <div class="row">
+   <span>信息码</span><input id="crInfo" value="10110" style="width:120px">
+   <span>生成多项式</span><input id="crPoly" value="10011" style="width:100px">
+   <button class="btn pri" onclick="crCalc()">生成 CRC 码字</button>
+  </div>
+  <div class="res" id="crRes"></div>
+  <div class="steps" id="crSteps"></div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>三步法</b>① 信息码左移 r 位（r=多项式最高次数）② 与生成多项式做<b>模 2 除</b>（异或、不借位）③ 余数拼在信息码后</div>
+   <div class="fcard"><b>常考口径（题34）</b>模 2 除法 = 按位<b>异或</b>、不借位不进位；余数位数固定 = 最高次数（本例 4 位，不够补 0）</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab3 流水线 ============ -->
+<section id="s-pipe">
+ <div class="tip">口诀：<b>流水周期 Δt = 最长段</b>（题9）；n 条指令 T = (k+n−1)Δt（题10）；实际加速比 = 非流水时间 / T（题38）；<b>最大吞吐率 = 1/Δt</b>（题57）。</div>
+
+ <div class="card">
+  <h2>⏱ 流水线时间线（ staircase 图）</h2>
+  <div class="row">
+   <span>段数 k</span><input id="ppK" value="5" style="width:60px">
+   <span>周期 Δt</span><input id="ppDt" value="2" style="width:60px">
+   <span>指令数 n</span><input id="ppN" value="6" style="width:60px">
+   <button class="btn pri" onclick="ppDraw()">画时间线</button>
+  </div>
+  <svg id="ppSvg" viewBox="0 0 760 220" style="width:100%"></svg>
+ </div>
+
+ <div class="card">
+  <h2>🧮 流水线计算器 + 随机出题</h2>
+  <div class="row">
+   <span>k</span><input id="pcK" value="5" style="width:56px">
+   <span>Δt(ns)</span><input id="pcDt" value="2" style="width:56px">
+   <span>n</span><input id="pcN" value="100" style="width:70px">
+   <span>不流水每条(ns)</span><input id="pcT1" value="10" style="width:70px">
+   <button class="btn pri" onclick="pcCalc()">计算</button>
+  </div>
+  <div class="res" id="pcRes"></div>
+  <div class="steps" id="pcSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="pmqNew()">🎲 出一道</button><span id="pmqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="pmqA" placeholder="答案" style="width:120px">
+   <button class="btn" onclick="pmqCheck()">检查</button>
+   <button class="btn" onclick="pmqShow()">显示解答</button>
+  </div>
+  <div id="pmqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="pmqSteps" style="display:none"></div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>三种冒险</b>结构冒险（部件冲突）、数据冒险（后指令要用前指令结果）、控制冒险（转移指令改流向）</div>
+   <div class="fcard"><b>吞吐率（题57）</b>实际 TP = n/T，n→∞ 才趋近 TPmax=1/Δt；流水线<b>不能减少单条指令时间</b>，只提高吞吐</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab4 存储与 Cache ============ -->
+<section id="s-cache">
+ <div class="tip">口诀：Cache 解决<b>速度</b>、主存-辅存解决<b>容量</b>（题12）；<b>t = h×tc + (1−h)×tm</b>（题11）；程序循环重复执行=时间局部性（题13）。</div>
+
+ <div class="card">
+  <h2>🧮 Cache 平均访问时间 + 随机出题（题11）</h2>
+  <div class="row">
+   <span>命中率 h</span><input id="ccH" value="0.9" style="width:80px">
+   <span>Cache 时间(ns)</span><input id="ccTc" value="20" style="width:80px">
+   <span>主存时间(ns)</span><input id="ccTm" value="200" style="width:80px">
+   <button class="btn pri" onclick="ccCalc()">计算</button>
+  </div>
+  <div class="res" id="ccRes"></div>
+  <div class="steps" id="ccSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="cmqNew()">🎲 出一道</button><span id="cmqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="cmqA" placeholder="ns" style="width:100px">
+   <button class="btn" onclick="cmqCheck()">检查</button>
+   <button class="btn" onclick="cmqShow()">显示解答</button>
+  </div>
+  <div id="cmqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="cmqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>🧩 映像方式与芯片扩展（题39、40）</h2>
+  <table>
+   <tr><th>映像方式</th><th>规则</th><th>特点</th></tr>
+   <tr><td><b>直接映像</b></td><td>主存块只能进<b>唯一固定行</b>（题39）</td><td>硬件简单、冲突率高</td></tr>
+   <tr><td><b>全相联</b></td><td>任意块放任意行</td><td>灵活、比较电路贵</td></tr>
+   <tr><td><b>组相联</b></td><td>分组定组、组内随意</td><td>折中，最常用</td></tr>
+  </table>
+  <div class="row" style="margin-top:10px">
+   <span>总容量</span><input id="chTot" value="64" style="width:64px">K×
+   <input id="chTotW" value="8" style="width:56px">位
+   <span>芯片</span><input id="chChip" value="8" style="width:64px">K×
+   <input id="chChipW" value="8" style="width:56px">位
+   <button class="btn pri" onclick="chCalc()">需要几片</button>
+   <b id="chR" class="mono"></b>
+  </div>
+  <div class="steps" id="chSteps"></div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>存储层次（题12）</b>寄存器→Cache→主存→辅存；Cache-主存层解决<b>速度</b>，主存-辅存层解决<b>容量</b>，都靠局部性支撑</div>
+   <div class="fcard"><b>局部性（题13）</b>时间局部性=刚访问过的还会访问（循环）；空间局部性=相邻地址将被访问（顺序取指/数组）</div>
+   <div class="fcard"><b>RAID 对号</b>RAID0 条带无冗余最快｜RAID1 镜像｜<b>RAID5 分布式奇偶校验，坏一块可重建</b>（题44）｜RAID10 镜像+条带</div>
+   <div class="fcard"><b>相联存储器</b>按<b>内容</b>并行查找（不是按地址）——Cache 行表、页表快表 TLB 都用它</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab5 可靠性 ============ -->
+<section id="s-relia">
+ <div class="tip">口诀：<b>串联 R=∏Ri（失效率相加）；并联 R=1−∏(1−Ri)</b>；混合系统"先并后串"逐层算（题14-16）；三模冗余 Rsys=3R²(1−R)+R³（题54）；<b>MTBF=1/λ</b>（题58）。</div>
+
+ <div class="card">
+  <h2>🔧 可靠性计算器 + 随机出题（题14-16、54、58）</h2>
+  <div class="row">
+   <select id="rlMode">
+    <option value="series">两个部件串联</option>
+    <option value="parallel">两个部件并联</option>
+    <option value="mix">两两组内并联、组间串联（题16）</option>
+    <option value="tmr">三模冗余表决</option>
+    <option value="mtbf">MTBF（串联失效率）</option>
+   </select>
+   <span>R/λ</span><input id="rlA" value="0.9" style="width:80px">
+   <span>第二个</span><input id="rlB" value="0.9" style="width:80px">
+   <button class="btn pri" onclick="rlCalc()">计算</button>
+  </div>
+  <div class="res" id="rlRes"></div>
+  <div class="steps" id="rlSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="rqNew()">🎲 出一道</button><span id="rqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="rqA" placeholder="答案" style="width:120px">
+   <button class="btn" onclick="rqCheck()">检查</button>
+   <button class="btn" onclick="rqShow()">显示解答</button>
+  </div>
+  <div id="rqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="rqSteps" style="display:none"></div>
+  <svg viewBox="0 0 640 130" style="width:100%;max-width:620px;margin-top:8px">
+   <defs><marker id="rla" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2"/></marker></defs>
+   <circle cx="70" cy="65" r="20" fill="#ecfeff" stroke="#0891b2" stroke-width="2"/><text x="70" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#164e63">入</text>
+   <rect x="130" y="20" width="90" height="34" rx="8" fill="#fff" stroke="#0891b2"/><text x="175" y="42" text-anchor="middle" font-size="12.5" fill="#0f172a">R1=0.9</text>
+   <rect x="130" y="76" width="90" height="34" rx="8" fill="#fff" stroke="#0891b2"/><text x="175" y="98" text-anchor="middle" font-size="12.5" fill="#0f172a">R2=0.9</text>
+   <line x1="90" y1="65" x2="90" y2="37" stroke="#0891b2" stroke-width="2"/><line x1="90" y1="37" x2="126" y2="37" stroke="#0891b2" stroke-width="2" marker-end="url(#rla)"/>
+   <line x1="90" y1="65" x2="90" y2="93" stroke="#0891b2" stroke-width="2"/><line x1="90" y1="93" x2="126" y2="93" stroke="#0891b2" stroke-width="2" marker-end="url(#rla)"/>
+   <line x1="220" y1="37" x2="260" y2="37" stroke="#0891b2" stroke-width="2"/><line x1="260" y1="37" x2="260" y2="65" stroke="#0891b2" stroke-width="2"/>
+   <line x1="220" y1="93" x2="260" y2="93" stroke="#0891b2" stroke-width="2"/><line x1="260" y1="93" x2="260" y2="65" stroke="#0891b2" stroke-width="2"/>
+   <line x1="260" y1="65" x2="310" y2="65" stroke="#0891b2" stroke-width="2" marker-end="url(#rla)"/>
+   <text x="175" y="14" text-anchor="middle" font-size="12" fill="#155e75">并联：1−(1−R1)(1−R2)=0.99</text>
+   <rect x="315" y="48" width="90" height="34" rx="8" fill="#fff" stroke="#0891b2"/><text x="360" y="70" text-anchor="middle" font-size="12.5" fill="#0f172a">R3=0.9</text>
+   <line x1="405" y1="65" x2="450" y2="65" stroke="#0891b2" stroke-width="2" marker-end="url(#rla)"/>
+   <text x="452" y="70" font-size="12.5" fill="#155e75">串联 ×0.9 → 0.891（题16 同构）</text>
+  </svg>
+ </div>
+</section>
+
+<!-- ============ Tab6 CPU 与总线 ============ -->
+<section id="s-cpu">
+ <div class="tip">口诀：<b>PC 存下一条指令地址</b>（题52）；指令周期 ⊃ 机器周期 ⊃ 时钟周期（题43）；<b>总线带宽 = 宽度/8 × 频率</b>（题41）；变址适合数组循环（题53）。</div>
+
+ <div class="card">
+  <h2>🚌 总线带宽计算器 + 随机出题（题41）</h2>
+  <div class="row">
+   <span>总线宽度</span><input id="bwW" value="32" style="width:70px">位
+   <span>频率</span><input id="bwF" value="100" style="width:70px">MHz
+   <span>每周期传送</span>
+   <select id="bwT"><option value="1">1 次</option><option value="2">2 次（DDR）</option></select>
+   <button class="btn pri" onclick="bwCalc()">算带宽</button>
+  </div>
+  <div class="res" id="bwRes"></div>
+  <div class="steps" id="bwSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="bwqNew()">🎲 出一道</button><span id="bwqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="bwqA" placeholder="MB/s" style="width:100px">
+   <button class="btn" onclick="bwqCheck()">检查</button>
+   <button class="btn" onclick="bwqShow()">显示解答</button>
+  </div>
+  <div id="bwqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="bwqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>📋 CPU 三大对号表</h2>
+  <table>
+   <tr><th>寄存器（题52、18）</th><th>存什么</th></tr>
+   <tr><td><b>PC 程序计数器</b></td><td><b>下一条</b>要执行指令的内存地址</td></tr>
+   <tr><td>IR 指令寄存器</td><td>当前正在执行的<b>指令本身</b></td></tr>
+   <tr><td>MAR / MDR</td><td>访存的<b>地址</b> / 与内存交换的<b>数据</b></td></tr>
+   <tr><td>PSW</td><td>标志位（进位/溢出/零/符号/中断允许）</td></tr>
+  </table>
+  <table style="margin-top:12px">
+   <tr><th>寻址方式（题8、53）</th><th>有效地址</th><th>访存次数</th><th>特点</th></tr>
+   <tr><td>立即寻址</td><td>操作数在指令中</td><td class="mono">0</td><td><b>最快</b>，只能作源操作数</td></tr>
+   <tr><td>直接寻址</td><td>EA=形式地址</td><td class="mono">1</td><td>简单</td></tr>
+   <tr><td>间接寻址</td><td>EA=形式地址指向单元的内容</td><td class="mono">≥2</td><td>最慢，可扩大范围</td></tr>
+   <tr><td>寄存器寻址</td><td>操作数在寄存器</td><td class="mono">0</td><td>快</td></tr>
+   <tr><td><b>变址寻址</b></td><td>EA=变址寄存器+形式地址</td><td class="mono">1</td><td><b>适合数组/循环</b>，程序员改变量</td></tr>
+   <tr><td>基址寻址</td><td>EA=基址寄存器+偏移</td><td class="mono">1</td><td>程序重定位，OS 管基址</td></tr>
+  </table>
+  <table style="margin-top:12px">
+   <tr><th>对比（题7）</th><th>RISC</th><th>CISC</th></tr>
+   <tr><td>指令</td><td>少而精、<b>定长</b>、寻址少</td><td>多而杂、变长</td></tr>
+   <tr><td>执行</td><td><b>一个机器周期</b>、流水线友好</td><td>周期不一</td></tr>
+   <tr><td>控制</td><td><b>组合逻辑（硬布线）</b></td><td>微程序控制为主</td></tr>
+   <tr><td>寄存器</td><td>数量多</td><td>较少</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:12px">
+   <div class="fcard"><b>中断（题18、42）</b>中断向量=中断服务程序的<b>入口地址</b>；多重中断：优先级更高的可打断低优先级（屏蔽字控制）</div>
+   <div class="fcard"><b>I/O 三方式（题17）</b>程序查询→中断→DMA：CPU 介入依次减少；<b>DMA 数据直接在设备与内存间传</b>，仅传送前后打扰 CPU（详见 26 号）</div>
+   <div class="fcard"><b>指令周期层级（题43）</b>指令周期 ⊃ 机器周期（CPU 周期）⊃ 时钟周期（节拍，最小单位）</div>
+   <div class="fcard"><b>芯片扩展（题40）</b>片数 = (总字数/片字数) × (总位数/片位数)；64K×8 用 8K×8 → 8×1 = 8 片</div>
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：14-讲义题库-组成原理与网络（58 题，硬件部分）→ 本页 → 17 系统 → 错题重练。网络分层/子网/TCP 请用 24-网络架构可视化；I/O 与中断细节配合 26-操作系统可视化。</footer>
+<script>
+/* ================= 纯函数（独立可测） ================= */
+const CTOOL = {};
+CTOOL.to8 = function(v){ return ((v % 256) + 256) % 256; };
+CTOOL.bits8 = function(v){ return CTOOL.to8(v).toString(2).padStart(8, '0'); };
+CTOOL.fourCodes = function(x){
+  if(!Number.isInteger(x) || x < -128 || x > 127) return null;
+  const comp = CTOOL.bits8(x);
+  const shift = CTOOL.bits8(x + 128);
+  let orig, inv;
+  if(x >= 0){ orig = '0' + comp.slice(1); inv = orig; }
+  else if(x === -128){ orig = '—（8位原码无法表示）'; inv = '—'; }
+  else { orig = '1' + (-x).toString(2).padStart(7, '0'); inv = '1' + orig.slice(1).split('').map(b => b === '1' ? '0' : '1').join(''); }
+  return { orig, inv, comp, shift };
+};
+CTOOL.bitsEval = function(s){
+  if(!/^[01]{8}$/.test(s)) return null;
+  const us = parseInt(s, 2);
+  return { us, signed: us >= 128 ? us - 256 : us, shift: us - 128 };
+};
+CTOOL.hammingR = function(n){
+  if(!(n >= 1) || n > 100) return null;
+  let r = 1;
+  while(Math.pow(2, r) < n + r + 1) r++;
+  return r;
+};
+CTOOL.crcRem = function(info, poly){
+  if(!/^[01]+$/.test(info) || !/^[01]+$/.test(poly) || poly.length < 2 || info.length < 1) return null;
+  const r = poly.length - 1;
+  let val = parseInt(info, 2) << r;
+  const p = parseInt(poly, 2);
+  for(let i = info.length - 1; i >= 0; i--){
+    if((val >> (i + r)) & 1) val ^= p << i;
+  }
+  const rem = val.toString(2).padStart(r, '0');
+  return { rem, code: info + rem, steps: CTOOL.crcSteps(info, poly, rem) };
+};
+CTOOL.crcSteps = function(info, poly, rem){
+  const log = ['① 信息码左移 ' + (poly.length - 1) + ' 位：' + info + ' → ' + info + '0'.repeat(poly.length - 1),
+    '② 模 2 除（每步按位异或，不借位）：被除数 ' + info + '0'.repeat(poly.length - 1) + ' ÷ ' + poly,
+    '③ 余数（固定 ' + (poly.length - 1) + ' 位，不足补 0）= ' + rem,
+    '④ CRC 码字 = 信息码 + 余数 = ' + info + rem];
+  return log.join('\n');
+};
+CTOOL.pipeT = function(k, dt, n){
+  if(!(k >= 1) || !(dt > 0) || !(n >= 1)) return null;
+  const T = (k + n - 1) * dt;
+  return { T, tp: n / T, tpmax: 1 / dt, speedup: (k * dt * n) / T, steps:
+    '① 流水周期 Δt = ' + dt + 'ns（各段相同时即段耗时；不等时取最长段）\n' +
+    '② n 条指令总时间 T = (k+n−1)×Δt = (' + k + '+' + n + '−1)×' + dt + ' = ' + T + 'ns\n' +
+    '③ 实际吞吐率 TP = n/T = ' + n + '/' + T + ' ≈ ' + (Math.round(n / T * 1000) / 1000) + ' 条/ns\n' +
+    '④ 最大吞吐率 TPmax = 1/Δt = ' + (Math.round(1000 / dt) / 1000) + ' 条/ns\n' +
+    '⑤ 加速比 = 非流水时间/T = (' + k + '×' + dt + '×' + n + ')/' + T + ' ≈ ' + (Math.round((k * dt * n) / T * 100) / 100) };
+};
+CTOOL.cacheTime = function(h, tc, tm){
+  if(!(h >= 0 && h <= 1) || !(tc > 0) || !(tm > 0)) return null;
+  const t = h * tc + (1 - h) * tm;
+  return { t, steps: 't = h×t_Cache + (1−h)×t_主存\n  = ' + h + '×' + tc + ' + ' + (Math.round((1 - h) * 100) / 100) + '×' + tm + '\n  = ' + (Math.round(h * tc * 100) / 100) + ' + ' + (Math.round((1 - h) * tm * 100) / 100) + ' = ' + (Math.round(t * 100) / 100) + 'ns' };
+};
+CTOOL.chipCount = function(totK, totW, chipK, chipW){
+  if(!(totK > 0) || !(totW > 0) || !(chipK > 0) || !(chipW > 0)) return null;
+  const byWord = totK / chipK, byBit = totW / chipW;
+  if(!Number.isInteger(byWord) || !Number.isInteger(byBit)) return null;
+  return { count: byWord * byBit, steps:
+    '字方向：' + totK + 'K ÷ ' + chipK + 'K = ' + byWord + ' 片\n' +
+    '位方向：' + totW + ' 位 ÷ ' + chipW + ' 位 = ' + byBit + ' 片\n' +
+    '共 ' + byWord + ' × ' + byBit + ' = ' + (byWord * byBit) + ' 片' };
+};
+CTOOL.relSeries = function(rs){ return rs.every(r => r >= 0 && r <= 1) ? rs.reduce((a, b) => a * b, 1) : null; };
+CTOOL.relParallel = function(rs){ return rs.every(r => r >= 0 && r <= 1) ? 1 - rs.reduce((a, b) => a * (1 - b), 1) : null; };
+CTOOL.tmr = function(R){ return (R >= 0 && R <= 1) ? 3 * R * R * (1 - R) + Math.pow(R, 3) : null; };
+CTOOL.mtbf = function(lam){ return lam > 0 ? 1 / lam : null; };
+CTOOL.busBand = function(wBits, fMHz, times){
+  if(!(wBits > 0) || !(fMHz > 0) || !(times > 0)) return null;
+  const mb = wBits / 8 * fMHz * times;
+  return { mbps: mb, steps: '带宽 = (宽度/8) × 频率 × 每周期次数\n  = (' + wBits + '/8) B × ' + fMHz + 'M × ' + times + '\n  = ' + (wBits / 8) + '×' + (fMHz * times) + 'M B/s = ' + (Math.round(mb * 100) / 100) + ' MB/s' };
+};
+
+/* ================= 出题工具 ================= */
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+const cmpNum = (k, v, a) => v !== '' && isFinite(+v) && Math.abs(parseFloat(v) - a) < 1e-9;
+const cmpTol = tol => (k, v, a) => v !== '' && isFinite(+v) && Math.abs(parseFloat(v) - a) < tol;
+const normTxt = s => String(s).replace(/\s+/g, '').replace(/，/g, ',').toUpperCase();
+
+CTOOL.nqGen = function(){
+  const t = pick(['comp', 'shift', 'eval', 'min']);
+  if(t === 'comp'){
+    const x = -127 + Math.floor(Math.random() * 240);
+    return { stem: '十进制数 <b>' + x + '</b> 的 8 位补码是（　）', clear: ['nqA'], ans: { nqA: CTOOL.bits8(x) }, steps:
+      (x < 0 ? 'x<0：补码 = 256 + x = ' + (256 + x) + ' = ' + CTOOL.bits8(x) + '\n（或：|x| 原码取反加 1）' : 'x≥0：原码=反码=补码 = ' + CTOOL.bits8(x)) };
+  }
+  if(t === 'shift'){
+    const x = -100 + Math.floor(Math.random() * 200);
+    return { stem: '十进制数 <b>' + x + '</b> 的 8 位移码是（　）', clear: ['nqA'], ans: { nqA: CTOOL.bits8(x + 128) }, steps:
+      '移码 = 补码符号位取反（即 x+128 的二进制）\n补码 = ' + CTOOL.bits8(x) + ' → 移码 = ' + CTOOL.bits8(x + 128) };
+  }
+  if(t === 'eval'){
+    const x = -100 + Math.floor(Math.random() * 220), b = CTOOL.bits8(x);
+    return { stem: '8 位补码 <b>' + b + '</b> 表示的十进制数是（　）', clear: ['nqA'], ans: { nqA: x }, cmp: cmpNum, steps:
+      '最高位是符号位 ' + b[0] + '；数值位按无符号读 = ' + parseInt(b.slice(1), 2) + '\nx<0 时：值 = 无符号整体值 − 256 = ' + parseInt(b, 2) + ' − 256 = ' + x };
+  }
+  return { stem: '8 位补码整数能表示的<b>最小</b>十进制数是（　）', clear: ['nqA'], ans: { nqA: -128 }, cmp: cmpNum, steps:
+    '补码范围 −2ⁿ⁻¹ ~ 2ⁿ⁻¹−1，n=8 → −128 ~ +127\n最小 −128 = 10000000（原码/反码表示不了它，±0 也因此合一）' };
+};
+CTOOL.hmqGen = function(){
+  const n = pick([4, 8, 10, 12, 16, 20, 32]), r = CTOOL.hammingR(n);
+  return { stem: '数据位为 <b>' + n + '</b> 位，采用海明码校验至少需要（　）位校验位', clear: ['hmqA'], ans: { hmqA: r }, cmp: cmpNum,
+    steps: '求最小 r 使 2^r ≥ n + r + 1\n' + [1, 2, 3, 4, 5, 6].map(i => 'r=' + i + '：2^' + i + '=' + Math.pow(2, i) + (Math.pow(2, i) >= n + i + 1 ? ' ≥ ' : ' < ') + (n + i + 1)).join('\n') + '\n→ r = ' + r };
+};
+CTOOL.pmqGen = function(){
+  const k = 3 + Math.floor(Math.random() * 4), dt = 1 + Math.floor(Math.random() * 3), n = pick([50, 100, 200]);
+  const t = pick(['T', 'S']);
+  const r = CTOOL.pipeT(k, dt, n);
+  if(t === 'T'){
+    return { stem: k + ' 段流水线、时钟周期 <b>' + dt + 'ns</b>，连续执行 <b>' + n + '</b> 条指令共需（　）ns', clear: ['pmqA'], ans: { pmqA: r.T }, cmp: cmpNum,
+      steps: r.steps };
+  }
+  return { stem: k + ' 段流水线、周期 ' + dt + 'ns，不流水时每条指令需 <b>' + (k * dt) + 'ns</b>，执行 ' + n + ' 条的加速比约为（　）', clear: ['pmqA'], ans: { pmqA: Math.round(r.speedup * 100) / 100 }, cmp: cmpTol(0.02),
+    steps: '非流水时间 = ' + (k * dt) + '×' + n + ' = ' + (k * dt * n) + 'ns\n流水时间 T = (' + k + '+' + n + '−1)×' + dt + ' = ' + r.T + 'ns\n加速比 = ' + (k * dt * n) + '/' + r.T + ' ≈ ' + (Math.round(r.speedup * 100) / 100) + '（n 很大时趋近段数 k=' + k + '）' };
+};
+CTOOL.cmqGen = function(){
+  const h = pick([0.9, 0.95, 0.98]), tc = pick([10, 20, 40]), tm = pick([100, 200, 500]);
+  const r = CTOOL.cacheTime(h, tc, tm);
+  return { stem: 'Cache 命中率 <b>' + h + '</b>，Cache 存取 <b>' + tc + 'ns</b>，主存存取 <b>' + tm + 'ns</b>，平均访问时间为（　）ns', clear: ['cmqA'], ans: { cmqA: Math.round(r.t * 100) / 100 }, cmp: cmpTol(0.02), steps: r.steps };
+};
+CTOOL.rqGen = function(){
+  const R = pick([0.8, 0.9, 0.95]);
+  const t = pick(['series', 'parallel', 'tmr', 'mtbf']);
+  if(t === 'series'){
+    return { stem: '两个部件<b>串联</b>，可靠度均为 <b>' + R + '</b>，系统可靠度是（　）', clear: ['rqA'], ans: { rqA: Math.round(R * R * 10000) / 10000 }, cmp: cmpTol(0.001),
+      steps: '串联：R = R1×R2 = ' + R + '×' + R + ' = ' + (R * R) + '（串联越多越不可靠）' };
+  }
+  if(t === 'parallel'){
+    const p = 1 - (1 - R) * (1 - R);
+    return { stem: '两个部件<b>并联</b>，可靠度均为 <b>' + R + '</b>，系统可靠度是（　）', clear: ['rqA'], ans: { rqA: Math.round(p * 10000) / 10000 }, cmp: cmpTol(0.001),
+      steps: '并联：R = 1−(1−R1)(1−R2) = 1−(1−' + R + ')² = 1−' + ((1 - R) * (1 - R)).toFixed(4) + ' = ' + p.toFixed(4) };
+  }
+  if(t === 'tmr'){
+    const v = CTOOL.tmr(R);
+    return { stem: '三模（模 3）冗余表决，单模块可靠度 <b>' + R + '</b>，表决器完全可靠，系统可靠度是（　）', clear: ['rqA'], ans: { rqA: Math.round(v * 10000) / 10000 }, cmp: cmpTol(0.001),
+      steps: '至少 2 个模块正常：Rsys = C(3,2)R²(1−R) + R³ = 3×' + (R * R) + '×' + (1 - R).toFixed(2) + ' + ' + Math.pow(R, 3).toFixed(4) + ' = ' + v.toFixed(4) };
+  }
+  const lam = pick([1e-4, 2e-4, 5e-5]);
+  return { stem: '两个部件<b>串联</b>，失效率均为 <b>' + lam + '/小时</b>，系统 MTBF 为（　）小时', clear: ['rqA'], ans: { rqA: Math.round(1 / (2 * lam)) }, cmp: cmpTol(0.5),
+    steps: '串联失效率相加：λ = ' + lam + '+ ' + lam + ' = ' + (2 * lam) + '/h\nMTBF = 1/λ = ' + Math.round(1 / (2 * lam)) + ' 小时' };
+};
+CTOOL.bwqGen = function(){
+  const w = pick([16, 32, 64]), f = pick([66, 100, 133, 200]), t = Math.random() < 0.8 ? 1 : 2;
+  const r = CTOOL.busBand(w, f, t);
+  return { stem: '总线宽度 <b>' + w + '</b> 位、工作频率 <b>' + f + 'MHz</b>、每周期传送 ' + t + ' 次，总线带宽为（　）MB/s', clear: ['bwqA'], ans: { bwqA: Math.round(r.mbps * 100) / 100 }, cmp: cmpTol(0.01), steps: r.steps };
+};
+
+/* ================= 页面骨架 ================= */
+const SECTIONS = [['num', '🔢 数制编码'], ['check', '🩺 校验码'], ['pipe', '⏱ 流水线'], ['cache', '🧩 存储与Cache'], ['relia', '🔧 可靠性'], ['cpu', '🖥 CPU与总线']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0] === 'num') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= 交互 handlers ================= */
+function nmCalc(){
+  const x = +document.getElementById('nmX').value;
+  const r = CTOOL.fourCodes(x);
+  const res = document.getElementById('nmRes'), st = document.getElementById('nmSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>整数需在 −128 ~ +127</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>原码</b><span>' + r.orig + '</span></div><div class="rcell"><b>反码</b><span>' + r.inv + '</span></div><div class="rcell"><b>补码</b><span>' + r.comp + '</span></div><div class="rcell"><b>移码</b><span>' + r.shift + '</span></div>';
+  st.style.display = 'block';
+  st.textContent = (x < 0
+    ? '负数：原码=1+|x|的7位（' + (x === -128 ? '−128 无 8 位原码' : '1' + Math.abs(x).toString(2).padStart(7, '0')) + '）；反码=原码数值位取反；补码=反码+1\n'
+    : '正数：原码=反码=补码（符号位 0）\n')
+    + '移码 = 补码符号位取反 = ' + r.shift + '（= x+128 的二进制，保序所以阶码用它）';
+}
+function nmRev(){
+  const b = document.getElementById('nmBits').value.trim();
+  const r = CTOOL.bitsEval(b);
+  const res = document.getElementById('nmRes'), st = document.getElementById('nmSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>需 8 位 0/1 串</span></div>'; st.style.display = 'none'; return; }
+  const four = CTOOL.fourCodes(r.signed);
+  res.innerHTML = '<div class="rcell"><b>按补码读</b><span>' + r.signed + '</span></div><div class="rcell"><b>按移码读</b><span>' + r.shift + '</span></div><div class="rcell"><b>无符号</b><span>' + r.us + '</span></div>';
+  st.style.display = 'block';
+  st.textContent = '同一串二进制，编码不同值不同：\n按补码：符号位 ' + b[0] + (r.signed < 0 ? '，' + parseInt(b, 2) + '−256 = ' + r.signed : '，正值直接读')
+    + '\n按移码：' + parseInt(b, 2) + '−128 = ' + r.shift + '\n按无符号：' + r.us + (four ? '\n（它作为补码时，原码=' + four.orig + '）' : '');
+}
+function hmCalc(){
+  const n = +document.getElementById('hmN').value;
+  const r = CTOOL.hammingR(n);
+  const st = document.getElementById('hmSteps');
+  if(r === null){ document.getElementById('hmR').textContent = '无效'; st.style.display = 'none'; return; }
+  document.getElementById('hmR').textContent = 'r = ' + r + '（总码长 ' + (n + r) + ' 位）';
+  const pos = []; for(let i = 0; i < r; i++) pos.push(Math.pow(2, i));
+  st.style.display = 'block';
+  st.textContent = '① 条件：2^r ≥ n + r + 1 → ' + [1, 2, 3, 4, 5, 6].map(i => 'r=' + i + ':' + Math.pow(2, i) + (Math.pow(2, i) >= n + i + 1 ? '≥' : '<') + (n + i + 1)).join('  ') + '\n'
+    + '② 最小 r = ' + r + '，码长 = n + r = ' + n + ' + ' + r + ' = ' + (n + r) + ' 位\n'
+    + '③ 校验位放在第 ' + pos.join('、') + ' 位（2 的幂次位），数据位按序填其余位置\n'
+    + '④ 每个校验位负责"下标二进制中该位为 1"的那些位 → 可检 2 位、纠 1 位错';
+}
+function crCalc(){
+  const info = document.getElementById('crInfo').value.trim(), poly = document.getElementById('crPoly').value.trim();
+  const r = CTOOL.crcRem(info, poly);
+  const res = document.getElementById('crRes'), st = document.getElementById('crSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>需 0/1 串，且生成多项式 ≥ 2 位</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>余数（CRC 位）</b><span>' + r.rem + '</span></div><div class="rcell"><b>CRC 码字</b><span>' + r.code + '</span></div><div class="rcell"><b>码长</b><span>' + r.code.length + ' 位</span></div>';
+  st.style.display = 'block'; st.textContent = r.steps;
+}
+function ppDraw(){
+  const k = +document.getElementById('ppK').value, dt = +document.getElementById('ppDt').value, n = +document.getElementById('ppN').value;
+  const svg = document.getElementById('ppSvg'), parts = [];
+  if(!(k >= 1 && k <= 10) || !(dt > 0) || !(n >= 1) || n > 12){ svg.innerHTML = '<text x="20" y="40" fill="#dc2626" font-size="13">输入无效（k≤10、n≤12 便于显示）</text>'; return; }
+  const cw = 46, ch = 30, x0 = 90, y0 = 40;
+  for(let j = 0; j < k; j++){
+    parts.push('<rect x="' + (x0 - 80) + '" y="' + (y0 + j * ch) + '" width="72" height="' + (ch - 4) + '" fill="#ecfeff" stroke="#a5f3fc"/>');
+    parts.push('<text x="' + (x0 - 44) + '" y="' + (y0 + j * ch + 19) + '" text-anchor="middle" font-size="12" fill="#155e75">段' + (j + 1) + '</text>');
+  }
+  for(let i = 0; i < n; i++){
+    parts.push('<text x="' + (x0 + i * cw + cw / 2) + '" y="' + (y0 - 12) + '" text-anchor="middle" font-size="11" fill="#64748b">' + dt + 'ns</text>');
+    for(let j = 0; j < k; j++){
+      const x = x0 + (i + j) * cw, y = y0 + j * ch;
+      parts.push('<rect x="' + x + '" y="' + y + '" width="' + (cw - 6) + '" height="' + (ch - 4) + '" rx="5" fill="#0891b2" opacity="' + (0.45 + 0.55 * (1 - j / k)) + '"/>');
+      parts.push('<text x="' + (x + (cw - 6) / 2) + '" y="' + (y + 19) + '" text-anchor="middle" font-size="11.5" fill="#fff" font-weight="bold">I' + (i + 1) + '</text>');
+    }
+  }
+  const total = (k + n - 1) * dt;
+  parts.push('<text x="' + x0 + '" y="' + (y0 + k * ch + 28) + '" font-size="12.5" fill="#0f172a">T = (k+n−1)×Δt = (' + k + '+' + n + '−1)×' + dt + ' = ' + total + 'ns　每条流出间隔 = Δt（满载后）</text>');
+  svg.setAttribute('viewBox', '0 0 760 ' + (y0 + k * ch + 44));
+  svg.innerHTML = parts.join('');
+}
+function pcCalc(){
+  const r = CTOOL.pipeT(+document.getElementById('pcK').value, +document.getElementById('pcDt').value, +document.getElementById('pcN').value);
+  const res = document.getElementById('pcRes'), st = document.getElementById('pcSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>k,n ≥ 1、Δt &gt; 0</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>总时间 T</b><span>' + r.T + ' ns</span></div>'
+    + '<div class="rcell"><b>实际吞吐率 TP</b><span>' + (Math.round(r.tp * 1000) / 1000) + ' 条/ns</span></div>'
+    + '<div class="rcell"><b>最大吞吐率 TPmax</b><span>' + (Math.round(r.tpmax * 1000) / 1000) + ' 条/ns</span></div>'
+    + '<div class="rcell"><b>加速比（不流水 ' + (+document.getElementById('pcT1').value * +document.getElementById('pcN').value) + 'ns）</b><span>' + (Math.round(+document.getElementById('pcT1').value * +document.getElementById('pcN').value / r.T * 100) / 100) + '</span></div>';
+  st.style.display = 'block'; st.textContent = r.steps;
+}
+function ccCalc(){
+  const r = CTOOL.cacheTime(+document.getElementById('ccH').value, +document.getElementById('ccTc').value, +document.getElementById('ccTm').value);
+  const res = document.getElementById('ccRes'), st = document.getElementById('ccSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>0 ≤ h ≤ 1，时间 &gt; 0</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>平均访问时间</b><span>' + (Math.round(r.t * 100) / 100) + ' ns</span></div>';
+  st.style.display = 'block'; st.textContent = r.steps;
+}
+function chCalc(){
+  const r = CTOOL.chipCount(+document.getElementById('chTot').value, +document.getElementById('chTotW').value, +document.getElementById('chChip').value, +document.getElementById('chChipW').value);
+  const st = document.getElementById('chSteps');
+  if(!r){ document.getElementById('chR').textContent = '无效（需整除）'; st.style.display = 'none'; return; }
+  document.getElementById('chR').textContent = r.count + ' 片';
+  st.style.display = 'block'; st.textContent = r.steps;
+}
+function rlCalc(){
+  const mode = document.getElementById('rlMode').value;
+  const a = +document.getElementById('rlA').value, b = +document.getElementById('rlB').value;
+  const res = document.getElementById('rlRes'), st = document.getElementById('rlSteps');
+  let cells = '', txt = '';
+  if(mode === 'series'){
+    const r = CTOOL.relSeries([a, b]);
+    if(r === null){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>0 ≤ R ≤ 1</span></div>'; st.style.display = 'none'; return; }
+    cells = '<div class="rcell"><b>串联可靠度</b><span>' + (Math.round(r * 10000) / 10000) + '</span></div>';
+    txt = '串联：R = R1×R2 = ' + a + '×' + b + ' = ' + (Math.round(a * b * 10000) / 10000) + '\n失效率口径：λ = λ1+λ2（串联环节越多越不可靠）';
+  } else if(mode === 'parallel'){
+    const r = CTOOL.relParallel([a, b]);
+    if(r === null){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>0 ≤ R ≤ 1</span></div>'; st.style.display = 'none'; return; }
+    cells = '<div class="rcell"><b>并联可靠度</b><span>' + (Math.round(r * 10000) / 10000) + '</span></div>';
+    txt = '并联：R = 1−(1−R1)(1−R2) = 1−(1−' + a + ')(1−' + b + ') = ' + (Math.round(r * 10000) / 10000) + '\n思路：并联同时坏才失效（题15）';
+  } else if(mode === 'mix'){
+    const p1 = CTOOL.relParallel([a, b]), p2 = CTOOL.relParallel([a, b]);
+    const r = p1 === null ? null : CTOOL.relSeries([p1, a]);
+    if(r === null){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>0 ≤ R ≤ 1</span></div>'; st.style.display = 'none'; return; }
+    cells = '<div class="rcell"><b>混合系统可靠度</b><span>' + (Math.round(r * 10000) / 10000) + '</span></div>';
+    txt = '① 组内并联：R并 = 1−(1−' + a + ')(1−' + b + ') = ' + (Math.round(p1 * 10000) / 10000) + '\n② 与后级串联：R = ' + (Math.round(p1 * 10000) / 10000) + '×' + a + ' = ' + (Math.round(r * 10000) / 10000) + '\n混合系统：先算并联块，再当整体串联（题16）';
+  } else if(mode === 'tmr'){
+    const r = CTOOL.tmr(a);
+    if(r === null){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>0 ≤ R ≤ 1</span></div>'; st.style.display = 'none'; return; }
+    cells = '<div class="rcell"><b>三模冗余可靠度</b><span>' + (Math.round(r * 10000) / 10000) + '</span></div>';
+    txt = 'Rsys = C(3,2)R²(1−R) + R³ = 3R²(1−R)+R³（题54）\n= 3×' + a + '²×' + (1 - a) + ' + ' + a + '³ = ' + (Math.round(r * 10000) / 10000) + '（≥2 个模块正常即可）';
+  } else {
+    if(!(a > 0 && b > 0)){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>λ &gt; 0</span></div>'; st.style.display = 'none'; return; }
+    const lam = a + b;
+    cells = '<div class="rcell"><b>串联失效率 λ</b><span>' + lam + '</span></div><div class="rcell"><b>MTBF = 1/λ</b><span>' + (Math.round(1 / lam * 100) / 100) + ' h</span></div>';
+    txt = 'λ = ' + a + ' + ' + b + ' = ' + lam + '/h\nMTBF = 1/λ = ' + (Math.round(1 / lam * 100) / 100) + ' 小时（题58：单部件 MTBF 是 1/' + a + '，串联后缩短）';
+  }
+  res.innerHTML = cells;
+  st.style.display = 'block'; st.textContent = txt;
+}
+function bwCalc(){
+  const r = CTOOL.busBand(+document.getElementById('bwW').value, +document.getElementById('bwF').value, +document.getElementById('bwT').value);
+  const res = document.getElementById('bwRes'), st = document.getElementById('bwSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>均需为正</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>总线带宽</b><span>' + (Math.round(r.mbps * 100) / 100) + ' MB/s</span></div>';
+  st.style.display = 'block'; st.textContent = r.steps;
+}
+
+/* ================= 随机出题通用绑定 ================= */
+function mkQuiz(pfx, gen){
+  let q = null;
+  window[pfx + 'New'] = function(){
+    q = gen();
+    document.getElementById(pfx + 'Q').innerHTML = q.stem;
+    (q.clear || []).forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+    document.getElementById(pfx + 'Fb').innerHTML = '';
+    const s = document.getElementById(pfx + 'Steps'); if(s) s.style.display = 'none';
+  };
+  window[pfx + 'Check'] = function(){
+    if(!q) return;
+    let all = true, html = '';
+    Object.keys(q.ans).forEach(k => {
+      const inp = document.getElementById(k); if(!inp) return;
+      const ok = q.cmp ? q.cmp(k, inp.value, q.ans[k]) : normTxt(inp.value) === normTxt(String(q.ans[k]));
+      all = all && ok;
+      html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+    });
+    document.getElementById(pfx + 'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+  };
+  window[pfx + 'Show'] = function(){
+    if(!q) return;
+    Object.keys(q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
+    const s = document.getElementById(pfx + 'Steps'); if(s){ s.style.display = 'block'; s.textContent = q.steps; }
+  };
+  window[pfx + 'New']();
+}
+mkQuiz('nq', CTOOL.nqGen);
+mkQuiz('hmq', CTOOL.hmqGen);
+mkQuiz('pmq', CTOOL.pmqGen);
+mkQuiz('cmq', CTOOL.cmqGen);
+mkQuiz('rq', CTOOL.rqGen);
+mkQuiz('bwq', CTOOL.bwqGen);
+
+/* ================= 载入即算 ================= */
+nmCalc();
+hmCalc();
+crCalc();
+ppDraw();
+pcCalc();
+ccCalc();
+chCalc();
+rlCalc();
+bwCalc();
+</script>
+</body>
+</html>

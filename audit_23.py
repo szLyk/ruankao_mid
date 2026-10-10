@@ -237,7 +237,7 @@ print('[数据] 17-练习数据.js nt(100题) 答案与 md 一致: %s' % ('OK' i
 p00 = open('00-总计划.md', encoding='utf-8').read()
 p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 h = open('17-在线练习系统.html', encoding='utf-8').read()
-check(p00.count('544项') == 2 and '297项' not in p00 and '254题' not in p00 and '397项' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00, '00 总数引用异常')
+check(p00.count('556项') == 2 and '297项' not in p00 and '254题' not in p00 and '397项' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00 and '544项' not in p00 and '552项' not in p00, '00 总数引用异常')
 check('网络真题36题' not in p00 and '网络真题36题' not in p02 and '网络真题36题' not in h, '旧标签名残留')
 check('网络专项' in h and '网络专项100题' in p00, '新标签名缺失')
 check('网络专项100' in p02, '02 未引用网络专项100')

@@ -8,11 +8,11 @@ import re, math, sys
 
 BANKS = [
     ('10-讲义题库-软件工程.md', '软件工程', 'sw', 64),
-    ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 55),
-    ('12-讲义题库-数据库.md', '数据库', 'db', 49),
+    ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 59),
+    ('12-讲义题库-数据库.md', '数据库', 'db', 51),
     ('13-讲义题库-操作系统.md', '操作系统', 'os', 57),
-    ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 54),
-    ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 47),
+    ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 58),
+    ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 49),
 ]
 fails, checked = [], 0
 
@@ -152,7 +152,68 @@ def pv_seq(init, ops):  # PV 序列模拟，返回 (终值, 等待队列人数)
         elif op == 'V' and v <= 0 and wait > 0: wait -= 1
     return v, wait
 
+def qs_first_pass(arr):  # 快排一趟（首元素为基准，交替填坑）
+    a = arr[:]; piv = a[0]; lo, hi = 0, len(a) - 1
+    while lo < hi:
+        while lo < hi and a[hi] >= piv: hi -= 1
+        a[lo] = a[hi]
+        while lo < hi and a[lo] <= piv: lo += 1
+        a[hi] = a[lo]
+    a[lo] = piv
+    return a
+
+def chain_asl(keys, m):  # 链地址法查找成功 ASL（尾插），返回最简分数
+    from fractions import Fraction
+    chains = {}
+    for k in keys: chains.setdefault(k % m, []).append(k)
+    total = sum(pos + 1 for lst in chains.values() for pos in range(len(lst)))
+    f = Fraction(total, len(keys))
+    return '%d/%d' % (f.numerator, f.denominator)
+
+def pre_from_in_post(inp, post):  # 中序+后序 → 先序
+    if not inp: return ''
+    root = post[-1]; i = inp.index(root)
+    return root + pre_from_in_post(inp[:i], post[:i]) + pre_from_in_post(inp[i+1:], post[i:len(post)-1])
+
+def aoe_longest(n_nodes, edges):  # AOE 关键路径长度（DAG 最长路）
+    import collections
+    adj = {}; deg = [0] * n_nodes
+    for u, v, w in edges:
+        adj.setdefault(u, []).append((v, w)); deg[v] += 1
+    best = [0] * n_nodes
+    q = collections.deque(u for u in range(n_nodes) if deg[u] == 0)
+    while q:
+        u = q.popleft()
+        for v, w in adj.get(u, []):
+            best[v] = max(best[v], best[u] + w); deg[v] -= 1
+            if deg[v] == 0: q.append(v)
+    return max(best)
+
+def excess8(x):  # 8 位移码：补码符号位取反 = x + 128
+    return format(x + 128, '08b')
+
+def crc_rem(info, poly):  # CRC 模 2 除余数
+    r = len(poly) - 1
+    val = int(info, 2) << r; p = int(poly, 2)
+    for i in range(len(info) - 1, -1, -1):
+        if (val >> (i + r)) & 1: val ^= p << i
+    return format(val, '0%db' % r)
+
+def fd_keys(attrs, fds):  # 候选键：闭包全覆盖且极小
+    from itertools import combinations
+    cand = []
+    for r in range(1, len(attrs) + 1):
+        for c in combinations(attrs, r):
+            s = set(c); old = None
+            while old != s:
+                old = s
+                for l, rr in fds:
+                    if set(l) <= s: s = s | set(rr)
+            if s == set(attrs): cand.append(''.join(c))
+    return [k for k in cand if not any(k != k2 and set(k) > set(k2) for k2 in cand)]
+
 # (题干关键词, 期望子串)；期望值全部由公式/模拟现算
+DB50_KEYS = fd_keys('ABCD', [('AB', 'C'), ('C', 'D'), ('D', 'A')])   # ['AB','BC','BD']
 M = [
     ('下三角（含对角线）按行压缩存储到一维数组', str(8*9//2)),                       # ds37 =36
     ('线性探测处理冲突，查找成功时等概率下的 ASL', '2'),                              # ds41 =(1+2+3)/3=2
@@ -182,6 +243,16 @@ M = [
     ('按短作业优先（SJF）调度，平均周转时间为', '%.2f' % ((2+6+14)/3)),               # os47 =7.33
     ('此时 S 的值和等待队列中的进程数分别是', '%d 和 %d' % pv_seq(2, ['P','P','P','V','V'])),                # os48 =1 和 0
     ('当前值为 −3，此时执行一次 V(S)，则', 'S=−%d，唤醒一个等待进程' % abs(pv_seq(-3, ['V'])[0])),          # os55 =S=−2，唤醒一个
+    ('以第一个元素 49 为基准做一趟快速排序', ','.join(map(str, qs_first_pass([49, 38, 65, 97, 76, 13, 27])))),  # ds56 =27,38,13,49,76,97,65
+    ('后序序列为 ACBEGFD', pre_from_in_post('ABCDEFG', 'ACBEGFD')),                    # ds57 =DBACEGF
+    ('用链地址法（新元素接链尾）处理冲突', chain_asl([32, 13, 49, 55, 22, 38, 21], 7)),  # ds58 =9/7
+    ('工程最短工期', str(aoe_longest(5, [(0, 1, 3), (0, 2, 4), (1, 3, 5), (2, 3, 6), (3, 4, 2)]))),          # ds59 =12
+    ('的 8 位移码', excess8(-1)),                                                      # hw55 =01111111
+    ('生成多项式 G(x)=x⁴+x+1', '10110' + crc_rem('10110', '10011')),                   # hw56 =101101111
+    ('每个时钟周期为 2ns', '%d×10⁸ 条/秒' % round(1 / 2e-9 / 1e8)),                     # hw57 =5×10⁸
+    ('每个部件失效率均为 10⁻⁴/小时', str(round(1 / (2 * 1e-4)))),                        # hw58 =5000
+    ('F={AB→C, C→D, D→A}', '、'.join(DB50_KEYS[:-1]) + ' 和 ' + DB50_KEYS[-1]),        # db50 =AB、BC 和 BD
+    ('dpi 的打印机打印 4 英寸×3 英寸', '%d×%d' % (4 * 300, 3 * 300)),                    # pl48 =1200×900
 ]
 C = [  # 概念口径抽查：正确选项文本须含关键词
     ('V 模型的对应关系，集成测试', '详细设计'),
@@ -233,6 +304,8 @@ C = [  # 概念口径抽查：正确选项文本须含关键词
     ('冗余表决系统中，单个模块可靠性为 R', '3R²(1-R)+R³'),
     ('两两之间保密通信', 'n(n-1)/2'),
     ('按采样定理要不失真地数字化', '8kHz'),
+    ('，但部分修改还留在缓冲区未写回磁盘', 'REDO'),
+    ('传感器、RFID 标签所属的层次', '感知层'),
 ]
 norm = lambda s: s.replace('（  ）', '')
 for kw, want in M + C:
@@ -266,9 +339,9 @@ print('[数据] 17-练习数据.js 六库答案与 md 逐位一致: %s' % ('OK' 
 p00 = open('00-总计划.md', encoding='utf-8').read()
 p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 rd = open('README.md', encoding='utf-8').read()
-check(p00.count('544项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00, '00 总数引用异常')
-check('题库426' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02 and '题库406' not in p02, '02 题库数引用异常')
-check('426' in rd and '544' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd and '406' not in rd, 'README 题库数引用异常')
+check(p00.count('556项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00 and '544项' not in p00 and '552项' not in p00, '00 总数引用异常')
+check('题库438' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02 and '题库406' not in p02 and '题库426' not in p02 and '题库434' not in p02, '02 题库数引用异常')
+check('438' in rd and '556' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd and '406' not in rd and '426' not in rd and '434' not in rd and '544' not in rd and '552' not in rd, 'README 题库数引用异常')
 check(all(f'（{n} 题）' in open(f, encoding='utf-8').read() for f, _, _, n in BANKS), '题库标题题数与期望不符')
 print('[引用] 00/02/README 总数与标签: %s' % ('OK' if not [f for f in fails if '引用' in f] else 'FAIL'))
 
@@ -278,4 +351,4 @@ if fails:
     print('审计未通过，%d 个问题:' % len(fails))
     for f in fails: print(' ✘', f)
     sys.exit(1)
-print('审计全部通过 ✅  六库 426 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
+print('审计全部通过 ✅  题库 438 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))

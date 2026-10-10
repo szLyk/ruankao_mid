@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>程序语言与背诵可视化 · 软件设计师</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.7;color:#0f172a;background:#f8fafc}
+:root{--acc:#db2777;--bg:#fdf2f8;--bd:#fbcfe8;--mut:#64748b}
+header{position:sticky;top:0;z-index:9;background:#831843;color:#fff;padding:12px 16px}
+h1{font-size:16px;font-weight:600}h1 small{font-size:12px;opacity:.75;display:block}
+nav{margin-top:8px}nav button{border:none;border-radius:16px;padding:5px 12px;margin-right:6px;margin-bottom:6px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:12.5px}
+nav button.on{background:#fff;color:#831843;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:var(--bg);border:1px solid var(--bd);color:#9d174d;padding:8px 12px;border-radius:10px;font-size:13px;margin-bottom:14px}
+h2{font-size:16px;margin-bottom:10px}h4{font-size:13.5px;color:#334155;margin:10px 0 6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select,textarea{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--bd)}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.btn.pri:hover{opacity:.88;color:#fff}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rcell{background:#f8fafc;border-radius:10px;padding:8px 10px}
+.rcell b{display:block;font-size:11.5px;color:var(--mut)}
+.rcell span{font-size:14.5px;font-weight:700;font-family:Consolas,monospace}
+.steps{background:#0f172a;color:#fbcfe8;font-family:Consolas,monospace;font-size:13px;padding:12px 14px;border-radius:10px;white-space:pre-wrap;line-height:1.9;margin-top:10px;display:none}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
+th{background:var(--bg)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:8px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
+.fcard b{color:var(--acc)}
+.mono{font-family:Consolas,monospace}
+footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
+svg text{font-family:"Microsoft YaHei",sans-serif}
+.pick{cursor:pointer}
+.sym{display:inline-block;border:1px solid var(--bd);border-radius:8px;padding:4px 10px;margin:2px;font-size:12.5px;background:#fff;cursor:pointer}
+.sym.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.code{background:#0f172a;color:#fbcfe8;font-family:Consolas,monospace;font-size:12.5px;padding:10px 12px;border-radius:8px;white-space:pre;line-height:1.8;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+ <h1>🗣 程序语言与背诵可视化 <small>软件设计师 · 全章知识点（编译原理 / 文法 / 表达式传参 / 知识产权 / 安全多媒体 / 数学新技术）· 配套《15-讲义题库-程序语言与背诵类》《06-高频背诵清单》· 题号已标注</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 编译原理 ============ -->
+<section id="s-comp" class="on">
+ <div class="tip">口诀：六阶段顺序 <b>词法→语法→语义→中间代码→优化→目标代码</b>；错误对号：<b>非法字符=词法、缺分号=语法、类型不匹配=语义</b>（题1-3）；符号表贯穿全程（题30）。</div>
+
+ <div class="card">
+  <h2>🏭 编译六阶段点击图（题1-4、29、30）</h2>
+  <svg id="stSvg" viewBox="0 0 760 110" style="width:100%"></svg>
+  <div id="stDetail" style="font-size:13px;margin-top:6px;min-height:44px"></div>
+  <div class="code" id="stCode">x = (b + a) * c;   →   词法: id(x) =( lp id(b) + id(a) rp ) * id(c) ;   →   语法树: =(x, *( +(b,a), c ))   →   四元式: (+,b,a,t1)(*,t1,c,t2)(=,t2,-,x)</div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>编译 vs 解释（题29）</b>编译：整体翻译、生成独立目标程序、执行快；解释：逐句翻译执行、<b>不生成独立目标程序</b>、可交互但慢</div>
+   <div class="fcard"><b>中间代码四形式（题4）</b>后缀式（逆波兰）、三地址码（四元式）、三元式、语法树——与机器无关，便于移植优化</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>🔎 错误归属判定器 + 随机出题（题1-3）</h2>
+  <div class="row">
+   <input id="eqTxt" value="括号不匹配" style="width:220px" placeholder="输入错误描述">
+   <button class="btn pri" onclick="eqRun()">判阶段</button>
+  </div>
+  <div class="res" id="eqRes"></div>
+  <div class="steps" id="eqSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="eqNew()">🎲 出一道</button><span id="eqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="eqA" placeholder="阶段名" style="width:130px">
+   <button class="btn" onclick="eqCheck()">检查</button>
+   <button class="btn" onclick="eqShow()">显示解答</button>
+  </div>
+  <div id="eqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="eqSteps2" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab2 文法与自动机 ============ -->
+<section id="s-gram">
+ <div class="tip">口诀：Chomsky 越靠右限制越多——<b>0 型=图灵机、1 型=上下文有关、2 型=上下文无关↔下推自动机、3 型=正规文法↔有限自动机</b>（题5、6、31）。</div>
+
+ <div class="card">
+  <h2>🎓 Chomsky 四级对号（点行看辨析）</h2>
+  <table id="chTab"></table>
+  <div id="chDetail" style="font-size:13px;margin-top:8px"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="gqNew()">🎲 出一道：这是几型文法？</button><span id="gqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="gqA" placeholder="0/1/2/3" style="width:100px">
+   <button class="btn" onclick="gqCheck()">检查</button>
+   <button class="btn" onclick="gqShow()">显示解答</button>
+  </div>
+  <div id="gqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="gqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>🔤 正规式与自动机（题6、31）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>正规式三运算</b>| 或（并）、· 连接、* 闭包（0 次或多次）；优先级 * &gt; · &gt; |</div>
+   <div class="fcard"><b>(a|b)*（题31）</b>表示 {a,b} 上的<b>任意符号串</b>（含空串）；a*b 则是"若干 a 后跟一个 b"</div>
+   <div class="fcard"><b>NFA ≡ DFA（题6）</b>等价（识别能力相同）；DFA 确定性、状态转移唯一；NFA 易构造，可子集法确定化</div>
+   <div class="fcard"><b>对号</b>正规式 ↔ 有限自动机 ↔ 正规文法（都属 3 型语言）；程序语言的语法用 2 型描述（题5）</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab3 表达式与传参 ============ -->
+<section id="s-expr">
+ <div class="tip">口诀：后缀式<b>操作数在前、运算符在后</b>（题7、8、33）；<b>传值改副本、传址改原值</b>（题9，年年考）；静态作用域看<b>定义处</b>、动态看<b>调用链</b>（题45）。</div>
+
+ <div class="card">
+  <h2>🧮 中缀 → 后缀/前缀 转换器 + 随机出题</h2>
+  <div class="row">
+   <span>表达式</span><input id="ifExpr" value="a+b*c" style="width:170px">
+   <button class="btn pri" onclick="ifRun()">转换</button>
+   <span style="font-size:12.5px;color:var(--mut)">支持单字母变量与 + − * / ( )</span>
+  </div>
+  <div class="res" id="ifRes"></div>
+  <div class="steps" id="ifSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="pqNew()">🎲 出一道后缀式</button><span id="pqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="pqA" placeholder="后缀式" style="width:140px">
+   <button class="btn" onclick="pqCheck()">检查</button>
+   <button class="btn" onclick="pqShow()">显示解答</button>
+  </div>
+  <div id="pqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="pqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>📦 传值 vs 传址 双盒跟踪器（题9）</h2>
+  <div class="code">void f(int x, int *y){ x = x + 1; *y = *y + 2; }
+调用：int a = 5, b = 8; f(a, &b);   // 问 a、b 最终值</div>
+  <div class="row">
+   <span>a 初值</span><input id="psA" value="5" style="width:70px">
+   <span>b 初值</span><input id="psB" value="8" style="width:70px">
+   <button class="btn pri" onclick="psRun()">推演两种方式</button>
+  </div>
+  <div class="res" id="psRes"></div>
+  <div class="steps" id="psSteps"></div>
+ </div>
+
+ <div class="card">
+  <h2>🔭 静态 vs 动态作用域（题45）</h2>
+  <div class="code">int x = 1;
+void f(){ print(x); }
+void g(){ int x = 2; f(); }
+调用 g() → f() 输出？</div>
+  <div class="row">
+   <button class="btn pri" onclick="scRun('static')">静态作用域</button>
+   <button class="btn" onclick="scRun('dynamic')">动态作用域</button>
+   <b id="scR" class="mono"></b>
+  </div>
+  <div class="steps" id="scSteps"></div>
+ </div>
+</section>
+
+<!-- ============ Tab4 知识产权与标准化 ============ -->
+<section id="s-ip">
+ <div class="tip">必拿 2-3 分：<b>发明 20 / 实用新型 10 / 外观 15（均自申请日）；商标 10 年可无限续展；公民著作权终生+死后 50 年；法人作品首次发表后 50 年；署名权永久</b>。详见《06-高频背诵清单》。</div>
+
+ <div class="card">
+  <h2>📅 年限记忆卡 + 随机出题（题17-19、28、35、36）</h2>
+  <div class="grid3">
+   <div class="fcard"><b>发明专利（题35）</b><b class="mono">20 年</b><br>自<b>申请日</b>起</div>
+   <div class="fcard"><b>实用新型</b><b class="mono">10 年</b><br>自申请日起</div>
+   <div class="fcard"><b>外观设计（题17）</b><b class="mono">15 年</b><br>2021 新专利法</div>
+   <div class="fcard"><b>注册商标（题36）</b><b class="mono">10 年</b><br>自核准注册日，<b>可无限续展</b></div>
+   <div class="fcard"><b>公民著作权（题18、28）</b>终生 + 死后 <b class="mono">50 年</b></div>
+   <div class="fcard"><b>法人作品 / 软件著作权(单位)</b>首次发表后 <b class="mono">50 年</b></div>
+  </div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="iqNew()">🎲 出一道</button><span id="iqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="iqA" placeholder="年限(年)" style="width:100px">
+   <button class="btn" onclick="iqCheck()">检查</button>
+   <button class="btn" onclick="iqShow()">显示解答</button>
+  </div>
+  <div id="iqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="iqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>🗂 产权与标准知识卡（题19、20、28、37）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>自动 vs 注册</b>著作权<b>创作完成自动产生</b>（题28）；专利权、商标权需<b>申请</b></div>
+   <div class="fcard"><b>永久保护（题19）</b>署名权、修改权、保护作品完整权（人身权）<b>无限期</b></div>
+   <div class="fcard"><b>委托开发</b>无合同约定 → 归<b>受托人（开发方）</b>；职务作品由单位承担责任 → 单位优先</div>
+   <div class="fcard"><b>标准代号（题20、37）</b><b class="mono">GB</b> 强制国标 / <b class="mono">GB/T</b> 推荐国标 / <b class="mono">GB/Z</b> 指导 / <b class="mono">DB</b> 地方 / <b class="mono">Q/</b> 企业</div>
+   <div class="fcard"><b>标准效力</b>国标 &gt; 行标 &gt; 地标 &gt; 企标</div>
+   <div class="fcard"><b>商业秘密</b>保密即保护，<b>无限期</b>（与技术专利互补）</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab5 安全与多媒体 ============ -->
+<section id="s-sec">
+ <div class="tip">口诀：对称加密 n 人两两通信要 <b>n(n−1)/2</b> 把钥匙、非对称要 <b>2n</b> 把（题46）；采样定理 <b>fs ≥ 2×fmax</b>（题47）；图像字节 = 像素×位深÷8（题21）。</div>
+
+ <div class="card">
+  <h2>🔑 密钥数计算器 + 随机出题（题46）</h2>
+  <div class="row">
+   <span>用户数 n</span><input id="knN" value="10" style="width:80px">
+   <button class="btn pri" onclick="knCalc()">算两种密钥数</button>
+  </div>
+  <div class="res" id="knRes"></div>
+  <div class="steps" id="knSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="keyqNew()">🎲 出一道</button><span id="keyqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="keyqA" placeholder="密钥数" style="width:100px">
+   <button class="btn" onclick="keyqCheck()">检查</button>
+   <button class="btn" onclick="keyqShow()">显示解答</button>
+  </div>
+  <div id="keyqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="keyqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>🖼 多媒体三计算器 + 随机出题（题21、22、39、47）</h2>
+  <div class="row">
+   <span>图像</span>宽<input id="miW" value="1024" style="width:70px">×高<input id="miH" value="768" style="width:70px">
+   位深<input id="miD" value="24" style="width:56px">
+   <button class="btn" onclick="miCalc()">字节</button><b id="miR" class="mono"></b>
+  </div>
+  <div class="row">
+   <span>音频</span>采样<input id="maF" value="44.1" style="width:70px">kHz
+   量化<input id="maB" value="16" style="width:56px">bit
+   声道<input id="maC" value="2" style="width:56px">
+   <button class="btn" onclick="maCalc()">码率</button><b id="maR" class="mono"></b>
+  </div>
+  <div class="row">
+   <span>视频</span><input id="mvW" value="640" style="width:64px">×<input id="mvH" value="480" style="width:64px">
+   位深<input id="mvD" value="24" style="width:56px">
+   帧率<input id="mvF" value="25" style="width:56px">
+   <button class="btn" onclick="mvCalc()">码率</button><b id="mvR" class="mono"></b>
+  </div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="mmqNew()">🎲 出一道</button><span id="mmqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="mmqA" placeholder="答案" style="width:110px">
+   <button class="btn" onclick="mmqCheck()">检查</button>
+   <button class="btn" onclick="mmqShow()">显示解答</button>
+  </div>
+  <div id="mmqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="mmqSteps" style="display:none"></div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>公式三件套</b>图像字节=像素总数×位深÷8｜音频码率=采样率×量化位×声道｜视频码率=单帧字节×帧率（题21、22、39）</div>
+   <div class="fcard"><b>采样定理（题47）</b>fs ≥ 2×fmax：4kHz 语音 → 8kHz 采样</div>
+   <div class="fcard"><b>制式与帧</b>PAL <b class="mono">25</b> 帧/s（题23）、NTSC 30；I 帧帧内编码可独立解码（题38）、P 前向预测、B 双向</div>
+   <div class="fcard"><b>编码对号（题40）</b>JPEG 静态<b>有损</b>；MPEG 动态视频；GIF 256 色 LZW 无损</div>
+   <div class="fcard"><b>安全速记（题11-16、34）</b>签名=发方<b>私钥</b>；信封=收方<b>公钥</b>包对称钥匙；MD5=128 位（题12）——分类与流程详见 24 号「加密与密钥」页签</div>
+   <div class="fcard"><b>打印 dpi</b>英寸 × dpi = 像素（4×3 英寸 @300dpi → 1200×900，题48）</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab6 数学与新技术 ============ -->
+<section id="s-misc">
+ <div class="tip">数学只记套路（题24-27、41、42、48）；新技术秒杀题（题43、44、49）；专业英语固定最后 5 题，见《19-专业英语-AI阅读20篇》。</div>
+
+ <div class="card">
+  <h2>🎲 数学套路随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="mqNew()">🎲 出一道</button><span id="mqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="mqA" placeholder="答案" style="width:120px">
+   <button class="btn" onclick="mqCheck()">检查</button>
+   <button class="btn" onclick="mqShow()">显示解答</button>
+  </div>
+  <div id="mqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="mqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>☁️ 新技术对号卡（题43、44、49）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>云三模式（题43）</b>IaaS 租虚拟机/存储｜PaaS 租运行环境｜<b>SaaS 直接用软件</b>（在线文档）</div>
+   <div class="fcard"><b>大数据 4V（题44）</b>Volume 规模、Variety 多样、Velocity 快速、<b>Value 价值密度低</b>——没有 Visibility</div>
+   <div class="fcard"><b>物联网三层（题49）</b><b>感知层</b>（传感器/RFID）→ 网络层 → 应用层</div>
+   <div class="fcard"><b>数据仓库</b>面向主题、集成、相对稳定、反映历史变化（分析决策，不是日常事务）</div>
+   <div class="fcard"><b>数据挖掘（12号题49）</b>购物篮=关联规则；有标签=分类；无标签=聚类</div>
+   <div class="fcard"><b>AI 常识</b>深度学习 ⊂ 机器学习 ⊂ 人工智能；训练/推理</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>🧠 数学与逻辑套路卡（题24-27、41、42、48）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>独立事件（题24）</b>P(至少一个) = 1 − (1−p)(1−q)；两独立 0.9 → 1−0.01 = 0.99</div>
+   <div class="fcard"><b>排列组合（题26、27）</b>全排列 n!；选 2 人 C(n,2)=n(n−1)/2；分类相加、分步相乘</div>
+   <div class="fcard"><b>命题逻辑（题25、41）</b>P→Q <b>前真后假才为假</b>；P→Q、Q→R ⊢ P→R（假言三段论）</div>
+   <div class="fcard"><b>古典概率（题42）</b>两骰子和 8：枚举 (2,6)(3,5)(4,4)(5,3)(6,2) 共 5/36</div>
+   <div class="fcard"><b>可靠性概率</b>串并联即可靠性公式（29 号页签），数字口径一致</div>
+   <div class="fcard"><b>英语（5 分）</b>先通读抓主题 → 选固定搭配术语；真题见《19-专业英语》20 篇</div>
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：15-讲义题库-程序语言与背诵类（49 题）+ 06-高频背诵清单 → 本页 → 17 系统「程序语言与背诵类」→ 错题重练。加密/签名细节用 24 号课件。</footer>
+<script>
+/* ================= 纯函数（独立可测） ================= */
+const LTOOL = {};
+LTOOL.stageOfError = function(txt){
+  const s = (txt || '');
+  if(!s.trim()) return null;
+  if(/非法字符|不认识的字符|无法识别的符号|拼写|记号/.test(s)) return { stage: '词法分析', why: '「不认识某个字符/记号」——词法分析负责把字符流切成记号流（有限自动机）' };
+  if(/分号|括号|括弧|缺.*end|if.*then 结构|结构错误|语法树/.test(s)) return { stage: '语法分析', why: '「结构不合法（缺分号/括号不匹配）」——语法分析用上下文无关文法检查结构' };
+  if(/类型|不兼容|运算对象|维数|作用域.*冲突/.test(s)) return { stage: '语义分析', why: '「类型不匹配/运算对象不合法」——语义分析做类型检查与一致性校验' };
+  if(/四元式|三元式|逆波兰|后缀|中间代码/.test(s)) return { stage: '中间代码生成', why: '生成与机器无关的中间形式' };
+  if(/优化/.test(s)) return { stage: '代码优化', why: '等价变换提高效率，不改变语义' };
+  if(/目标代码|机器码|汇编/.test(s)) return { stage: '目标代码生成', why: '生成最终目标程序' };
+  return null;
+};
+LTOOL.toPostfix = function(s){
+  s = (s || '').replace(/\s+/g, '');
+  if(!s || !/^[a-zA-Z0-9+\-*/()]+$/.test(s)) return null;
+  const prec = { '+': 1, '-': 1, '*': 2, '/': 2 };
+  const out = [], st = [], log = ['读入：' + s];
+  for(const c of s){
+    if(/[a-zA-Z0-9]/.test(c)){ out.push(c); log.push('操作数 ' + c + ' 直接输出 → 输出[' + out.join('') + '] 栈[' + st.join('') + ']'); }
+    else if(c === '('){ st.push(c); log.push('( 入栈 → 栈[' + st.join('') + ']'); }
+    else if(c === ')'){
+      while(st.length && st[st.length - 1] !== '('){ out.push(st.pop()); log.push(') → 弹出 ' + out[out.length - 1] + ' → 输出[' + out.join('') + ']'); }
+      if(!st.length) return null;
+      st.pop(); log.push(') → 弹 ( 丢弃 → 栈[' + st.join('') + ']');
+    } else {
+      while(st.length && st[st.length - 1] !== '(' && prec[st[st.length - 1]] >= prec[c]){
+        out.push(st.pop()); log.push(c + '：栈顶≥' + c + '，弹出 ' + out[out.length - 1] + ' → 输出[' + out.join('') + ']');
+      }
+      st.push(c); log.push(c + ' 入栈 → 栈[' + st.join('') + ']');
+    }
+  }
+  while(st.length){ const c = st.pop(); if(c === '(') return null; out.push(c); log.push('收尾弹出 ' + c + ' → 输出[' + out.join('') + ']'); }
+  return { post: out.join(''), steps: log.join('\n') };
+};
+LTOOL.toPrefix = function(s){
+  s = (s || '').replace(/\s+/g, '');
+  if(!s || !/^[a-zA-Z0-9+\-*/()]+$/.test(s)) return null;
+  const rev = s.split('').reverse().map(c => c === '(' ? ')' : (c === ')' ? '(' : c)).join('');
+  const r = LTOOL.toPostfix(rev);
+  if(!r) return null;
+  const pre = r.post.split('').reverse().join('');
+  return { pre, steps: '① 整串反转并交换括号：' + s + ' → ' + rev + '\n② 用后缀算法处理得：' + r.post + '\n③ 再整体反转 → 前缀式：' + pre };
+};
+LTOOL.paramSim = function(a, b, mode){
+  if(!isFinite(a) || !isFinite(b)) return null;
+  if(mode === 'value'){
+    return { a, b, steps:
+      '传值调用：x、y 是 a、b 的【副本】\n① x = x+1 → 副本 x 变 ' + (a + 1) + '（a 不受影响）\n② *y = *y+2 → 副本 y 变 ' + (b + 2) + '（b 不受影响）\n返回后副本销毁：a = ' + a + '，b = ' + b };
+  }
+  return { a: a + 1, b: b + 2, steps:
+    '传址调用：x 存 a 的地址、y 存 b 的地址\n① x = x+1 → 顺着地址改原值：a = ' + a + '+1 = ' + (a + 1) + '\n② *y = *y+2 → 改原值：b = ' + b + '+2 = ' + (b + 2) + '\n返回后：a = ' + (a + 1) + '，b = ' + (b + 2) };
+};
+LTOOL.scopeVal = function(mode){ return mode === 'static' ? 1 : 2; };
+LTOOL.chomskyJudge = function(text){
+  const s = text || '';
+  if(/图灵机|无限制|0 型/.test(s)) return 0;
+  if(/αAβ|上下文有关|左部.*长度.*右部|\|α\|/.test(s)) return 1;
+  if(/下推自动机|上下文无关/.test(s)) return 2;
+  if(/有限自动机|正规文法|右线性|左线性|线性文法/.test(s)) return 3;
+  return null;
+};
+LTOOL.keyCount = function(n, mode){
+  if(!(n >= 1)) return null;
+  return mode === 'sym' ? n * (n - 1) / 2 : 2 * n;
+};
+LTOOL.imgBytes = function(w, h, d){
+  if(!(w > 0) || !(h > 0) || !(d > 0)) return null;
+  const b = w * h * d / 8;
+  return { b, kb: b / 1024, mb: b / 1024 / 1024,
+    steps: '像素总数 = ' + w + '×' + h + ' = ' + (w * h) + '\n字节 = ' + (w * h) + '×' + d + ' ÷ 8 = ' + Math.round(b) + ' B\n≈ ' + (Math.round(b / 1024 * 10) / 10) + ' KB ≈ ' + (Math.round(b / 1024 / 1024 * 100) / 100) + ' MB' };
+};
+LTOOL.audioRate = function(fkHz, bits, ch){
+  if(!(fkHz > 0) || !(bits > 0) || !(ch > 0)) return null;
+  const bps = fkHz * 1000 * bits * ch;
+  return { bps, kbps: bps / 1000,
+    steps: '码率 = 采样率×量化位×声道 = ' + fkHz + 'k×' + bits + '×' + ch + '\n= ' + Math.round(bps) + ' bps = ' + (Math.round(bps / 1000 * 10) / 10) + ' kbps\n（CD 音质 44.1k×16×2 ≈ 1411 kbps，题22）' };
+};
+LTOOL.videoRate = function(w, h, d, fps){
+  if(!(w > 0) || !(h > 0) || !(d > 0) || !(fps > 0)) return null;
+  const bps = w * h * d * fps;
+  return { bps, mbps: bps / 1e6,
+    steps: '单帧字节 = ' + w + '×' + h + '×' + d + '÷8 = ' + (w * h * d / 8) + ' B\n码率 = 单帧×帧率 = ' + (w * h * d / 8) + '×' + fps + ' B/s\n= ' + Math.round(bps) + ' bps ≈ ' + (Math.round(bps / 1e6)) + ' Mbps（题39 同型）' };
+};
+LTOOL.nyquist = function(fmax){ return fmax > 0 ? 2 * fmax : null; };
+
+/* ================= 出题工具 ================= */
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+const cmpNum = (k, v, a) => v !== '' && isFinite(+v) && Math.abs(parseFloat(v) - a) < 1e-9;
+const cmpTol = tol => (k, v, a) => v !== '' && isFinite(+v) && Math.abs(parseFloat(v) - a) < tol;
+const cmpFrac = (k, v, a) => {
+  if(v === '') return false;
+  const f = String(v).match(/^(\d+)\s*\/\s*(\d+)$/);
+  const val = f ? (+f[1]) / (+f[2]) : parseFloat(v);
+  return isFinite(val) && Math.abs(val - a) < 0.005;
+};
+const normTxt = s => String(s).replace(/\s+/g, '').replace(/，/g, ',').toUpperCase();
+
+const EQ_BANK = [
+  ['源程序中出现不认识的字符 @', '词法分析', '词法分析把字符流切成记号流，遇到"不认识"的字符在此报错。'],
+  ['缺少分号、括号不匹配', '语法分析', '结构不合法（缺分号/括号不配对）由上下文无关文法的语法分析报告。'],
+  ['运算对象类型不兼容（整型数组+实数指针）', '语义分析', '类型检查、运算对象合法性由语义分析负责。'],
+  ['标识符未定义就使用', '语义分析', '名字的作用域/定义检查属于语义分析（符号表辅助）。']
+];
+LTOOL.eqGen = function(){
+  const e = pick(EQ_BANK);
+  return { stem: '编译过程中，发现「<b>' + e[0] + '</b>」的是哪个阶段？（填：词法分析/语法分析/语义分析）', clear: ['eqA'], ans: { eqA: e[1] }, steps: '答案：' + e[1] + '。\n' + e[2] };
+};
+const GQ_BANK = [
+  ['G[S]：S→aS | a（右部至多一个非终结符且总在最右）', 3, '右线性文法 → 3 型（正规文法），对应有限自动机。'],
+  ['G[S]：S→aSb | ab（嵌套配对 aⁿbⁿ）', 2, '左部单个非终结符但右部结构无法线性化 → 2 型（上下文无关），对应下推自动机。'],
+  ['文法：αAβ → αA1β（只有 A 在上下文 αβ 中才能改写）', 1, '改写依赖上下文 → 1 型（上下文有关文法）。'],
+  ['与有限自动机等价的文法是几型文法？', 3, '3 型（正规文法）↔ 有限自动机；2 型 ↔ 下推自动机。'],
+  ['与下推自动机等价的文法是几型文法？', 2, '2 型（上下文无关）↔ 下推自动机（多一个栈）。'],
+  ['产生式形如 A→α（左部单个非终结符，右部任意）', 2, '左部唯一非终结符、上下文无关 → 2 型。'],
+  ['每个产生式 α→β 都满足 |α| ≤ |β|（不缩短）', 1, '不缩短 + 上下文有关 → 1 型；0 型无限制（对应图灵机）。']
+];
+LTOOL.gqGen = function(){
+  const g = pick(GQ_BANK);
+  return { stem: '「<b>' + g[0] + '</b>」——这是几型文法？（填 0/1/2/3）', clear: ['gqA'], ans: { gqA: g[1] }, cmp: cmpNum, steps: '答案：' + g[1] + ' 型。\n' + g[2] + '\n口诀：0 图灵、1 有关、2 无关(下推)、3 正规(有限)。' };
+};
+LTOOL.pqGen = function(){
+  const L = 'abcd'.split('');
+  const sh = () => L.sort(() => Math.random() - 0.5);
+  const ops = () => pick([['+', '*'], ['+', '/'], ['-', '*'], ['+', '-']]);
+  const t = pick([0, 1, 2]);
+  const l = sh(), o = ops();
+  let expr, r;
+  if(t === 0){ expr = l[0] + o[0] + l[1] + o[1] + l[2]; }
+  else if(t === 1){ expr = '(' + l[0] + o[0] + l[1] + ')' + o[1] + l[2]; }
+  else { expr = l[0] + o[0] + '(' + l[1] + o[1] + l[2] + ')'; }
+  r = LTOOL.toPostfix(expr);
+  return { stem: '表达式 <b>' + expr + '</b> 的后缀式（逆波兰式）是（　）', clear: ['pqA'], ans: { pqA: r.post }, steps: r.steps };
+};
+const IQ_BANK = [
+  ['发明专利的保护期是', 20, '发明专利 20 年，自申请日起算，不可续展（题35）。'],
+  ['实用新型专利的保护期是', 10, '实用新型 10 年，自申请日起算。'],
+  ['外观设计专利的保护期是', 15, '外观设计 15 年（2021 新专利法），自申请日起算（题17）。'],
+  ['注册商标的有效期是', 10, '商标 10 年，自核准注册日起，可无限次续展（每次 10 年）（题36）。']
+];
+LTOOL.iqGen = function(){
+  const e = pick(IQ_BANK);
+  return { stem: e[0] + '（　）年', clear: ['iqA'], ans: { iqA: e[1] }, cmp: cmpNum, steps: '答案：' + e[1] + ' 年。\n' + e[2] };
+};
+LTOOL.keyqGen = function(){
+  const n = 5 + Math.floor(Math.random() * 8), sym = Math.random() < 0.5;
+  const a = LTOOL.keyCount(n, 'sym'), b = LTOOL.keyCount(n, 'asym');
+  return { stem: n + ' 个用户两两保密通信，采用<b>' + (sym ? '对称' : '非对称') + '加密</b>需要管理的密钥总数是（　）', clear: ['keyqA'], ans: { keyqA: sym ? a : b }, cmp: cmpNum,
+    steps: (sym ? '对称：每对一把钥匙 = C(n,2) = n(n−1)/2 = ' + n + '×' + (n - 1) + '/2 = ' + a : '非对称：每人一对（公+私）= 2n = ' + b)
+      + '\n对照：另一口径是 ' + (sym ? b : a) + '（' + (sym ? '非对称 2n' : '对称 n(n−1)/2') + '）' };
+};
+LTOOL.mmqGen = function(){
+  const t = pick(['img', 'audio', 'video', 'ny']);
+  if(t === 'img'){
+    const w = pick([640, 800, 1024]), h = pick([480, 600, 768]), d = pick([8, 16, 24]);
+    const r = LTOOL.imgBytes(w, h, d);
+    return { stem: '分辨率 <b>' + w + '×' + h + '</b>、<b>' + d + '</b> 位真彩色的未压缩图像数据量约为（　）KB（取整）', clear: ['mmqA'], ans: { mmqA: Math.round(r.kb) }, cmp: cmpTol(1.5), steps: r.steps };
+  }
+  if(t === 'audio'){
+    const f = pick([8, 16, 22.05, 44.1]), b = pick([8, 16]), c = pick([1, 2]);
+    const r = LTOOL.audioRate(f, b, c);
+    return { stem: '采样 <b>' + f + 'kHz</b>、量化 <b>' + b + '</b> 位、<b>' + c + '</b> 声道的未压缩音频码率约为（　）kbps', clear: ['mmqA'], ans: { mmqA: Math.round(r.kbps) }, cmp: cmpTol(2), steps: r.steps };
+  }
+  if(t === 'video'){
+    const w = 640, h = 480, d = 24, fps = pick([25, 30]);
+    const r = LTOOL.videoRate(w, h, d, fps);
+    return { stem: w + '×' + h + '、24 位真彩、<b>' + fps + '</b> 帧/秒的未压缩视频码率约为（　）Mbps（取整）', clear: ['mmqA'], ans: { mmqA: Math.round(r.mbps) }, cmp: cmpTol(1.5), steps: r.steps };
+  }
+  const f = pick([4, 5, 8, 10]);
+  return { stem: '模拟信号最高频率 <b>' + f + 'kHz</b>，按采样定理不失真采样频率至少为（　）kHz', clear: ['mmqA'], ans: { mmqA: 2 * f }, cmp: cmpNum, steps: '采样定理：fs ≥ 2×fmax = 2×' + f + ' = ' + (2 * f) + 'kHz（电话语音 4kHz → 8kHz 采样）' };
+};
+LTOOL.mqGen = function(){
+  const t = pick(['perm', 'comb', 'dice', 'opp', 'logic']);
+  if(t === 'perm'){
+    const n = 3 + Math.floor(Math.random() * 4), f = [1, 1, 2, 6, 24, 120, 720][n];
+    return { stem: '<b>' + n + '</b> 个元素的全排列数是（　）', clear: ['mqA'], ans: { mqA: f }, cmp: cmpNum, steps: '全排列 = n! = ' + [1, 2, 3, 4, 5, 6].slice(0, n).map(x => x).join('×') + ' = ' + f };
+  }
+  if(t === 'comb'){
+    const n = 5 + Math.floor(Math.random() * 6), r = 2;
+    const c = n * (n - 1) / 2;
+    return { stem: '从 <b>' + n + '</b> 人中选 <b>2</b> 人组成小组，方案数是（　）', clear: ['mqA'], ans: { mqA: c }, cmp: cmpNum, steps: 'C(n,2) = n(n−1)/2 = ' + n + '×' + (n - 1) + '/2 = ' + c + '（与对称密钥数同款公式）' };
+  }
+  if(t === 'dice'){
+    return { stem: '掷两枚均匀骰子，点数之和为 <b>8</b> 的概率是（　）（填分数如 5/36 或小数）', clear: ['mqA'], ans: { mqA: 5 / 36 }, cmp: cmpFrac, steps: '枚举：(2,6)(3,5)(4,4)(5,3)(6,2) 共 5 种 / 36 = 5/36 ≈ 0.139' };
+  }
+  if(t === 'opp'){
+    const p = pick([0.1, 0.2, 0.3]);
+    return { stem: '两个独立部件可靠度均为 <b>' + p + '</b>，至少一个正常工作的概率是（　）', clear: ['mqA'], ans: { mqA: Math.round((1 - (1 - p) * (1 - p)) * 10000) / 10000 }, cmp: cmpTol(0.001), steps: 'P(至少一个) = 1 − (1−p)² = 1 − ' + ((1 - p) * (1 - p)).toFixed(4) + ' = ' + (1 - (1 - p) * (1 - p)).toFixed(4) + '（= 并联可靠性公式，题24）' };
+  }
+  return { stem: '由 P→Q 与 Q→R 可以推出（　）（填推理名，如：P→R）', clear: ['mqA'], ans: { mqA: 'P→R' }, steps: '假言三段论：传递性，P→Q、Q→R ⊢ P→R（题41）。\n蕴含口诀：前真后假才为假（题25）。' };
+};
+
+/* ================= 页面骨架 ================= */
+const SECTIONS = [['comp', '🏭 编译原理'], ['gram', '🎓 文法自动机'], ['expr', '🧮 表达式传参'], ['ip', '📅 知识产权'], ['sec', '🔑 安全多媒体'], ['misc', '☁️ 数学新技术']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0] === 'comp') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= 交互 handlers ================= */
+const STAGES = [
+  ['词法分析', '字符流 → 记号流（单词）。工具：有限自动机。\n典型错误：非法字符、不认识的符号（题1）。'],
+  ['语法分析', '记号流 → 语法树。工具：上下文无关文法（2 型）。\n典型错误：缺分号、括号不匹配（题2）。'],
+  ['语义分析', '类型检查、标识符作用域与一致性。\n典型错误：类型不匹配、运算对象不合法（题3）。'],
+  ['中间代码生成', '产生与机器无关的中间形式：后缀式 / 四元式 / 三元式 / 语法树（题4）。'],
+  ['代码优化', '等价变换提高效率（局部/全局），不改变程序语义。'],
+  ['目标代码生成', '生成目标程序（机器码/汇编），与具体机器相关。']
+];
+function stDraw(sel){
+  const parts = [];
+  const W = 110, G = 18, x0 = 10, y0 = 30;
+  parts.push('<defs><marker id="sta" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#db2777"/></marker></defs>');
+  STAGES.forEach((s, i) => {
+    const x = x0 + i * (W + G);
+    parts.push('<g class="pick" onclick="stPick(' + i + ')">'
+      + '<rect x="' + x + '" y="' + y0 + '" width="' + W + '" height="44" rx="9" fill="' + (i === sel ? '#db2777' : '#fdf2f8') + '" stroke="' + (i === sel ? '#db2777' : '#fbcfe8') + '" stroke-width="2"/>'
+      + '<text x="' + (x + W / 2) + '" y="' + (y0 + 27) + '" text-anchor="middle" font-size="13" font-weight="bold" fill="' + (i === sel ? '#fff' : '#831843') + '">' + (i + 1) + ' ' + s[0] + '</text></g>');
+    if(i < STAGES.length - 1) parts.push('<line x1="' + (x + W + 2) + '" y1="' + (y0 + 22) + '" x2="' + (x + W + G - 2) + '" y2="' + (y0 + 22) + '" stroke="#db2777" stroke-width="2" marker-end="url(#sta)"/>');
+  });
+  parts.push('<text x="' + (x0 + 3 * (W + G) + W / 2) + '" y="' + (y0 + 68) + '" text-anchor="middle" font-size="12" fill="#9d174d">符号表贯穿全程（题30）；错误在最早阶段即可发现并报出</text>');
+  document.getElementById('stSvg').innerHTML = parts.join('');
+}
+function stPick(i){
+  stDraw(i);
+  const d = document.getElementById('stDetail');
+  d.innerHTML = '<b style="color:#db2777">' + (i + 1) + ' ' + STAGES[i][0] + '</b>　' + STAGES[i][1].replace(/\n/g, '<br>');
+}
+function eqRun(){
+  const r = LTOOL.stageOfError(document.getElementById('eqTxt').value);
+  const res = document.getElementById('eqRes'), st = document.getElementById('eqSteps');
+  if(!r){ res.innerHTML = '<div class="rcell"><b>未识别</b><span>试试：非法字符 / 缺分号 / 类型不匹配</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>所属阶段</b><span>' + r.stage + '</span></div>';
+  st.style.display = 'block'; st.textContent = '理由：' + r.why;
+}
+function ifRun(){
+  const s = document.getElementById('ifExpr').value;
+  const post = LTOOL.toPostfix(s), pre = LTOOL.toPrefix(s);
+  const res = document.getElementById('ifRes'), st = document.getElementById('ifSteps');
+  if(!post || !pre){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>支持单字母/数字与 + − * / ( )</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>后缀式（逆波兰）</b><span>' + post.post + '</span></div><div class="rcell"><b>前缀式（波兰）</b><span>' + pre.pre + '</span></div>';
+  st.style.display = 'block';
+  st.textContent = '—— 后缀：运算符栈法 ——\n' + post.steps + '\n—— 前缀：反转法 ——\n' + pre.steps;
+}
+function psRun(){
+  const a = +document.getElementById('psA').value, b = +document.getElementById('psB').value;
+  const v = LTOOL.paramSim(a, b, 'value'), r = LTOOL.paramSim(a, b, 'ref');
+  const res = document.getElementById('psRes'), st = document.getElementById('psSteps');
+  if(!v){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>请输数字</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>传值后 a, b</b><span>' + v.a + ', ' + v.b + '</span></div><div class="rcell"><b>传址后 a, b</b><span>' + r.a + ', ' + r.b + '</span></div>';
+  st.style.display = 'block';
+  st.textContent = '—— 传值 ——\n' + v.steps + '\n—— 传址 ——\n' + r.steps;
+}
+function scRun(mode){
+  const v = LTOOL.scopeVal(mode);
+  document.getElementById('scR').textContent = '输出 ' + v;
+  const st = document.getElementById('scSteps'); st.style.display = 'block';
+  st.textContent = mode === 'static'
+    ? '静态作用域：看【定义处】的嵌套。f 定义在全局，其外层的 x 就是全局 x=1 → 输出 1。\n（C/Java 等绝大多数语言都是静态作用域，题45 答案）'
+    : '动态作用域：看【调用链】。g 调用 f，最近一层是 g 的局部 x=2 → 输出 2。\n（动态作用域只是理论对照，真题用来考静态）';
+}
+const CH_ROWS = [
+  ['0 型（无限制）', 'α→β，α 含非终结符', '图灵机', '能力最强，几乎不用来出正面题'],
+  ['1 型（上下文有关）', 'αAβ→αA1β，|左|≤|右|', '线性有界自动机', '「αAβ 上下文」字眼 → 1 型'],
+  ['2 型（上下文无关）', 'A→α（左部单个非终结符）', '下推自动机', '程序语言语法（题5）；嵌套配对 S→aSb'],
+  ['3 型（正规文法）', 'A→aB / A→a（线性）', '有限自动机', '词法、正规式 ↔ 对应（题6、31）']
+];
+function chDraw(){
+  const rows = CH_ROWS.map((r, i) => '<tr class="pick" onclick="chPick(' + i + ')"><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td></tr>').join('');
+  document.getElementById('chTab').innerHTML = '<tr><th>级别</th><th>产生式形式</th><th>对应自动机</th><th>识别信号</th></tr>' + rows;
+}
+function chPick(i){
+  document.querySelectorAll('#chTab tr').forEach((tr, j) => { if(j > 0) tr.style.background = j - 1 === i ? 'var(--bg)' : ''; });
+  document.getElementById('chDetail').innerHTML = '<b style="color:#db2777">' + CH_ROWS[i][0] + '</b>　限制越少能力越强：0 型 ⊃ 1 型 ⊃ 2 型 ⊃ 3 型（逐级加限制）。' + CH_ROWS[i][3];
+}
+function knCalc(){
+  const n = +document.getElementById('knN').value;
+  const a = LTOOL.keyCount(n, 'sym'), b = LTOOL.keyCount(n, 'asym');
+  const res = document.getElementById('knRes'), st = document.getElementById('knSteps');
+  if(a === null){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>n ≥ 1</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>对称加密（每对一把）</b><span>' + a + '</span></div><div class="rcell"><b>非对称（每人一对）</b><span>' + b + '</span></div>';
+  st.style.display = 'block';
+  st.textContent = '对称：C(n,2) = n(n−1)/2 = ' + n + '×' + (n - 1) + '/2 = ' + a + '\n非对称：2n = ' + b + '\n口诀：对称除二连乘，非对称直接翻倍（题46）。';
+}
+function miCalc(){
+  const r = LTOOL.imgBytes(+document.getElementById('miW').value, +document.getElementById('miH').value, +document.getElementById('miD').value);
+  document.getElementById('miR').textContent = r ? (Math.round(r.kb * 10) / 10 + ' KB（' + Math.round(r.mb * 100) / 100 + ' MB）') : '无效';
+  if(r){ const st = document.getElementById('mmqSteps'); st.style.display = 'block'; st.textContent = '图像：\n' + r.steps; }
+}
+function maCalc(){
+  const r = LTOOL.audioRate(+document.getElementById('maF').value, +document.getElementById('maB').value, +document.getElementById('maC').value);
+  document.getElementById('maR').textContent = r ? (Math.round(r.kbps * 10) / 10 + ' kbps') : '无效';
+  if(r){ const st = document.getElementById('mmqSteps'); st.style.display = 'block'; st.textContent = '音频：\n' + r.steps; }
+}
+function mvCalc(){
+  const r = LTOOL.videoRate(+document.getElementById('mvW').value, +document.getElementById('mvH').value, +document.getElementById('mvD').value, +document.getElementById('mvF').value);
+  document.getElementById('mvR').textContent = r ? (Math.round(r.mbps) + ' Mbps') : '无效';
+  if(r){ const st = document.getElementById('mmqSteps'); st.style.display = 'block'; st.textContent = '视频：\n' + r.steps; }
+}
+
+/* ================= 随机出题通用绑定 ================= */
+function mkQuiz(pfx, gen){
+  let q = null;
+  window[pfx + 'New'] = function(){
+    q = gen();
+    document.getElementById(pfx + 'Q').innerHTML = q.stem;
+    (q.clear || []).forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+    document.getElementById(pfx + 'Fb').innerHTML = '';
+    const s = document.getElementById(pfx + 'Steps'); if(s) s.style.display = 'none';
+  };
+  window[pfx + 'Check'] = function(){
+    if(!q) return;
+    let all = true, html = '';
+    Object.keys(q.ans).forEach(k => {
+      const inp = document.getElementById(k); if(!inp) return;
+      const ok = q.cmp ? q.cmp(k, inp.value, q.ans[k]) : normTxt(inp.value) === normTxt(String(q.ans[k]));
+      all = all && ok;
+      html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+    });
+    document.getElementById(pfx + 'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+  };
+  window[pfx + 'Show'] = function(){
+    if(!q) return;
+    Object.keys(q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
+    const s = document.getElementById(pfx + 'Steps'); if(s){ s.style.display = 'block'; s.textContent = q.steps; }
+  };
+  window[pfx + 'New']();
+}
+mkQuiz('eq', LTOOL.eqGen);
+mkQuiz('gq', LTOOL.gqGen);
+mkQuiz('pq', LTOOL.pqGen);
+mkQuiz('iq', LTOOL.iqGen);
+mkQuiz('keyq', LTOOL.keyqGen);
+mkQuiz('mmq', LTOOL.mmqGen);
+mkQuiz('mq', LTOOL.mqGen);
+
+/* ================= 载入即算 ================= */
+stDraw(0); stPick(0);
+chDraw(); chPick(2);
+eqRun();
+ifRun();
+psRun();
+knCalc();
+miCalc(); maCalc(); mvCalc();
+</script>
+</body>
+</html>

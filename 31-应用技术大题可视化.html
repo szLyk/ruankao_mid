@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>应用技术大题可视化 · 软件设计师</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.7;color:#0f172a;background:#f8fafc}
+:root{--acc:#4f46e5;--bg:#eef2ff;--bd:#e0e7ff;--mut:#64748b}
+header{position:sticky;top:0;z-index:9;background:#312e81;color:#fff;padding:12px 16px}
+h1{font-size:16px;font-weight:600}h1 small{font-size:12px;opacity:.75;display:block}
+nav{margin-top:8px}nav button{border:none;border-radius:16px;padding:5px 12px;margin-right:6px;margin-bottom:6px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:12.5px}
+nav button.on{background:#fff;color:#312e81;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:var(--bg);border:1px solid var(--bd);color:#3730a3;padding:8px 12px;border-radius:10px;font-size:13px;margin-bottom:14px}
+h2{font-size:16px;margin-bottom:10px}h4{font-size:13.5px;color:#334155;margin:10px 0 6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select,textarea{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--bd)}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.btn.pri:hover{opacity:.88;color:#fff}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rcell{background:#f8fafc;border-radius:10px;padding:8px 10px}
+.rcell b{display:block;font-size:11.5px;color:var(--mut)}
+.rcell span{font-size:14.5px;font-weight:700;font-family:Consolas,monospace}
+.steps{background:#0f172a;color:#e0e7ff;font-family:Consolas,monospace;font-size:13px;padding:12px 14px;border-radius:10px;white-space:pre-wrap;line-height:1.9;margin-top:10px;display:none}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
+th{background:var(--bg)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:8px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
+.fcard b{color:var(--acc)}
+.mono{font-family:Consolas,monospace}
+footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
+svg text{font-family:"Microsoft YaHei",sans-serif}
+.pick{cursor:pointer}
+.code{background:#0f172a;color:#e0e7ff;font-family:Consolas,monospace;font-size:12.5px;padding:10px 12px;border-radius:8px;white-space:pre;line-height:1.8;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+ <h1>📝 应用技术大题可视化 <small>软件设计师 · 下午场 5 大题×15 分（①DFD ②数据库 ③UML ④C 算法 ⑤设计模式）· 配套《16-应用技术大题自编卷》《04-答题模板》· 目标分 10/13/10/8/12</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 DFD ============ -->
+<section id="s-dfd" class="on">
+ <div class="tip">①数据流图（目标 10 分）：先读<b>说明</b>再读图；口诀——<b>父图有子图、出入要平衡、加工不黑洞不奇迹</b>。模板详见《04-应用技术答题模板》。</div>
+
+ <div class="card">
+  <h2>⚖️ 三大规则 + 黑洞/奇迹图解</h2>
+  <div class="grid2">
+   <div class="fcard"><b>规则1 父子图平衡（10号题47 同源）</b>子图的输入/输出数据流必须与父图对应加工的<b>完全一致</b>（数量与方向），既不能多也不能少</div>
+   <div class="fcard"><b>规则2 加工要闭环</b>每个加工<b>既有输入又有输出</b>；只有进没有出=黑洞，只有出没有进=奇迹</div>
+   <div class="fcard"><b>规则3 命名规范</b>数据流必须命名（不能同名异物）；外部实体/数据存储不能直连——<b>外部→外部、存储→存储</b>都要经过加工</div>
+   <div class="fcard"><b>答题三步</b>① 对照说明逐条找"提到的流图上有没有" ② 数每个加工的出入流 ③ 检查父图↔子图边界</div>
+  </div>
+  <svg id="dfSvg" viewBox="0 0 700 170" style="width:100%;max-width:680px;margin-top:8px"></svg>
+  <div id="dfDetail" style="font-size:13px;margin-top:6px;min-height:26px"></div>
+ </div>
+
+ <div class="card">
+  <h2>🎲 找错随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="dfqNew()">🎲 出一道</button><span id="dfqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="dfqA" placeholder="错误类型" style="width:180px">
+   <button class="btn" onclick="dfqCheck()">检查</button>
+   <button class="btn" onclick="dfqShow()">显示解答</button>
+  </div>
+  <div id="dfqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="dfqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>✍️ 四类常见填空与判分点</h2>
+  <table>
+   <tr><th>填空类型</th><th>线索信号</th><th>判分点</th></tr>
+   <tr><td>补数据流</td><td>说明里出现"提交/发送/读取 XX"，图上对应箭头缺失</td><td><b>名词</b>，方向别画反</td></tr>
+   <tr><td>补加工名</td><td>动宾结构："XX 处理/统计/校验"</td><td>动词+宾语，与说明用词一致</td></tr>
+   <tr><td>补数据存储</td><td>"记录/保存/查询档案"</td><td>名词表；注意读写双向场景</td></tr>
+   <tr><td>补外部实体</td><td>数据流的源头/终点在人或组织</td><td>矩形；不在系统内、可改数据</td></tr>
+  </table>
+ </div>
+</section>
+
+<!-- ============ Tab2 数据库 ============ -->
+<section id="s-db">
+ <div class="tip">②数据库设计（目标 13 分，最好拿）：三步——<b>找实体 → 判断联系类型 1:1 / 1:n / m:n → 转关系模式</b>。SQL 细节见 27 号课件。</div>
+
+ <div class="card">
+  <h2>🔀 联系类型判定器 + 随机出题</h2>
+  <div class="row">
+   <input id="erTxt" value="一个部门有多名员工，每名员工只属于一个部门" style="width:380px">
+   <button class="btn pri" onclick="erRun()">判联系类型</button>
+  </div>
+  <div class="res" id="erRes"></div>
+  <div class="steps" id="erSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="erqNew()">🎲 出一道</button><span id="erqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="erqA" placeholder="如 1:n" style="width:110px">
+   <button class="btn" onclick="erqCheck()">检查</button>
+   <button class="btn" onclick="erqShow()">显示解答</button>
+  </div>
+  <div id="erqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="erqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>📋 E-R → 关系模式三规则（题23、24 同源）</h2>
+  <table>
+   <tr><th>联系类型</th><th>转换方法</th><th>记忆</th></tr>
+   <tr><td><b>1:1</b></td><td>并入任一端（加对方主键作外键）</td><td>随便并</td></tr>
+   <tr><td><b>1:n</b></td><td>并入 <b>n 端</b>（n 端加 1 端主键作外键）</td><td>并入多的一方</td></tr>
+   <tr><td><b>m:n</b></td><td><b>独立成表</b>：两端主键 + 联系自身属性，主键=两端主键组合</td><td>多对多必须独立</td></tr>
+  </table>
+  <div class="grid2" style="margin-top:10px">
+   <div class="fcard"><b>主键/外键填空</b>主键：能唯一标识且非空；外键：参照另一表主键 <b class="mono">FOREIGN KEY ... REFERENCES</b>（12号题27）</div>
+   <div class="fcard"><b>弱实体</b>没有自己的主键、依赖宿主实体存在（如"家属"依赖"职工"）：主键=宿主主键+自己的区分属性</div>
+   <div class="fcard"><b>SQL 模板</b>建表 CREATE TABLE、约束 PRIMARY KEY / FOREIGN KEY / CHECK；查询 GROUP BY + HAVING（27 号页签有全套）</div>
+   <div class="fcard"><b>踩坑</b>m:n 联系的属性（如"成绩"）放在<b>联系表</b>里，不放任何一端实体表</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab3 UML ============ -->
+<section id="s-uml">
+ <div class="tip">③UML 建模（目标 10 分）：最常考<b>用例图 include/extend 箭头方向</b>与"给情景选图"。类图六关系见 25 号课件。</div>
+
+ <div class="card">
+  <h2>🧭 用例图 include / extend 箭头方向（点图看口诀）</h2>
+  <svg id="ucSvg" viewBox="0 0 700 210" style="width:100%;max-width:680px"></svg>
+  <div id="ucDetail" style="font-size:13px;margin-top:6px;min-height:48px"></div>
+ </div>
+
+ <div class="card">
+  <h2>🎲 情景选图随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="uqNew()">🎲 出一道</button><span id="uqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="uqA" placeholder="图名" style="width:130px">
+   <button class="btn" onclick="uqCheck()">检查</button>
+   <button class="btn" onclick="uqShow()">显示解答</button>
+  </div>
+  <div id="uqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="uqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>📋 九图速查表（信号词 → 图）</h2>
+  <table>
+   <tr><th>图</th><th>识别信号</th><th>关键元素</th></tr>
+   <tr><td><b>用例图</b></td><td>"系统功能需求、参与者交互"</td><td>参与者、用例椭圆、include/extend</td></tr>
+   <tr><td><b>类图</b></td><td>"静态结构、属性操作、类关系"</td><td>类框、关联/聚合/组合/泛化/实现/依赖</td></tr>
+   <tr><td><b>顺序图</b></td><td>"按<b>时间顺序</b>的消息传递"</td><td>生命线、激活条、消息箭头</td></tr>
+   <tr><td><b>通信图</b></td><td>"按<b>对象组织</b>的交互"（旧称协作图）</td><td>对象链路上标消息序号</td></tr>
+   <tr><td><b>活动图</b></td><td>"<b>并行</b>/分支/工作流"</td><td>活动节点、分岔汇合（粗横条）、泳道</td></tr>
+   <tr><td><b>状态图</b></td><td>"对象<b>状态变迁</b>、事件触发"</td><td>状态圆角框、初始/终态、转移</td></tr>
+   <tr><td><b>部署图</b></td><td>"硬件拓扑、节点上的软件"</td><td>节点立方体、通信路径（10号题46）</td></tr>
+   <tr><td><b>构件图</b></td><td>"代码构件间依赖"</td><td>构件框、接口</td></tr>
+   <tr><td><b>对象图</b></td><td>"某一时刻类的实例快照"</td><td>对象框（带下划线）</td></tr>
+  </table>
+ </div>
+</section>
+
+<!-- ============ Tab4 C 算法 ============ -->
+<section id="s-alg">
+ <div class="tip">④C 算法填空（目标 8 分，允许放弃但要填满）：先读<b>注释和函数头</b>，再顺着数据结构找空。C 语法速成见《03》、算法全集见《21-算法大全》。</div>
+
+ <div class="card">
+  <h2>🧩 五类高频算法套路卡</h2>
+  <div class="grid2">
+   <div class="fcard"><b>链表类</b>遍历 <b class="mono">p = p-&gt;next</b>；尾判 <b class="mono">p != NULL</b>；插入先接后断 <b class="mono">s-&gt;next = p-&gt;next; p-&gt;next = s</b></div>
+   <div class="fcard"><b>二分类</b>循环 <b class="mono">lo &lt;= hi</b>；右半 <b class="mono">lo = mid+1</b>；左半 <b class="mono">hi = mid−1</b>；mid = (lo+hi)/2</div>
+   <div class="fcard"><b>排序类</b>双指针分区、<b class="mono">temp</b> 交换三行；内层边界 j&lt;n−1−i（冒泡每趟少一个）</div>
+   <div class="fcard"><b>字符串类</b>结尾判 <b class="mono">s[i] != '\0'</b> 或 i&lt;len；累加器初值 <b class="mono">= 0</b>；乘积器初值 <b class="mono">= 1</b></div>
+   <div class="fcard"><b>递归类</b>先写<b>出口</b>（if n&lt;=1 return …），再写自调用 <b class="mono">f(n−1)+…</b>；DP 用数组打表</div>
+   <div class="fcard"><b>矩阵/数组类</b>下标 0 起 vs 1 起看题目；对角/边界元素单独处理</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>🎯 填空位模式随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="alqNew()">🎲 出一道</button><span id="alqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="alqA" placeholder="填空内容" style="width:200px">
+   <button class="btn" onclick="alqCheck()">检查</button>
+   <button class="btn" onclick="alqShow()">显示解答</button>
+  </div>
+  <div id="alqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="alqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>🥊 考场策略卡</h2>
+  <div class="grid2">
+   <div class="fcard"><b>时间预算</b>8 分题控制在 15 分钟内；两空不会先跳过，回来照上下文变量类型蒙</div>
+   <div class="fcard"><b>蒙答案技巧</b>空在循环条件→优先 lo&lt;=hi / p!=NULL；空在更新→mid±1 / p=p-&gt;next；空在返回→0 或 n</div>
+   <div class="fcard"><b>题型惯例</b>近年多考链表+排序+递归组合；读题先圈"数据结构声明区"</div>
+   <div class="fcard"><b>自编卷</b>《16-应用技术大题自编卷》④题有 2 道仿真，做完回这里对套路</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab5 设计模式 ============ -->
+<section id="s-dp">
+ <div class="tip">⑤设计模式（目标 12 分，Java 考生性价比最高）：先背<b>意图信号词</b>，再看代码对号。23 模式全集与 Java 代码见《20-设计模式详解》。</div>
+
+ <div class="card">
+  <h2>🎭 意图 → 模式名 随机出题（13 高频）</h2>
+  <div class="row"><button class="btn pri" onclick="dpmNew()">🎲 出一道</button><span id="dpmQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="dpmA" placeholder="模式名" style="width:140px">
+   <button class="btn" onclick="dpmCheck()">检查</button>
+   <button class="btn" onclick="dpmShow()">显示解答</button>
+  </div>
+  <div id="dpmFb" style="font-size:13.5px"></div>
+  <div class="steps" id="dpmSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>🔍 代码信号速查卡</h2>
+  <div class="grid2">
+   <div class="fcard"><b>看到 getInstance()</b>→<b>单例</b>（私有构造+静态实例）</div>
+   <div class="fcard"><b>看到 clone()/Cloneable</b>→<b>原型</b></div>
+   <div class="fcard"><b>看到 Context 持有算法接口</b>→<b>策略</b>（setStrategy 换算法）</div>
+   <div class="fcard"><b>看到 notify()/observers 列表</b>→<b>观察者</b>（一对多通知）</div>
+   <div class="fcard"><b>看到 children/operation 递归</b>→<b>组合</b>（部分-整体树）</div>
+   <div class="fcard"><b>看到同接口包裹+addedBehavior</b>→<b>装饰器</b></div>
+   <div class="fcard"><b>看到 Adapter/两接口转换</b>→<b>适配器</b></div>
+   <div class="fcard"><b>看到 state 变量+行为切换</b>→<b>状态</b>（Context 持 State）</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>📜 六大设计原则（题41 同源）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>开闭原则</b>对扩展开放、对修改关闭——所有模式的共同目标</div>
+   <div class="fcard"><b>单一职责</b>一个类只负责一件事</div>
+   <div class="fcard"><b>里氏替换</b>子类必须能替换父类（is-a）</div>
+   <div class="fcard"><b>依赖倒置</b>依赖抽象接口，不依赖具体实现</div>
+   <div class="fcard"><b>接口隔离</b>多个专用接口 &gt; 一个胖接口</div>
+   <div class="fcard"><b>迪米特法则</b>只与直接朋友通信，减少耦合</div>
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：04-答题模板 + 16-自编卷 → 本页 → 17 系统「应用技术」→ 错题重练。①③的建模细节配合 25 号类图页签；②的 SQL 配合 27 号。</footer>
+<script>
+/* ================= 出题库 ================= */
+const DFQ_BANK = [
+  ['某加工只有输入数据流、没有任何输出数据流', '黑洞', '只有进没有出 = 黑洞：数据被吞掉，加工没有产出。'],
+  ['某加工只有输出数据流、没有任何输入数据流', '奇迹', '只有出没有进 = 奇迹：无中生有地输出数据。'],
+  ['子图的输入输出数据流与父图对应加工的不一致', '父子图不平衡', '父子图平衡：数量与方向都必须完全一致。'],
+  ['数据流直接从一个外部实体流向另一个外部实体', '外部实体直连', '外部实体之间不能直接连：必须经过加工处理。'],
+  ['数据流直接从一个数据存储流向另一个数据存储', '存储直连', '数据存储之间不能直接连：必须经过加工。']
+];
+const ERQ_BANK = [
+  ['每个部门有多名员工，每名员工只属于一个部门（部门-员工）', '1:n', '一对多：联系并入 n 端（员工表加部门号外键）。'],
+  ['学生选修课程：一门课多名学生、一名学生多门课', 'm:n', '多对多：独立成联系表（学号+课程号为主键，成绩放联系表）。'],
+  ['每个部门只有一个经理，一个经理只管理一个部门', '1:1', '一对一：并入任一端都可以。'],
+  ['一名作者可写多本书，一本书可多人合著（作者-图书）', 'm:n', '多对多：独立成表。'],
+  ['每个班级有多名学生，每名学生只在一个班级（班级-学生）', '1:n', '一对多：并入 n 端（学生表加班级号外键）。']
+];
+const UQ_BANK = [
+  ['描述系统的功能需求、参与者与系统的交互', '用例图', '用例图=功能+参与者椭圆图。'],
+  ['展示对象之间按【时间顺序】组织的消息交互', '顺序图', '时间顺序 → 顺序图（生命线+消息箭头）。'],
+  ['按【对象组织】消息交互、链路上标序号（旧称协作图）', '通信图', '通信图与顺序图语义等价，组织视角不同。'],
+  ['描述对象生命周期内的【状态变迁】及触发事件', '状态图', '状态图=圆角状态框+事件转移。'],
+  ['描述有【并行】行为、分支与流转的工作流', '活动图', '活动图=分岔汇合粗横条+泳道。'],
+  ['展示系统的【硬件拓扑】与节点上部署的软件', '部署图', '部署图=节点立方体（10号题46）。'],
+  ['描述系统的【静态结构】：类、属性、操作与关系', '类图', '静态结构 → 类图（六关系见 25 号）。'],
+  ['描述代码构件及其之间的依赖关系', '构件图', '构件图=编译后代码单元的依赖。']
+];
+const ALQ_BANK = [
+  ['单链表遍历中，p 后移到下一个结点应填：p = ______', 'p=p->next', '链表推进三板斧之一；写成 p++ 是数组思维，链表错。'],
+  ['单链表"未到表尾"的循环条件是：while(______)', 'p!=NULL', 'p 非空才继续；若还要用 p->next，条件常写 p->next!=NULL。'],
+  ['二分查找继续在右半区查找，边界更新：______', 'lo=mid+1', '左闭右闭区间：mid 已比较过，±1 防死循环。'],
+  ['交换变量 a、b 的三行代码中，暂存变量通常命名为', 'temp', '约定俗成；判分看逻辑不是名字，但代码信号词要认识。'],
+  ['递归函数必须有______，否则无限递归栈溢出', '出口', '先写出口再写自调用；出口通常是最小规模情形。']
+];
+const DPM_BANK = [
+  ['定义创建对象的接口，让【子类决定】实例化哪个类', '工厂方法', '信号：Creator+factoryMethod，延迟到子类。'],
+  ['创建【一系列相关】对象而无需指定具体类', '抽象工厂', '信号：多个 createXxx 成一族。'],
+  ['保证一个类【只有一个实例】并提供全局访问点', '单例', '代码信号：getInstance() + 私有构造。'],
+  ['通过【克隆】已有对象来创建新对象', '原型', '代码信号：clone()/Cloneable。'],
+  ['将复杂对象的【构建分步骤】进行，同一过程可出不同表示', '生成器', '又称建造者；信号：Builder+Director。'],
+  ['把一个类接口【转换】成客户希望的另一个接口', '适配器', '信号：Adapter 包 Adaptee 实现 Target。'],
+  ['将抽象部分与实现部分【分离，使两维独立变化】', '桥接', '信号：Abstraction 持 Implementor（避免多继承爆炸）。'],
+  ['【动态地】给对象添加额外职责（同接口包裹叠加）', '装饰器', '信号：Decorator 同接口+成员对象。'],
+  ['为【子系统的一组接口】提供统一的高层接口', '外观', '信号：Facade 集中调用多个子系统。'],
+  ['为其他对象提供【代理】以控制对它的访问', '代理', '远程/虚拟/保护代理；同接口+控制转发。'],
+  ['将对象组成【树形的部分-整体】层次，一致对待单个与组合', '组合', '信号：children 列表+operation 递归。'],
+  ['定义对象间【一对多】依赖，状态变化自动通知所有依赖者', '观察者', '信号：attach/detach/notify。'],
+  ['封装一族可互相替换的【算法】，算法变化不影响客户', '策略', '信号：Context 持 Strategy，setStrategy 换。']
+];
+
+/* ================= 出题工具 ================= */
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+const normTxt = s => String(s).replace(/\s+/g, '').replace(/，/g, ',').replace(/：/g, ':').toUpperCase();
+function bankGen(bank){ return function(){
+  const e = pick(bank);
+  return { stem: '「<b>' + e[0] + '</b>」——（填空）', clear: ['A'], ans: { A: e[1] }, steps: '答案：' + e[1] + '\n' + e[2] };
+}; }
+
+/* ================= 页面骨架 ================= */
+const SECTIONS = [['dfd', '① 数据流图'], ['db', '② 数据库'], ['uml', '③ UML'], ['alg', '④ C算法'], ['dp', '⑤ 设计模式']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0] === 'dfd') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= SVG 交互 ================= */
+function dfDraw(sel){
+  const parts = [];
+  parts.push('<defs><marker id="dfa" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#4f46e5"/></marker></defs>');
+  // 黑洞（左）
+  parts.push('<text x="165" y="24" text-anchor="middle" font-size="14" font-weight="bold" fill="' + (sel === 0 ? '#dc2626' : '#3730a3') + '">黑洞：只有进没有出</text>');
+  parts.push('<text x="60" y="86" text-anchor="middle" font-size="12" fill="#0f172a">订单数据</text>');
+  parts.push('<line x1="20" y1="82" x2="108" y2="82" stroke="#4f46e5" stroke-width="2" marker-end="url(#dfa)"/>');
+  parts.push('<circle cx="165" cy="82" r="42" fill="' + (sel === 0 ? '#fee2e2' : '#eef2ff') + '" stroke="#4f46e5" stroke-width="2" class="pick" onclick="dfPick(0)"/>');
+  parts.push('<text x="165" y="87" text-anchor="middle" font-size="13" font-weight="bold" fill="#312e81">P 处理</text>');
+  parts.push('<text x="165" y="140" text-anchor="middle" font-size="12" fill="#64748b">数据进去就没了 ✘</text>');
+  // 奇迹（右）
+  parts.push('<text x="535" y="24" text-anchor="middle" font-size="14" font-weight="bold" fill="' + (sel === 1 ? '#dc2626' : '#3730a3') + '">奇迹：只有出没有进</text>');
+  parts.push('<circle cx="535" cy="82" r="42" fill="' + (sel === 1 ? '#fee2e2' : '#eef2ff') + '" stroke="#4f46e5" stroke-width="2" class="pick" onclick="dfPick(1)"/>');
+  parts.push('<text x="535" y="87" text-anchor="middle" font-size="13" font-weight="bold" fill="#312e81">Q 统计</text>');
+  parts.push('<text x="640" y="86" text-anchor="middle" font-size="12" fill="#0f172a">报表数据</text>');
+  parts.push('<line x1="582" y1="82" x2="668" y2="82" stroke="#4f46e5" stroke-width="2" marker-end="url(#dfa)"/>');
+  parts.push('<text x="535" y="140" text-anchor="middle" font-size="12" fill="#64748b">凭空输出 ✘</text>');
+  document.getElementById('dfSvg').innerHTML = parts.join('');
+}
+function dfPick(i){
+  dfDraw(i);
+  document.getElementById('dfDetail').innerHTML = i === 0
+    ? '<b style="color:#dc2626">黑洞</b>　每个加工必须有输出——数据流图里"只收不发"的加工是典型考点错误。'
+    : '<b style="color:#dc2626">奇迹</b>　每个加工必须有输入——"无中生有"的输出同样是典型考点错误。';
+}
+function ucDraw(sel){
+  const parts = [];
+  parts.push('<defs><marker id="uca" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#4f46e5"/></marker></defs>');
+  parts.push('<rect x="20" y="70" width="26" height="46" rx="6" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/><circle cx="33" cy="60" r="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/><text x="33" y="136" text-anchor="middle" font-size="12" fill="#312e81">用户</text>');
+  const el = (x, y, t) => '<ellipse cx="' + x + '" cy="' + y + '" rx="76" ry="28" fill="#fff" stroke="#4f46e5" stroke-width="2"/><text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#312e81">' + t + '</text>';
+  parts.push(el(250, 105, '提交订单'));
+  parts.push(el(510, 55, '登录验证'));
+  parts.push(el(510, 160, '记录日志'));
+  parts.push('<line x1="48" y1="92" x2="170" y2="100" stroke="#4f46e5" stroke-width="2"/><text x="108" y="86" font-size="11" fill="#64748b"></text>');
+  // include: 基 → 被包含（箭头出基）
+  parts.push('<line x1="320" y1="88" x2="436" y2="66" stroke="#4f46e5" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#uca)" class="pick" onclick="ucPick(0)"/>');
+  parts.push('<text x="378" y="66" text-anchor="middle" font-size="12" font-weight="bold" fill="#4f46e5">&lt;&lt;include&gt;&gt;</text>');
+  // extend: 扩展 → 基（箭头进基）
+  parts.push('<line x1="445" y1="142" x2="325" y2="122" stroke="#4f46e5" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#uca)" class="pick" onclick="ucPick(1)"/>');
+  parts.push('<text x="385" y="144" text-anchor="middle" font-size="12" font-weight="bold" fill="#4f46e5">&lt;&lt;extend&gt;&gt;</text>');
+  parts.push('<text x="352" y="185" text-anchor="middle" font-size="12.5" fill="' + (sel === 0 ? '#dc2626' : '#64748b') + '">口诀：include 箭头【出基】（基→被包含），extend 箭头【进基】（扩展→基）</text>');
+  document.getElementById('ucSvg').innerHTML = parts.join('');
+}
+function ucPick(i){
+  ucDraw(i);
+  const d = document.getElementById('ucDetail');
+  d.innerHTML = i === 0
+    ? '<b style="color:#4f46e5">&lt;&lt;include&gt;&gt;</b>　必然包含：箭头<b>从基用例指向被包含用例</b>（提交订单 → 包含 → 登录验证）。基用例每次执行都用到它。'
+    : '<b style="color:#4f46e5">&lt;&lt;extend&gt;&gt;</b>　可选扩展：箭头<b>从扩展用例指向基用例</b>（记录日志 → 扩展 → 提交订单）。只在特定条件下发生。';
+}
+function erRun(){
+  const t = document.getElementById('erTxt').value;
+  const res = document.getElementById('erRes'), st = document.getElementById('erSteps');
+  const r = erJudge(t);
+  if(!r){ res.innerHTML = '<div class="rcell"><b>未识别</b><span>描述需含"每个/多/只"等数量词</span></div>'; st.style.display = 'none'; return; }
+  res.innerHTML = '<div class="rcell"><b>联系类型</b><span>' + r.t + '</span></div>';
+  st.style.display = 'block'; st.textContent = r.why;
+}
+function erJudge(t){
+  const s = t || '';
+  if(!s.trim()) return null;
+  const duo = (s.match(/多/g) || []).length;
+  if(duo >= 2) return { t: 'm:n', why: '双方都能"对多" → m:n：独立成联系表（两端主键 + 联系自身属性，主键为组合键）。' };
+  if(/只有一个|仅有一个|唯一/.test(s)) return { t: '1:1', why: '一一对应 → 1:1：并入任一端（加对方主键作外键）。' };
+  if(duo === 1 || /一个.*(多|若干)/.test(s)) return { t: '1:n', why: '一方对多、另一方唯一 → 1:n：并入 n 端，n 端加 1 端主键作外键。' };
+  return null;
+}
+
+/* ================= 随机出题绑定 ================= */
+function mkQuiz(pfx, gen){
+  let q = null;
+  window[pfx + 'New'] = function(){
+    q = gen();
+    document.getElementById(pfx + 'Q').innerHTML = q.stem;
+    (q.clear || []).forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+    document.getElementById(pfx + 'Fb').innerHTML = '';
+    const s = document.getElementById(pfx + 'Steps'); if(s) s.style.display = 'none';
+  };
+  window[pfx + 'Check'] = function(){
+    if(!q) return;
+    let all = true, html = '';
+    Object.keys(q.ans).forEach(k => {
+      const inp = document.getElementById(k); if(!inp) return;
+      const ok = q.cmp ? q.cmp(k, inp.value, q.ans[k]) : normTxt(inp.value) === normTxt(String(q.ans[k]));
+      all = all && ok;
+      html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+    });
+    document.getElementById(pfx + 'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+  };
+  window[pfx + 'Show'] = function(){
+    if(!q) return;
+    Object.keys(q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
+    const s = document.getElementById(pfx + 'Steps'); if(s){ s.style.display = 'block'; s.textContent = q.steps; }
+  };
+  window[pfx + 'New']();
+}
+const dfqGen = bankGen(DFQ_BANK);
+const erqGen = bankGen(ERQ_BANK);
+const uqGen = bankGen(UQ_BANK);
+const alqGen = bankGen(ALQ_BANK);
+const dpmGen = bankGen(DPM_BANK);
+mkQuiz('dfq', dfqGen);
+mkQuiz('erq', erqGen);
+mkQuiz('uq', uqGen);
+mkQuiz('alq', alqGen);
+mkQuiz('dpm', dpmGen);
+
+/* ================= 载入即算 ================= */
+dfDraw(0);
+ucDraw(0); ucPick(0);
+erRun();
+</script>
+</body>
+</html>
