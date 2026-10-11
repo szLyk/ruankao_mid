@@ -305,6 +305,171 @@ void g(){ int x = 2; f(); }
  </div>
 </section>
 
+<!-- ============ 🕸 知识图谱 ============ -->
+<section id="s-kgmap">
+ <div class="card">
+  <h2>🕸 知识图谱 <span style="font-size:12px;color:var(--mut);font-weight:400">红框⭐=年年考/高频 · 点击节点看要点与题号 · 点彩色图例聚焦分类</span></h2>
+  <div class="row"><span id="kgchips" style="display:contents"></span><button class="btn" onclick="kgReset()">⤢ 重置视图</button><span style="font-size:12px;color:var(--mut)" id="kgstats"></span></div>
+  <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+   <div style="flex:1;min-width:520px;border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff"><svg id="kgsvg" viewBox="0 0 1200 800" style="width:100%;display:block;cursor:grab"></svg></div>
+   <aside id="kgpanel" style="width:300px;flex-shrink:0;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;max-height:620px;overflow-y:auto;font-size:13px"><div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框⭐ = 年年考/高频。</div></aside>
+  </div>
+ </div>
+</section>
+
+<script>
+const KG_DATA = {
+CL: { c: ['编译原理', '#6366f1'], g: ['文法与语言', '#0ea5e9'], e: ['表达式传参', '#10b981'], ip: ['产权标准化', '#ef4444'], se: ['安全', '#f59e0b'], mm: ['多媒体数学', '#8b5cf6'] },
+NODES: [
+ { id: 'stage6', n: '编译六阶段', c: 'c', one: '词法→语法→语义→中间代码→优化→目标代码；符号表贯穿', pts: ['非法字符=词法', '缺分号括号=语法', '类型不匹配=语义'], qs: '30页编译页签 · 题1-4', h: 1 },
+ { id: 'civs', n: '编译 vs 解释', c: 'c', one: '编译生成独立目标程序执行快；解释逐句执行不生成', pts: ['解释可交互、跨平台', 'Java 先编译成字节码再解释/JIT'], qs: '30页编译页签 · 题29' },
+ { id: 'mid', n: '中间代码', c: 'c', one: '后缀式、四元式、三元式、语法树——与机器无关', pts: ['便于移植与优化'], qs: '30页编译页签 · 题4' },
+ { id: 'chom', n: '文法四级', c: 'g', one: '0 图灵、1 上下文有关、2 上下文无关、3 正规——逐级加限制', pts: ['2 型：左部单非终结符', '3 型：A→aB / A→a 线性', '能力：0 ⊃ 1 ⊃ 2 ⊃ 3'], qs: '30页文法页签 · 题5', h: 1 },
+ { id: 'auto', n: '自动机对号', c: 'g', one: '3 型↔有限自动机；2 型↔下推自动机（多一个栈）', pts: ['词法分析用 3 型', '语法分析用 2 型'], qs: '30页文法页签 · 题5-6', h: 1 },
+ { id: 'regex', n: '正规式', c: 'g', one: '| 或、· 连接、* 闭包（0 次或多次）', pts: ['(a|b)* = 任意串含空串', '优先级 * > · > |'], qs: '30页文法页签 · 题31' },
+ { id: 'postfix', n: '表达式转换', c: 'e', one: '后缀=操作数在前运算符在后；前缀整体反转', pts: ['栈法：操作数出栈次序定', 'a+b*c → abc*+ / +a*bc'], qs: '30页表达式页签 · 题7-8、33', h: 1 },
+ { id: 'param', n: '传值与传址', c: 'e', one: '传值改副本、传址改本体——年年考读程序', pts: ['传址形参存地址，*p 改原值', 'C 数组名退化为指针=传址'], qs: '30页表达式页签 · 题9', h: 1 },
+ { id: 'scope', n: '作用域', c: 'e', one: '静态看定义处嵌套（C/Java），动态看调用链', pts: ['局部→全局逐层找', '动态作用域只是理论对照'], qs: '30页表达式页签 · 题45' },
+ { id: 'ipyear', n: '知识产权年限', c: 'ip', one: '发明 20 / 实用新型 10 / 外观 15；商标 10 可续；著作权 50', pts: ['均自申请日/注册日/发表日', '署名权等人身权永久', '商业秘密保密即无限期'], qs: '30页产权页签 · 题17-19、35-36', h: 1 },
+ { id: 'ipown', n: '著作权归属', c: 'ip', one: '著作权创作完成自动产生；委托开发无约定归受托方', pts: ['专利/商标须申请注册', '职务作品单位优先'], qs: '30页产权页签 · 题28' },
+ { id: 'std', n: '标准代号', c: 'ip', one: 'GB 强制 / GB/T 推荐 / GB/Z 指导 / DB 地方 / Q/ 企业', pts: ['效力：国标>行标>地标>企标'], qs: '30页产权页签 · 题20、37' },
+ { id: 'crypto', n: '加密分类', c: 'se', one: '对称同钥快（DES/AES）；非对称公私钥慢（RSA）', pts: ['摘要 MD5/SHA 单向验完整', '密钥数：对称 n(n−1)/2、非对称 2n'], qs: '30页安全页签 · 题11-12、46', h: 1 },
+ { id: 'sign', n: '签名与信封', c: 'se', one: '签名=发方私钥加密摘要；信封=收方公钥包对称钥匙', pts: ['签名给真实性+不可否认', '数字证书=CA 背书公钥'], qs: '30页安全页签 · 题13-14' },
+ { id: 'attack', n: '攻击对号', c: 'se', one: '蠕虫自我复制、木马后门、DDoS 淹、SQL 注入拼句子', pts: ['XSS 跨站脚本', '钓鱼=社会工程', '防火墙防外不防内'], qs: '30页安全页签 · 题15-16、34' },
+ { id: 'img', n: '图像计算', c: 'mm', one: '字节 = 像素总数 × 位深 ÷ 8；英寸×dpi=像素', pts: ['65536 色=16 位', 'JPEG 有损、GIF 256 色无损'], qs: '30页安全页签 · 题21、48', h: 1 },
+ { id: 'av', n: '音视频计算', c: 'mm', one: '音频码率=采样率×量化位×声道；视频再乘帧率', pts: ['PAL 25 帧、NTSC 30 帧', 'I 帧独立可解码'], qs: '30页安全页签 · 题22-23、39', h: 1 },
+ { id: 'nyq', n: '采样定理', c: 'mm', one: 'fs ≥ 2×fmax（4kHz 语音→8kHz 采样）', pts: ['与奈奎斯特容量公式区分：那是信道极限'], qs: '30页安全页签 · 题47', h: 1 },
+ { id: 'math', n: '数学套路', c: 'mm', one: '至少一个=1−都不发生；C(n,2)=n(n−1)/2；前真后假才为假', pts: ['假言三段论：P→Q、Q→R ⊢ P→R', '掷双骰子和 8 = 5/36'], qs: '30页数学页签 · 题24-27、41-42' },
+ { id: 'tech', n: '新技术对号', c: 'mm', one: 'SaaS 直接用软件；4V 无 Verification；物联网感知层在底', pts: ['IaaS 租机器、PaaS 租环境', '数据仓库：主题/集成/稳定/历史'], qs: '30页数学页签 · 题43-44、49', h: 1 }
+],
+EDGES: [
+ ['stage6', 'civs', 'cmp', '两种执行方式'], ['stage6', 'mid', 'dep', '阶段产物'],
+ ['chom', 'auto', 'dep', '文法配自动机'], ['regex', 'auto', 'use', '正规式↔有限自动机'], ['chom', 'regex', 'dep', '3 型=正规语言'],
+ ['postfix', 'mid', 'use', '后缀即中间代码'], ['param', 'postfix', 'cmp', '读程序两考点'], ['scope', 'param', 'dep', '同属语言机制'],
+ ['ipyear', 'ipown', 'dep', '产权两半'], ['std', 'ipyear', 'use', '同属背诵'],
+ ['crypto', 'sign', 'dep', '公私钥基础'], ['sign', 'attack', 'cmp', '防护 vs 攻击'],
+ ['img', 'av', 'dep', '公式同源'], ['nyq', 'av', 'dep', '采样定码率'], ['math', 'tech', 'cmp', '套路 vs 对号']
+]
+};
+
+/* ================= 🕸 知识图谱 ================= */
+(function(){
+const CL = KG_DATA.CL, NODES = KG_DATA.NODES, EDGES = KG_DATA.EDGES;
+const COLW = 250, NODEW = 200, NH = 46, VGAP = 26;
+const cats = Object.keys(CL);
+const byCat = {};
+NODES.forEach(n => (byCat[n.c] = byCat[n.c] || []).push(n));
+let maxN = 0;
+cats.forEach(c => {
+  const arr = byCat[c] || []; maxN = Math.max(maxN, arr.length);
+  arr.forEach((n, i) => { n.x = 34 + cats.indexOf(c) * COLW; n.y = 52 + i * (NH + VGAP); n.w = NODEW; });
+});
+const W = 64 + cats.length * COLW, H = 66 + maxN * (NH + VGAP);
+const svg = document.getElementById('kgsvg');
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+let vb = { x: 0, y: 0, w: W, h: H };
+let sel = null, dim = null;
+const EC = { dep: '#2563eb', part: '#16a34a', cmp: '#d97706', use: '#8b5cf6' };
+function nodeById(id){ return NODES.find(n => n.id === id); }
+function trim(x1, y1, rect, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  if(!dx && !dy) return { x: x2, y: y2 };
+  const hw = rect.w / 2 + 4, hh = 27;
+  const sc = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9);
+  return { x: x2 - dx * sc, y: y2 - dy * sc };
+}
+function kgBuild(){
+  const parts = ['<defs><marker id="kga" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>'];
+  cats.forEach(c => {
+    parts.push('<text x="' + (34 + cats.indexOf(c) * COLW) + '" y="30" font-size="13.5" font-weight="bold" fill="' + CL[c][1] + '">' + CL[c][0] + '</text>');
+  });
+  EDGES.forEach(e => {
+    const a = nodeById(e[0]), b = nodeById(e[1]);
+    if(!a || !b) return;
+    const p1 = trim(a.x, a.y, a, b.x, b.y), p2 = trim(b.x, b.y, b, a.x, a.y);
+    const dimE = dim && a.c !== dim && b.c !== dim;
+    const faint = sel && sel !== e[0] && sel !== e[1];
+    parts.push('<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="' + (dimE || faint ? '#e2e8f0' : (EC[e[2]] || '#94a3b8')) + '" stroke-width="' + (dimE || faint ? 1 : 1.7) + '" opacity="' + (dimE ? 0.45 : (faint ? 0.35 : 0.9)) + '" marker-end="url(#kga)"/>');
+    if(sel && (sel === e[0] || sel === e[1])){
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      parts.push('<text x="' + mx + '" y="' + (my - 5) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</text>');
+    }
+  });
+  NODES.forEach(n => {
+    const d = dim && n.c !== dim, faded = sel && sel !== n.id;
+    const col = CL[n.c][1];
+    parts.push('<g onclick="kgPick(\'' + n.id + '\')" style="cursor:pointer" opacity="' + (d ? 0.22 : (faded ? 0.35 : 1)) + '">'
+      + '<rect x="' + n.x + '" y="' + (n.y - 23) + '" width="' + n.w + '" height="' + NH + '" rx="11" fill="' + (sel === n.id ? col : '#fff') + '" stroke="' + (n.h ? '#dc2626' : col) + '" stroke-width="' + (n.h ? 2.5 : 1.6) + '"/>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 1) + '" font-size="13" font-weight="bold" fill="' + (sel === n.id ? '#fff' : '#0f172a') + '">' + (n.h ? '⭐' : '') + n.n + '</text>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 17) + '" font-size="10.5" fill="' + (sel === n.id ? 'rgba(255,255,255,.85)' : '#64748b') + '">' + (n.qs || '') + '</text>'
+      + '</g>');
+  });
+  svg.innerHTML = parts.join('');
+}
+window.kgPick = function(id){
+  sel = (sel === id) ? null : id;
+  const panel = document.getElementById('kgpanel');
+  if(!sel){ panel.innerHTML = '<div style="color:var(--mut)">已取消选中。再点节点查看详情；滚轮缩放、拖拽平移。</div>'; kgBuild(); return; }
+  const n = nodeById(id);
+  if(!n) return;
+  const nb = EDGES.filter(e => e[0] === id || e[1] === id).map(e => {
+    const other = nodeById(e[0] === id ? e[1] : e[0]);
+    return '<li><b style="color:' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</b> → ' + other.n + '</li>';
+  }).join('');
+  panel.innerHTML = '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + (n.h ? '⭐ ' : '') + n.n + '</div>'
+    + '<div style="border-left:3px solid ' + CL[n.c][1] + ';padding-left:8px;margin-bottom:8px;color:#334155">' + n.one + '</div>'
+    + '<ul style="padding-left:18px;margin:0 0 8px">' + (n.pts || []).map(p => '<li>' + p + '</li>').join('') + '</ul>'
+    + (n.qs ? '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px">对应练习：<b>' + n.qs + '</b></div>' : '')
+    + (nb ? '<div style="margin-top:8px"><b style="font-size:12px;color:var(--mut)">关联考点：</b><ul style="padding-left:18px;font-size:12.5px;margin:4px 0 0">' + nb + '</ul></div>' : '');
+  kgBuild();
+};
+window.kgReset = function(){
+  sel = null; dim = null; vb = { x: 0, y: 0, w: W, h: H };
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+  kgBuild();
+  document.getElementById('kgpanel').innerHTML = '<div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框 = ⭐ 年年考/高频。</div>';
+};
+window.kgDim = function(c){ dim = (dim === c) ? null : c; sel = null; kgBuild(); };
+(function(){
+  const box = document.getElementById('kgchips');
+  if(box){
+    Object.keys(CL).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.cssText = 'border-color:' + CL[c][1] + ';padding:3px 10px;font-size:12px;border-radius:12px';
+      b.textContent = CL[c][0];
+      b.onclick = () => kgDim(c);
+      box.appendChild(b);
+    });
+  }
+  const st = document.getElementById('kgstats');
+  if(st) st.textContent = NODES.length + ' 个考点 · ' + EDGES.length + ' 条关联 · 滚轮缩放 / 拖拽平移 / 点图例聚焦';
+})();
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = vb.x + (e.clientX - r.left) / r.width * vb.w;
+  const my = vb.y + (e.clientY - r.top) / r.height * vb.h;
+  const s = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+  vb.w *= s; vb.h *= s;
+  vb.x = mx - (mx - vb.x) * s; vb.y = my - (my - vb.y) * s;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+let pan = null;
+svg.addEventListener('mousedown', e => { pan = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y }; });
+window.addEventListener('mousemove', e => {
+  if(!pan) return;
+  const r = svg.getBoundingClientRect();
+  vb.x = pan.vx - (e.clientX - pan.x) * vb.w / r.width;
+  vb.y = pan.vy - (e.clientY - pan.y) * vb.h / r.height;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+window.addEventListener('mouseup', () => { pan = null; });
+kgBuild();
+})();
+
+</script>
+
 </main>
 <footer>学习主线：15-讲义题库-程序语言与背诵类（49 题）+ 06-高频背诵清单 → 本页 → 17 系统「程序语言与背诵类」→ 错题重练。加密/签名细节用 24 号课件。</footer>
 <script>
@@ -501,7 +666,7 @@ LTOOL.mqGen = function(){
 };
 
 /* ================= 页面骨架 ================= */
-const SECTIONS = [['comp', '🏭 编译原理'], ['gram', '🎓 文法自动机'], ['expr', '🧮 表达式传参'], ['ip', '📅 知识产权'], ['sec', '🔑 安全多媒体'], ['misc', '☁️ 数学新技术']];
+const SECTIONS = [['comp', '🏭 编译原理'], ['gram', '🎓 文法自动机'], ['expr', '🧮 表达式传参'], ['ip', '📅 知识产权'], ['sec', '🔑 安全多媒体'], ['misc', '☁️ 数学新技术'], ['kgmap', '🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));

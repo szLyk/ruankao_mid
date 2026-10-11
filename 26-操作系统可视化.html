@@ -509,6 +509,169 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
  </div>
 </section>
 
+<!-- ============ 🕸 知识图谱 ============ -->
+<section id="s-kgmap">
+ <div class="card">
+  <h2>🕸 知识图谱 <span style="font-size:12px;color:var(--mut);font-weight:400">红框⭐=年年考/高频 · 点击节点看要点与题号 · 点彩色图例聚焦分类</span></h2>
+  <div class="row"><span id="kgchips" style="display:contents"></span><button class="btn" onclick="kgReset()">⤢ 重置视图</button><span style="font-size:12px;color:var(--mut)" id="kgstats"></span></div>
+  <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+   <div style="flex:1;min-width:520px;border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff"><svg id="kgsvg" viewBox="0 0 1200 800" style="width:100%;display:block;cursor:grab"></svg></div>
+   <aside id="kgpanel" style="width:300px;flex-shrink:0;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;max-height:620px;overflow-y:auto;font-size:13px"><div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框⭐ = 年年考/高频。</div></aside>
+  </div>
+ </div>
+</section>
+
+<script>
+const KG_DATA = {
+CL: { p: ['进程', '#6366f1'], s: ['同步互斥', '#0ea5e9'], d: ['死锁', '#ef4444'], m: ['存储管理', '#10b981'], f: ['文件与设备', '#f59e0b'], sc: ['调度', '#8b5cf6'] },
+NODES: [
+ { id: 'p3', n: '三态与五态', c: 'p', one: '运行/就绪/阻塞是骨架；加创建/终止成五态', pts: ['就绪→运行：被调度', '运行→阻塞：等 I/O 等事件', '阻塞只能先回就绪，不能直接运行'], qs: '本页进程状态页签 · 题5-6', h: 1 },
+ { id: 'thread', n: '线程', c: 'p', one: '调度单位；共享进程资源、独享寄存器与栈', pts: ['共享：代码/数据/文件', '独享：PC、寄存器、栈', '用户级/内核级线程'], qs: '13号§1' },
+ { id: 'pvgraph', n: '前趋图与 PV', c: 's', one: '前趋边 = 信号量：起点完成后 V，终点开始前 P', pts: ['每条边一个信号量，初值 0', 'P 申请、V 释放', '多前驱：各 P 一把；多后继：各 V 一把'], qs: '本页 PV 页签 · 题8-10', h: 1 },
+ { id: 'sem', n: '信号量机制', c: 's', one: 'P 减 V 加；负值绝对值=等待进程数', pts: ['P(s)<0 睡眠进等待队列', 'V(s)≤0 唤醒一个等待者', '初值即资源数；mutex=1'], qs: '讲义§2 · 题11' },
+ { id: 'pc', n: '生产者-消费者', c: 's', one: 'empty=n、full=0、mutex=1 三信号量模板', pts: ['先同步 P 后互斥 P，顺序反了会死锁', 'V 顺序无关', '读者-写者：多读互写'], qs: '本页 PV 页签 · 题12-14', h: 1 },
+ { id: 'crit', n: '临界区管理', c: 's', one: '互斥进入、空闲让进、有限等待三准则', pts: ['软件解法：Peterson', '硬件：TestAndSet/Swap'], qs: '13号§2' },
+ { id: 'cond4', n: '死锁四条件', c: 'd', one: '互斥、占有等待、不剥夺、环路等待——四个都要才死锁', pts: ['破坏任一条件可预防', '一次性申请破坏占有等待', '资源有序分配破坏环路'], qs: '讲义§3 · 题15', h: 1 },
+ { id: 'noDl', n: '不死锁资源数', c: 'd', one: '至少 n(m−1)+1 个资源必然不死锁', pts: ['最坏：每人攥 m−1 个', '剩 1 个总能轮转'], qs: '本页死锁页签 · 题16', h: 1 },
+ { id: 'banker', n: '银行家算法', c: 'd', one: '试分配后找安全序列：尚需 ≤ 可用则可回收', pts: ['安全序列不唯一', '不安全 ≠ 必死锁', '三步：Need→试探→回收'], qs: '本页死锁页签 · 题17', h: 1 },
+ { id: 'paget', n: '页式地址转换', c: 'm', one: '页号=逻辑地址÷页大小（商），偏移=余数', pts: ['物理地址=页框号×页大小+偏移', '位视角：高位是页号低位是偏移', '页大小 2^k → 偏移低 k 位'], qs: '本页页式页签 · 题18-20', h: 1 },
+ { id: 'tlb', n: '快表 TLB', c: 'm', one: '页表的高速缓存；命中取一条数据只访存 1 次', pts: ['不命中：访存 2 次（页表+数据）', '相联存储器按内容查找'], qs: '13号§5 · 题32' },
+ { id: 'replace', n: '页面置换', c: 'm', one: 'FIFO 可能 Belady 异常；LRU 看过去、OPT 看未来', pts: ['LRU：淘汰最久未访问', 'OPT：理论最优、无法实现', 'Belady：帧越多缺页反而越多'], qs: '本页置换页签 · 题46', h: 1 },
+ { id: 'disk', n: '磁盘调度', c: 'f', one: 'SSTF 只看距离；SCAN 沿方向扫到头再折返', pts: ['SCAN 电梯调度', 'LOOK 到最远请求即折返（不到物理头）'], qs: '本页调度页签 · 题43-44', h: 1 },
+ { id: 'bitmap', n: '位示图', c: 'f', one: '字号 = ⌊块号÷字长⌋，位 = 块号 mod 字长（0 起）', pts: ['1 位表示 1 块占用', '整图字节 = 块数/8'], qs: '本页调度页签 · 题45' },
+ { id: 'inode', n: 'UNIX 索引节点', c: 'f', one: '直接+一级+二级混合索引，兼顾小文件与大文件', pts: ['地址项分工：直接块/一次间址/二次间址', '最大文件=各级可指块数之和'], qs: '13号§7 · 题56' },
+ { id: 'dir', n: '文件目录', c: 'f', one: 'FCB 集合；绝对路径从根、相对从当前', pts: ['按名存取', '目录项=名字+索引节点号'], qs: '13号§7 · 题57' },
+ { id: 'io', n: 'I/O 三方式', c: 'f', one: '查询→中断→DMA：CPU 介入依次减少', pts: ['查询：忙等', '中断：传完打扰 CPU', 'DMA：设备与内存直达，仅首尾打扰'], qs: '讲义§6 · 题17' },
+ { id: 'sched', n: '调度算法', c: 'sc', one: 'FCFS 公平、SJF 最短优先、响应比=（等+服）÷服', pts: ['SJF 平均周转最短但可能饿死长作业', '高响应比兼顾新旧', '轮转：分时系统保响应'], qs: '本页调度页签 · 题47', h: 1 },
+ { id: 'turn', n: '周转时间', c: 'sc', one: '周转 = 完成时刻 − 到达时刻；带权 = 周转 ÷ 服务', pts: ['平均周转比较算法优劣', 'SJF/高响对比 FCFS 短'], qs: '本页调度页签 · 题22' }
+],
+EDGES: [
+ ['p3', 'thread', 'cmp', '进程 vs 线程'], ['pvgraph', 'sem', 'dep', '前趋图用信号量'], ['sem', 'pc', 'dep', '模板套用'], ['sem', 'crit', 'use', '互斥实现'], ['pc', 'crit', 'use', '互斥访问缓冲区'],
+ ['sem', 'cond4', 'use', '申请不当致死锁'], ['cond4', 'noDl', 'dep', '资源数推论'], ['cond4', 'banker', 'use', '避免死锁'], ['banker', 'noDl', 'cmp', '避免 vs 保证'],
+ ['paget', 'tlb', 'use', '加速查表'], ['paget', 'replace', 'dep', '缺页才置换'], ['replace', 'tlb', 'cmp', '不同层机制'],
+ ['disk', 'io', 'use', '设备服务'], ['bitmap', 'dir', 'use', '占用登记'], ['inode', 'dir', 'dep', '目录指向节点'], ['io', 'disk', 'use', '驱动磁盘'],
+ ['sched', 'p3', 'use', '调度切状态'], ['sched', 'turn', 'use', '算周转比较'], ['thread', 'sched', 'dep', '线程被调度']
+]
+};
+
+/* ================= 🕸 知识图谱 ================= */
+(function(){
+const CL = KG_DATA.CL, NODES = KG_DATA.NODES, EDGES = KG_DATA.EDGES;
+const COLW = 250, NODEW = 200, NH = 46, VGAP = 26;
+const cats = Object.keys(CL);
+const byCat = {};
+NODES.forEach(n => (byCat[n.c] = byCat[n.c] || []).push(n));
+let maxN = 0;
+cats.forEach(c => {
+  const arr = byCat[c] || []; maxN = Math.max(maxN, arr.length);
+  arr.forEach((n, i) => { n.x = 34 + cats.indexOf(c) * COLW; n.y = 52 + i * (NH + VGAP); n.w = NODEW; });
+});
+const W = 64 + cats.length * COLW, H = 66 + maxN * (NH + VGAP);
+const svg = document.getElementById('kgsvg');
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+let vb = { x: 0, y: 0, w: W, h: H };
+let sel = null, dim = null;
+const EC = { dep: '#2563eb', part: '#16a34a', cmp: '#d97706', use: '#8b5cf6' };
+function nodeById(id){ return NODES.find(n => n.id === id); }
+function trim(x1, y1, rect, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  if(!dx && !dy) return { x: x2, y: y2 };
+  const hw = rect.w / 2 + 4, hh = 27;
+  const sc = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9);
+  return { x: x2 - dx * sc, y: y2 - dy * sc };
+}
+function kgBuild(){
+  const parts = ['<defs><marker id="kga" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>'];
+  cats.forEach(c => {
+    parts.push('<text x="' + (34 + cats.indexOf(c) * COLW) + '" y="30" font-size="13.5" font-weight="bold" fill="' + CL[c][1] + '">' + CL[c][0] + '</text>');
+  });
+  EDGES.forEach(e => {
+    const a = nodeById(e[0]), b = nodeById(e[1]);
+    if(!a || !b) return;
+    const p1 = trim(a.x, a.y, a, b.x, b.y), p2 = trim(b.x, b.y, b, a.x, a.y);
+    const dimE = dim && a.c !== dim && b.c !== dim;
+    const faint = sel && sel !== e[0] && sel !== e[1];
+    parts.push('<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="' + (dimE || faint ? '#e2e8f0' : (EC[e[2]] || '#94a3b8')) + '" stroke-width="' + (dimE || faint ? 1 : 1.7) + '" opacity="' + (dimE ? 0.45 : (faint ? 0.35 : 0.9)) + '" marker-end="url(#kga)"/>');
+    if(sel && (sel === e[0] || sel === e[1])){
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      parts.push('<text x="' + mx + '" y="' + (my - 5) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</text>');
+    }
+  });
+  NODES.forEach(n => {
+    const d = dim && n.c !== dim, faded = sel && sel !== n.id;
+    const col = CL[n.c][1];
+    parts.push('<g onclick="kgPick(\'' + n.id + '\')" style="cursor:pointer" opacity="' + (d ? 0.22 : (faded ? 0.35 : 1)) + '">'
+      + '<rect x="' + n.x + '" y="' + (n.y - 23) + '" width="' + n.w + '" height="' + NH + '" rx="11" fill="' + (sel === n.id ? col : '#fff') + '" stroke="' + (n.h ? '#dc2626' : col) + '" stroke-width="' + (n.h ? 2.5 : 1.6) + '"/>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 1) + '" font-size="13" font-weight="bold" fill="' + (sel === n.id ? '#fff' : '#0f172a') + '">' + (n.h ? '⭐' : '') + n.n + '</text>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 17) + '" font-size="10.5" fill="' + (sel === n.id ? 'rgba(255,255,255,.85)' : '#64748b') + '">' + (n.qs || '') + '</text>'
+      + '</g>');
+  });
+  svg.innerHTML = parts.join('');
+}
+window.kgPick = function(id){
+  sel = (sel === id) ? null : id;
+  const panel = document.getElementById('kgpanel');
+  if(!sel){ panel.innerHTML = '<div style="color:var(--mut)">已取消选中。再点节点查看详情；滚轮缩放、拖拽平移。</div>'; kgBuild(); return; }
+  const n = nodeById(id);
+  if(!n) return;
+  const nb = EDGES.filter(e => e[0] === id || e[1] === id).map(e => {
+    const other = nodeById(e[0] === id ? e[1] : e[0]);
+    return '<li><b style="color:' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</b> → ' + other.n + '</li>';
+  }).join('');
+  panel.innerHTML = '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + (n.h ? '⭐ ' : '') + n.n + '</div>'
+    + '<div style="border-left:3px solid ' + CL[n.c][1] + ';padding-left:8px;margin-bottom:8px;color:#334155">' + n.one + '</div>'
+    + '<ul style="padding-left:18px;margin:0 0 8px">' + (n.pts || []).map(p => '<li>' + p + '</li>').join('') + '</ul>'
+    + (n.qs ? '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px">对应练习：<b>' + n.qs + '</b></div>' : '')
+    + (nb ? '<div style="margin-top:8px"><b style="font-size:12px;color:var(--mut)">关联考点：</b><ul style="padding-left:18px;font-size:12.5px;margin:4px 0 0">' + nb + '</ul></div>' : '');
+  kgBuild();
+};
+window.kgReset = function(){
+  sel = null; dim = null; vb = { x: 0, y: 0, w: W, h: H };
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+  kgBuild();
+  document.getElementById('kgpanel').innerHTML = '<div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框 = ⭐ 年年考/高频。</div>';
+};
+window.kgDim = function(c){ dim = (dim === c) ? null : c; sel = null; kgBuild(); };
+(function(){
+  const box = document.getElementById('kgchips');
+  if(box){
+    Object.keys(CL).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.cssText = 'border-color:' + CL[c][1] + ';padding:3px 10px;font-size:12px;border-radius:12px';
+      b.textContent = CL[c][0];
+      b.onclick = () => kgDim(c);
+      box.appendChild(b);
+    });
+  }
+  const st = document.getElementById('kgstats');
+  if(st) st.textContent = NODES.length + ' 个考点 · ' + EDGES.length + ' 条关联 · 滚轮缩放 / 拖拽平移 / 点图例聚焦';
+})();
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = vb.x + (e.clientX - r.left) / r.width * vb.w;
+  const my = vb.y + (e.clientY - r.top) / r.height * vb.h;
+  const s = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+  vb.w *= s; vb.h *= s;
+  vb.x = mx - (mx - vb.x) * s; vb.y = my - (my - vb.y) * s;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+let pan = null;
+svg.addEventListener('mousedown', e => { pan = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y }; });
+window.addEventListener('mousemove', e => {
+  if(!pan) return;
+  const r = svg.getBoundingClientRect();
+  vb.x = pan.vx - (e.clientX - pan.x) * vb.w / r.width;
+  vb.y = pan.vy - (e.clientY - pan.y) * vb.h / r.height;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+window.addEventListener('mouseup', () => { pan = null; });
+kgBuild();
+})();
+
+</script>
+
 </main>
 <footer>学习主线：13-讲义题库-操作系统（讲义 + 白话详解 D1-D9）→ 本页（可视化 + 出题）→ 17 系统「操作系统」55题 → 错题重练（错题考点已在卡片标题标出题号）。</footer>
 
@@ -747,7 +910,7 @@ const STATES = {
 };
 
 /* ================= 导航 ================= */
-const SECTIONS = [['pv','🚦 进程与PV'],['state','🔄 进程状态'],['page','📐 页式地址转换'],['rp','🔁 页面置换'],['dead','🔒 死锁'],['sched','📋 调度与速查']];
+const SECTIONS = [['pv','🚦 进程与PV'],['state','🔄 进程状态'],['page','📐 页式地址转换'],['rp','🔁 页面置换'],['dead','🔒 死锁'],['sched','📋 调度与速查'], ['kgmap', '🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t===id));

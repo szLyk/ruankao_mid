@@ -419,6 +419,175 @@ v4 v5 2</textarea>
  </div>
 </section>
 
+<!-- ============ 🕸 知识图谱 ============ -->
+<section id="s-kgmap">
+ <div class="card">
+  <h2>🕸 知识图谱 <span style="font-size:12px;color:var(--mut);font-weight:400">红框⭐=年年考/高频 · 点击节点看要点与题号 · 点彩色图例聚焦分类</span></h2>
+  <div class="row"><span id="kgchips" style="display:contents"></span><button class="btn" onclick="kgReset()">⤢ 重置视图</button><span style="font-size:12px;color:var(--mut)" id="kgstats"></span></div>
+  <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+   <div style="flex:1;min-width:520px;border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff"><svg id="kgsvg" viewBox="0 0 1200 800" style="width:100%;display:block;cursor:grab"></svg></div>
+   <aside id="kgpanel" style="width:300px;flex-shrink:0;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;max-height:620px;overflow-y:auto;font-size:13px"><div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框⭐ = 年年考/高频。</div></aside>
+  </div>
+ </div>
+</section>
+
+<script>
+const KG_DATA = {
+CL: { l: ['线性结构', '#6366f1'], t: ['树', '#10b981'], g: ['图', '#0ea5e9'], s: ['查找', '#f59e0b'], o: ['排序', '#ef4444'], a: ['算法策略', '#8b5cf6'] },
+NODES: [
+ { id: 'list', n: '顺序表与链表', c: 'l', one: '链表插入先接后断；顺序表随机访问 O(1)', pts: ['s→next=p→next; p→next=s', '删除后继：p→next=q→next', '链表查找只能顺序'], qs: '本页线性表页签 · 题36' },
+ { id: 'stack', n: '栈', c: 'l', one: 'FILO；表达式求值、括号匹配、递归全靠它', pts: ['出栈序列判定：边进边比', '卡特兰数种数', 'DFS 用栈'], qs: '本页线性表页签 · 题3、51', h: 1 },
+ { id: 'queue', n: '队列与循环队列', c: 'l', one: 'FIFO；个数 =(rear−front+m)%m，牺牲一格判满', pts: ['队满 =(rear+1)%m==front', '队空 rear==front', '最多存 m−1 个'], qs: '本页线性表页签 · 题1-2', h: 1 },
+ { id: 'arr', n: '数组与压缩', c: 'l', one: '行优先地址 = 首址 + (i×列数+j)×L', pts: ['列优先把 i、j 对调', '对称矩阵下三角 n(n+1)/2', '三对角/稀疏三角'], qs: '本页策略页签 · 题37、53' },
+ { id: 'kmp', n: '串与 KMP', c: 'l', one: 'next[i] = 最长相等真前后缀；非空子串 n(n+1)/2 个', pts: ['"ababa"→0,0,1,2,3', '失配滑到 next 位不回溯主串'], qs: '讲义§8 · 题39、55' },
+ { id: 'treep', n: '树性质', c: 't', one: 'n₀ = n₂ + 1 永远成立；完全二叉树高 ⌊log₂n⌋+1', pts: ['哈夫曼 n 叶共 2n−1 结点', '二叉链表空指针 n+1 个', '总结点=度数和+1'], qs: '本页树页签 · 题4-5、8', h: 1 },
+ { id: 'trav', n: '遍历与复原', c: 't', one: '先/后序定根，中序分左右——两个序列才能唯一还原', pts: ['先序首=根、后序尾=根', '中序分家递归重建', '先根遍历树=先序二叉树'], qs: '本页树页签 · 题6、57', h: 1 },
+ { id: 'huff', n: '哈夫曼树', c: 't', one: '每次合并最小两个；WPL=Σ合并和=Σ权×路径长', pts: ['无度 1 结点', '前缀码不歧义'], qs: '本页树页签 · 题7', h: 1 },
+ { id: 'bst', n: 'BST 二叉排序树', c: 't', one: '左<根<右；中序遍历得递增序列', pts: ['插入从根比较向下', '有序输入退化成链 O(n)'], qs: '本页树页签 · 题9、42', h: 1 },
+ { id: 'avl', n: 'AVL 平衡树', c: 't', one: '平衡因子 |左−右|≤1；LL 右旋、RR 左旋、LR/RL 双旋', pts: ['看插入位置判旋转类型', '旋转后仍 BST'], qs: '讲义§7 · 题10、43' },
+ { id: 'heap', n: '堆', c: 't', one: '完全二叉树形态；从 ⌊n/2⌋ 起向下调整建堆', pts: ['大根堆 a[i]≥孩子', '取堆顶：与末尾交换再调整'], qs: '本页排序页签 · 题28-30、44', h: 1 },
+ { id: 'gstore', n: '图存储', c: 'g', one: '邻接矩阵 n² 适合稠密；邻接表 n+e 适合稀疏', pts: ['无向矩阵对称', '有向图度数：行出列入'], qs: '讲义§3 · 题11-12' },
+ { id: 'gtrav', n: '图遍历', c: 'g', one: 'DFS 用栈（回溯），BFS 用队列（层次）', pts: ['BFS 层次≈树的层序', '连通分量逐个遍历'], qs: '本页图页签 · 题13、35', h: 1 },
+ { id: 'topo', n: '拓扑排序', c: 'g', one: '反复拿走入度 0 的点；仅 DAG 可行', pts: ['序列不一定唯一', '个数用枚举/乘法原理'], qs: '本页图页签 · 题14、50', h: 1 },
+ { id: 'dij', n: '最短路 Dijkstra', c: 'g', one: '贪心扩张，边权必须非负', pts: ['Floyd 求全源、DP 思想', '负权边两者都不能直接用'], qs: '讲义§3 · 题15', h: 1 },
+ { id: 'mst', n: '最小生成树', c: 'g', one: 'Prim 按点适合稠密；Kruskal 按边+并查集适合稀疏', pts: ['n 个顶点 n−1 条边', '权互不相同则唯一'], qs: '讲义§3 · 题16、48' },
+ { id: 'aoe', n: '关键路径', c: 'g', one: 'AOE 最长路径 = 总工期；最早=最迟的活动是关键活动', pts: ['缩短工期只能压关键活动', '关键路径可能多条'], qs: '本页图页签 · 题40、59', h: 1 },
+ { id: 'bin', n: '二分查找', c: 's', one: '要有序+顺序存储；最多 ⌈log₂(n+1)⌉ 次', pts: ['判定树即折半过程', 'mid=(lo+hi)/2 交替收缩'], qs: '本页查找页签 · 题17-18', h: 1 },
+ { id: 'hash', n: '哈希表', c: 's', one: 'ASL 只与装填因子有关，与表长无关', pts: ['线性探测顺延占坑会堆积', '链地址同链依次比', '成功比较次数=位置'], qs: '本页查找页签 · 题19-20、41、58', h: 1 },
+ { id: 'sort8', n: '八大排序总表', c: 'o', one: '复杂度+稳定性一张表；不稳定：快选堆希', pts: ['快排/选择/堆/希尔不稳定', '归并空间 O(n) 最大', '基数不比较关键字'], qs: '本页排序页签 · 题21-23、27', h: 1 },
+ { id: 'ins', n: '插入类', c: 'o', one: '直接插入基本有序最快；希尔增量逐趟缩到 1', pts: ['直接插入 O(n²)~O(n)', '希尔分组插入'], qs: '本页排序页签 · 题46' },
+ { id: 'swap', n: '交换类', c: 'o', one: '冒泡相邻交换大数沉底；快排每趟定基准位置', pts: ['快排基本有序时最坏 O(n²)', '一趟填坑：左右交替'], qs: '本页排序页签 · 题24、56', h: 1 },
+ { id: 'selc', n: '选择类', c: 'o', one: '简单选择比较次数固定 n(n−1)/2；堆排选前 k 大最划算', pts: ['一趟选最小放头部'], qs: '本页排序页签 · 题25-26' },
+ { id: 'merge', n: '归并与基数', c: 'o', one: '归并 ⌈log₂n⌉ 趟、稳定但占 O(n)；基数按位分桶', pts: ['外部排序基础', '基数适合位数少的多关键字'], qs: '本页排序页签 · 题34、45、47', h: 1 },
+ { id: 'strat', n: '四大策略', c: 'a', one: '分治=独立子问题；贪心=局部最优；DP=重叠子问题；回溯=可退回', pts: ['DP 两条件：最优子结构+重叠', '贪心不保证全局最优', 'N 皇后=回溯教科书'], qs: '本页策略页签 · 题31-34、52', h: 1 }
+],
+EDGES: [
+ ['list', 'stack', 'cmp', 'LIFO 限定'], ['stack', 'queue', 'cmp', 'FILO vs FIFO'], ['queue', 'arr', 'dep', '数组实现循环'], ['arr', 'list', 'cmp', '存取 vs 插删'],
+ ['kmp', 'list', 'use', '串的存储'], ['treep', 'trav', 'dep', '性质支撑遍历'], ['trav', 'bst', 'use', '中序验 BST'], ['huff', 'treep', 'dep', '2n−1 推论'], ['bst', 'avl', 'dep', '失衡才旋'], ['heap', 'treep', 'dep', '完全二叉树'],
+ ['gstore', 'gtrav', 'dep', '存储定遍历'], ['gtrav', 'topo', 'dep', 'DAG 才有拓扑'], ['dij', 'gtrav', 'use', '贪心扩张'], ['mst', 'dij', 'cmp', '贪心两兄弟'], ['aoe', 'topo', 'dep', '先拓扑再关键路径'],
+ ['bin', 'trav', 'cmp', '判定树像二叉树'], ['hash', 'bin', 'cmp', 'O(1) vs O(logn)'],
+ ['sort8', 'ins', 'dep', '总表分家'], ['sort8', 'swap', 'dep', '总表分家'], ['sort8', 'selc', 'dep', '总表分家'], ['sort8', 'merge', 'dep', '总表分家'], ['swap', 'strat', 'dep', '分治快排'], ['merge', 'strat', 'dep', '分治归并'], ['heap', 'selc', 'use', '堆属选择类']
+]
+};
+
+/* ================= 🕸 知识图谱 ================= */
+(function(){
+const CL = KG_DATA.CL, NODES = KG_DATA.NODES, EDGES = KG_DATA.EDGES;
+const COLW = 250, NODEW = 200, NH = 46, VGAP = 26;
+const cats = Object.keys(CL);
+const byCat = {};
+NODES.forEach(n => (byCat[n.c] = byCat[n.c] || []).push(n));
+let maxN = 0;
+cats.forEach(c => {
+  const arr = byCat[c] || []; maxN = Math.max(maxN, arr.length);
+  arr.forEach((n, i) => { n.x = 34 + cats.indexOf(c) * COLW; n.y = 52 + i * (NH + VGAP); n.w = NODEW; });
+});
+const W = 64 + cats.length * COLW, H = 66 + maxN * (NH + VGAP);
+const svg = document.getElementById('kgsvg');
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+let vb = { x: 0, y: 0, w: W, h: H };
+let sel = null, dim = null;
+const EC = { dep: '#2563eb', part: '#16a34a', cmp: '#d97706', use: '#8b5cf6' };
+function nodeById(id){ return NODES.find(n => n.id === id); }
+function trim(x1, y1, rect, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  if(!dx && !dy) return { x: x2, y: y2 };
+  const hw = rect.w / 2 + 4, hh = 27;
+  const sc = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9);
+  return { x: x2 - dx * sc, y: y2 - dy * sc };
+}
+function kgBuild(){
+  const parts = ['<defs><marker id="kga" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>'];
+  cats.forEach(c => {
+    parts.push('<text x="' + (34 + cats.indexOf(c) * COLW) + '" y="30" font-size="13.5" font-weight="bold" fill="' + CL[c][1] + '">' + CL[c][0] + '</text>');
+  });
+  EDGES.forEach(e => {
+    const a = nodeById(e[0]), b = nodeById(e[1]);
+    if(!a || !b) return;
+    const p1 = trim(a.x, a.y, a, b.x, b.y), p2 = trim(b.x, b.y, b, a.x, a.y);
+    const dimE = dim && a.c !== dim && b.c !== dim;
+    const faint = sel && sel !== e[0] && sel !== e[1];
+    parts.push('<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="' + (dimE || faint ? '#e2e8f0' : (EC[e[2]] || '#94a3b8')) + '" stroke-width="' + (dimE || faint ? 1 : 1.7) + '" opacity="' + (dimE ? 0.45 : (faint ? 0.35 : 0.9)) + '" marker-end="url(#kga)"/>');
+    if(sel && (sel === e[0] || sel === e[1])){
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      parts.push('<text x="' + mx + '" y="' + (my - 5) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</text>');
+    }
+  });
+  NODES.forEach(n => {
+    const d = dim && n.c !== dim, faded = sel && sel !== n.id;
+    const col = CL[n.c][1];
+    parts.push('<g onclick="kgPick(\'' + n.id + '\')" style="cursor:pointer" opacity="' + (d ? 0.22 : (faded ? 0.35 : 1)) + '">'
+      + '<rect x="' + n.x + '" y="' + (n.y - 23) + '" width="' + n.w + '" height="' + NH + '" rx="11" fill="' + (sel === n.id ? col : '#fff') + '" stroke="' + (n.h ? '#dc2626' : col) + '" stroke-width="' + (n.h ? 2.5 : 1.6) + '"/>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 1) + '" font-size="13" font-weight="bold" fill="' + (sel === n.id ? '#fff' : '#0f172a') + '">' + (n.h ? '⭐' : '') + n.n + '</text>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 17) + '" font-size="10.5" fill="' + (sel === n.id ? 'rgba(255,255,255,.85)' : '#64748b') + '">' + (n.qs || '') + '</text>'
+      + '</g>');
+  });
+  svg.innerHTML = parts.join('');
+}
+window.kgPick = function(id){
+  sel = (sel === id) ? null : id;
+  const panel = document.getElementById('kgpanel');
+  if(!sel){ panel.innerHTML = '<div style="color:var(--mut)">已取消选中。再点节点查看详情；滚轮缩放、拖拽平移。</div>'; kgBuild(); return; }
+  const n = nodeById(id);
+  if(!n) return;
+  const nb = EDGES.filter(e => e[0] === id || e[1] === id).map(e => {
+    const other = nodeById(e[0] === id ? e[1] : e[0]);
+    return '<li><b style="color:' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</b> → ' + other.n + '</li>';
+  }).join('');
+  panel.innerHTML = '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + (n.h ? '⭐ ' : '') + n.n + '</div>'
+    + '<div style="border-left:3px solid ' + CL[n.c][1] + ';padding-left:8px;margin-bottom:8px;color:#334155">' + n.one + '</div>'
+    + '<ul style="padding-left:18px;margin:0 0 8px">' + (n.pts || []).map(p => '<li>' + p + '</li>').join('') + '</ul>'
+    + (n.qs ? '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px">对应练习：<b>' + n.qs + '</b></div>' : '')
+    + (nb ? '<div style="margin-top:8px"><b style="font-size:12px;color:var(--mut)">关联考点：</b><ul style="padding-left:18px;font-size:12.5px;margin:4px 0 0">' + nb + '</ul></div>' : '');
+  kgBuild();
+};
+window.kgReset = function(){
+  sel = null; dim = null; vb = { x: 0, y: 0, w: W, h: H };
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+  kgBuild();
+  document.getElementById('kgpanel').innerHTML = '<div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框 = ⭐ 年年考/高频。</div>';
+};
+window.kgDim = function(c){ dim = (dim === c) ? null : c; sel = null; kgBuild(); };
+(function(){
+  const box = document.getElementById('kgchips');
+  if(box){
+    Object.keys(CL).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.cssText = 'border-color:' + CL[c][1] + ';padding:3px 10px;font-size:12px;border-radius:12px';
+      b.textContent = CL[c][0];
+      b.onclick = () => kgDim(c);
+      box.appendChild(b);
+    });
+  }
+  const st = document.getElementById('kgstats');
+  if(st) st.textContent = NODES.length + ' 个考点 · ' + EDGES.length + ' 条关联 · 滚轮缩放 / 拖拽平移 / 点图例聚焦';
+})();
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = vb.x + (e.clientX - r.left) / r.width * vb.w;
+  const my = vb.y + (e.clientY - r.top) / r.height * vb.h;
+  const s = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+  vb.w *= s; vb.h *= s;
+  vb.x = mx - (mx - vb.x) * s; vb.y = my - (my - vb.y) * s;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+let pan = null;
+svg.addEventListener('mousedown', e => { pan = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y }; });
+window.addEventListener('mousemove', e => {
+  if(!pan) return;
+  const r = svg.getBoundingClientRect();
+  vb.x = pan.vx - (e.clientX - pan.x) * vb.w / r.width;
+  vb.y = pan.vy - (e.clientY - pan.y) * vb.h / r.height;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+window.addEventListener('mouseup', () => { pan = null; });
+kgBuild();
+})();
+
+</script>
+
 </main>
 <footer>学习主线：11-讲义题库-数据结构与算法（59 题）→ 本页 → 17 系统「数据结构与算法」→ 错题重练。计算拿不准时回本页重算一遍。</footer>
 <script>
@@ -803,7 +972,7 @@ DSTOOL.agGen = function(){
 };
 
 /* ================= 页面骨架 ================= */
-const SECTIONS = [['line', '📦 线性表'], ['tree', '🌳 树与二叉树'], ['graph', '🕸 图'], ['search', '🔍 查找'], ['sort', '🔀 排序'], ['algo', '🧭 策略速查']];
+const SECTIONS = [['line', '📦 线性表'], ['tree', '🌳 树与二叉树'], ['graph', '🕸 图'], ['search', '🔍 查找'], ['sort', '🔀 排序'], ['algo', '🧭 策略速查'], ['kgmap', '🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));

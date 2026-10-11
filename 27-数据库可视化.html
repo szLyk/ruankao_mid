@@ -328,12 +328,173 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
  </div>
 </section>
 
+<!-- ============ 🕸 知识图谱 ============ -->
+<section id="s-kgmap">
+ <div class="card">
+  <h2>🕸 知识图谱 <span style="font-size:12px;color:var(--mut);font-weight:400">红框⭐=年年考/高频 · 点击节点看要点与题号 · 点彩色图例聚焦分类</span></h2>
+  <div class="row"><span id="kgchips" style="display:contents"></span><button class="btn" onclick="kgReset()">⤢ 重置视图</button><span style="font-size:12px;color:var(--mut)" id="kgstats"></span></div>
+  <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+   <div style="flex:1;min-width:520px;border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff"><svg id="kgsvg" viewBox="0 0 1200 800" style="width:100%;display:block;cursor:grab"></svg></div>
+   <aside id="kgpanel" style="width:300px;flex-shrink:0;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;max-height:620px;overflow-y:auto;font-size:13px"><div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框⭐ = 年年考/高频。</div></aside>
+  </div>
+ </div>
+</section>
+
+<script>
+const KG_DATA = {
+CL: { s: ['结构与代数', '#6366f1'], d: ['设计与范式', '#0ea5e9'], q: ['SQL', '#10b981'], t: ['事务', '#f59e0b'], c: ['并发恢复', '#ef4444'], x: ['分布式挖掘', '#8b5cf6'] },
+NODES: [
+ { id: 'mode3', n: '三级模式', c: 's', one: '外模式/概念模式/内模式 + 两级映射保独立性', pts: ['外模式=视图（用户视图）', '概念模式=基本表', '内模式=存储文件', '逻辑独立性=改概念不改外；物理独立性=改存储不改概念'], qs: '本页三级模式页签 · 题1-2', h: 1 },
+ { id: 'ra', n: '关系代数', c: 's', one: 'σ 选行、π 选列、⋈ 连接、÷ 全部包含', pts: ['选择 σ条件(表)', '投影 π列(表) 去重', '自然连接去同名列', '÷ 查"全部/至少"类'], qs: '本页关系代数页签 · 题3-5', h: 1 },
+ { id: 'integ', n: '三类完整性', c: 's', one: '实体（主键非空唯一）、参照（外键）、用户定义', pts: ['外键 = 被参照主键值或 NULL', 'CHECK/NOT NULL 属用户定义'], qs: '12号§2 · 题6-7' },
+ { id: 'key', n: '候选键与闭包', c: 'd', one: '闭包能推出全属性且极小的属性集', pts: ['只出现在左部的属性必入键', '(AB)⁺ 逐步并入右部', '全主属性的关系至少 3NF'], qs: '12号§3 · 题12、50', h: 1 },
+ { id: 'nf', n: '范式阶梯', c: 'd', one: '1NF→消部分依赖 2NF→消传递依赖 3NF→BCNF', pts: ['2NF：非主属性完全依赖码', '3NF：消除传递依赖', 'BCNF：所有决定因素含码', '套路：找码→查部分→查传递'], qs: '本页范式页签 · 题8-11', h: 1 },
+ { id: 'er', n: 'E-R 图', c: 'd', one: '矩形实体、椭圆属性、菱形联系；联系看两端数量', pts: ['1:1 / 1:n / m:n', '多值属性、弱实体', '合并局部图消冲突：属性/命名/结构'], qs: '本页E-R页签 · 题23、25、36' },
+ { id: 'er2r', n: 'E-R 转模式', c: 'd', one: '1:n 并入 n 端加外键；m:n 独立成表（两端主键组合）', pts: ['1:1 并入任一端', 'm:n 的联系属性放联系表', '弱实体：宿主主键+区分属性'], qs: '大题② · 题24', h: 1 },
+ { id: 'sqldql', n: 'SQL 查询', c: 'q', one: 'SELECT…FROM…WHERE→GROUP BY→HAVING→ORDER BY', pts: ['WHERE 筛行、HAVING 筛组', 'COUNT(*) 含 NULL、COUNT(列) 不含', 'LIKE 配 % _；外连接保全部'], qs: '本页SQL页签 · 题18-20、28-29', h: 1 },
+ { id: 'sqlddl', n: 'SQL DDL/DCL', c: 'q', one: 'CREATE/ALTER/DROP 建改删；GRANT 授权 REVOKE 收权', pts: ['PRIMARY KEY / FOREIGN KEY…REFERENCES', '视图 CREATE VIEW', 'WITH GRANT OPTION 可转授'], qs: '本页SQL页签 · 题27、31' },
+ { id: 'index', n: '索引 B+ 树', c: 'q', one: '叶子链表相连，范围查询与遍历高效', pts: ['非叶只导航、叶子存数据', '主键索引聚簇存储'], qs: '12号§4 · 题22' },
+ { id: 'acid', n: '事务 ACID', c: 't', one: '原子/一致/隔离/持续——四个字母各自有实现', pts: ['原子性←UNDO 回退', '持久性←REDO 重做', '隔离性←封锁协议'], qs: '本页事务页签 · 题13、32', h: 1 },
+ { id: 'prob4', n: '并发四问题', c: 'c', one: '丢失修改、脏读、不可重复读、幻读——隔离级别逐个治', pts: ['脏读=读到未提交', '不可重复读=两次读值不同（UPDATE）', '幻读=两次读行数不同（INSERT）'], qs: '本页事务页签 · 题14-16、44', h: 1 },
+ { id: 'lock', n: '封锁协议', c: 'c', one: 'S 读 X 写；1/2/3 级逐个多防一个问题', pts: ['1级 X 到事务结束：防丢失', '2级 +S 读完即放：防脏读', '3级 S 也到结束：防不可重复读', '两段锁 = 可串行化'], qs: '12号§5 · 题16-17、45', h: 1 },
+ { id: 'dlive', n: '死锁与活锁', c: 'c', one: '死锁=互相等待成环（等待图回路）；活锁=永远抢不到', pts: ['预防：一次封锁/顺序封锁', '诊断：等待图/超时'], qs: '12号§5 · 题43、46-47' },
+ { id: 'recovery', n: '故障恢复', c: 'c', one: '已提交 → REDO 重做；未提交 → UNDO 撤销', pts: ['检查点前不用重做', '日志先写（WAL）'], qs: '本页事务页签 · 题33、51', h: 1 },
+ { id: 'd2pc', n: '分布式与 2PC', c: 'x', one: '两段提交：先表决再执行，保全局原子', pts: ['透明性：分片>位置>局部模型', '分片/复制'], qs: '12号§6 · 题26、48' },
+ { id: 'dw', n: '数据仓库与挖掘', c: 'x', one: '仓库面向主题、集成、稳定、反映历史', pts: ['OLAP 分析 vs OLTP 事务', '挖掘三法：关联/分类/聚类'], qs: '12号§7 · 题42、49' }
+],
+EDGES: [
+ ['mode3', 'ra', 'dep', '同一模式的两种操作'], ['ra', 'sqldql', 'dep', '代数→SQL'], ['mode3', 'sqlddl', 'use', '视图=外模式'], ['integ', 'sqlddl', 'use', '约束子句'],
+ ['key', 'nf', 'dep', '找码判范式'], ['er', 'er2r', 'dep', '图转模式'], ['er2r', 'key', 'use', '联系表的主键'], ['nf', 'er2r', 'use', '模式规范化'],
+ ['sqldql', 'index', 'use', '索引加速'], ['sqlddl', 'index', 'use', 'CREATE INDEX'],
+ ['acid', 'prob4', 'dep', '隔离性针对并发'], ['prob4', 'lock', 'dep', '封锁治并发'], ['lock', 'dlive', 'dep', '封锁的副作用'], ['acid', 'recovery', 'dep', '原子持久靠恢复'], ['recovery', 'lock', 'cmp', '恢复 vs 并发'],
+ ['d2pc', 'acid', 'use', '全局原子'], ['dw', 'ra', 'cmp', '分析 vs 操作']
+]
+};
+
+/* ================= 🕸 知识图谱 ================= */
+(function(){
+const CL = KG_DATA.CL, NODES = KG_DATA.NODES, EDGES = KG_DATA.EDGES;
+const COLW = 250, NODEW = 200, NH = 46, VGAP = 26;
+const cats = Object.keys(CL);
+const byCat = {};
+NODES.forEach(n => (byCat[n.c] = byCat[n.c] || []).push(n));
+let maxN = 0;
+cats.forEach(c => {
+  const arr = byCat[c] || []; maxN = Math.max(maxN, arr.length);
+  arr.forEach((n, i) => { n.x = 34 + cats.indexOf(c) * COLW; n.y = 52 + i * (NH + VGAP); n.w = NODEW; });
+});
+const W = 64 + cats.length * COLW, H = 66 + maxN * (NH + VGAP);
+const svg = document.getElementById('kgsvg');
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+let vb = { x: 0, y: 0, w: W, h: H };
+let sel = null, dim = null;
+const EC = { dep: '#2563eb', part: '#16a34a', cmp: '#d97706', use: '#8b5cf6' };
+function nodeById(id){ return NODES.find(n => n.id === id); }
+function trim(x1, y1, rect, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  if(!dx && !dy) return { x: x2, y: y2 };
+  const hw = rect.w / 2 + 4, hh = 27;
+  const sc = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9);
+  return { x: x2 - dx * sc, y: y2 - dy * sc };
+}
+function kgBuild(){
+  const parts = ['<defs><marker id="kga" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>'];
+  cats.forEach(c => {
+    parts.push('<text x="' + (34 + cats.indexOf(c) * COLW) + '" y="30" font-size="13.5" font-weight="bold" fill="' + CL[c][1] + '">' + CL[c][0] + '</text>');
+  });
+  EDGES.forEach(e => {
+    const a = nodeById(e[0]), b = nodeById(e[1]);
+    if(!a || !b) return;
+    const p1 = trim(a.x, a.y, a, b.x, b.y), p2 = trim(b.x, b.y, b, a.x, a.y);
+    const dimE = dim && a.c !== dim && b.c !== dim;
+    const faint = sel && sel !== e[0] && sel !== e[1];
+    parts.push('<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="' + (dimE || faint ? '#e2e8f0' : (EC[e[2]] || '#94a3b8')) + '" stroke-width="' + (dimE || faint ? 1 : 1.7) + '" opacity="' + (dimE ? 0.45 : (faint ? 0.35 : 0.9)) + '" marker-end="url(#kga)"/>');
+    if(sel && (sel === e[0] || sel === e[1])){
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      parts.push('<text x="' + mx + '" y="' + (my - 5) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</text>');
+    }
+  });
+  NODES.forEach(n => {
+    const d = dim && n.c !== dim, faded = sel && sel !== n.id;
+    const col = CL[n.c][1];
+    parts.push('<g onclick="kgPick(\'' + n.id + '\')" style="cursor:pointer" opacity="' + (d ? 0.22 : (faded ? 0.35 : 1)) + '">'
+      + '<rect x="' + n.x + '" y="' + (n.y - 23) + '" width="' + n.w + '" height="' + NH + '" rx="11" fill="' + (sel === n.id ? col : '#fff') + '" stroke="' + (n.h ? '#dc2626' : col) + '" stroke-width="' + (n.h ? 2.5 : 1.6) + '"/>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 1) + '" font-size="13" font-weight="bold" fill="' + (sel === n.id ? '#fff' : '#0f172a') + '">' + (n.h ? '⭐' : '') + n.n + '</text>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 17) + '" font-size="10.5" fill="' + (sel === n.id ? 'rgba(255,255,255,.85)' : '#64748b') + '">' + (n.qs || '') + '</text>'
+      + '</g>');
+  });
+  svg.innerHTML = parts.join('');
+}
+window.kgPick = function(id){
+  sel = (sel === id) ? null : id;
+  const panel = document.getElementById('kgpanel');
+  if(!sel){ panel.innerHTML = '<div style="color:var(--mut)">已取消选中。再点节点查看详情；滚轮缩放、拖拽平移。</div>'; kgBuild(); return; }
+  const n = nodeById(id);
+  if(!n) return;
+  const nb = EDGES.filter(e => e[0] === id || e[1] === id).map(e => {
+    const other = nodeById(e[0] === id ? e[1] : e[0]);
+    return '<li><b style="color:' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</b> → ' + other.n + '</li>';
+  }).join('');
+  panel.innerHTML = '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + (n.h ? '⭐ ' : '') + n.n + '</div>'
+    + '<div style="border-left:3px solid ' + CL[n.c][1] + ';padding-left:8px;margin-bottom:8px;color:#334155">' + n.one + '</div>'
+    + '<ul style="padding-left:18px;margin:0 0 8px">' + (n.pts || []).map(p => '<li>' + p + '</li>').join('') + '</ul>'
+    + (n.qs ? '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px">对应练习：<b>' + n.qs + '</b></div>' : '')
+    + (nb ? '<div style="margin-top:8px"><b style="font-size:12px;color:var(--mut)">关联考点：</b><ul style="padding-left:18px;font-size:12.5px;margin:4px 0 0">' + nb + '</ul></div>' : '');
+  kgBuild();
+};
+window.kgReset = function(){
+  sel = null; dim = null; vb = { x: 0, y: 0, w: W, h: H };
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+  kgBuild();
+  document.getElementById('kgpanel').innerHTML = '<div style="color:var(--mut)">点击任意节点查看：一句话本质 · 要点清单 · 对应题号。红框 = ⭐ 年年考/高频。</div>';
+};
+window.kgDim = function(c){ dim = (dim === c) ? null : c; sel = null; kgBuild(); };
+(function(){
+  const box = document.getElementById('kgchips');
+  if(box){
+    Object.keys(CL).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.cssText = 'border-color:' + CL[c][1] + ';padding:3px 10px;font-size:12px;border-radius:12px';
+      b.textContent = CL[c][0];
+      b.onclick = () => kgDim(c);
+      box.appendChild(b);
+    });
+  }
+  const st = document.getElementById('kgstats');
+  if(st) st.textContent = NODES.length + ' 个考点 · ' + EDGES.length + ' 条关联 · 滚轮缩放 / 拖拽平移 / 点图例聚焦';
+})();
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = vb.x + (e.clientX - r.left) / r.width * vb.w;
+  const my = vb.y + (e.clientY - r.top) / r.height * vb.h;
+  const s = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+  vb.w *= s; vb.h *= s;
+  vb.x = mx - (mx - vb.x) * s; vb.y = my - (my - vb.y) * s;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+let pan = null;
+svg.addEventListener('mousedown', e => { pan = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y }; });
+window.addEventListener('mousemove', e => {
+  if(!pan) return;
+  const r = svg.getBoundingClientRect();
+  vb.x = pan.vx - (e.clientX - pan.x) * vb.w / r.width;
+  vb.y = pan.vy - (e.clientY - pan.y) * vb.h / r.height;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+window.addEventListener('mouseup', () => { pan = null; });
+kgBuild();
+})();
+
+</script>
+
 </main>
 <footer>学习主线：12-讲义题库-数据库（讲义+白话详解C1-C7）→ 本页（可视化+出题）→ 17 系统「数据库」43题 → 错题重练。大题②的根基也在本模块（04 模板 + 16 卷②）。</footer>
 
 <script>
 /* ================= 导航 ================= */
-const SECTIONS = [['mode','🏛 三级模式'],['ra','🔣 关系代数'],['nf','📐 范式阶梯'],['tx','💼 事务与并发'],['sql','📝 SQL 速查'],['er','🌐 E-R 与新技术']];
+const SECTIONS = [['mode','🏛 三级模式'],['ra','🔣 关系代数'],['nf','📐 范式阶梯'],['tx','💼 事务与并发'],['sql','📝 SQL 速查'],['er','🌐 E-R 与新技术'], ['kgmap', '🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t===id));
