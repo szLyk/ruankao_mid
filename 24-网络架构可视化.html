@@ -416,8 +416,8 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
 </section>
 
 <!-- ============ Tab 6.5 背诵测验 ============ -->
-<section id="s-memo">
- <div class="tip">背诵三件套：①拥塞控制推算（超时=门限减半、窗口归 1）②四张对号表（设备/端口/协议/路由）③数字常识——碎片时间刷，别整章背。</div>
+<section id="s-cong">
+ <div class="tip">TCP 拥塞/流量三考点：①逐 RTT 窗口推算 ②超时与快恢复后的新门限、新窗口 ③发送窗 = min(rwnd, cwnd)。三条规则：慢开始翻倍→门限后 +1；超时门限减半、cwnd 归 1；3 个重复 ACK→快重传快恢复（都减半、不归 1）。</div>
 
  <div class="card">
   <h2>📈 TCP 拥塞控制推算器</h2>
@@ -447,7 +447,12 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
   <div class="steps" id="ccqSteps" style="display:none"></div>
  </div>
 
- <div class="card">
+ </section>
+
+<!-- ============ Tab 6.8 背诵测验（纯背诵） ============ -->
+<section id="s-memo">
+ <div class="tip">纯背诵：设备看层、端口 8 个、协议作用对号、路由三兄弟 + 数字常识——碎片时间过，别整章背。</div>
+<div class="card">
   <h2>📚 四张背诵表</h2>
   <h4>① 层 ↔ 设备</h4>
   <table>
@@ -648,7 +653,7 @@ const TCP_TD = [
 ];
 
 /* ================= Tab 导航 ================= */
-const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['memo','🧠 背诵测验'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
+const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['cong','📈 TCP 拥塞'],['memo','🧠 背诵测验'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
