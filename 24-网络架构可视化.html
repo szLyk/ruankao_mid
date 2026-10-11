@@ -430,7 +430,8 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
    <span>超时发生在 cwnd=</span><input id="cwLim" value="24" style="width:70px">
    <button class="btn pri" onclick="cwCalc()">推演</button>
   </div>
-  <div class="steps" id="cwSteps"></div>
+    <div class="row"><span>发送窗 = min(rwnd, cwnd)：</span>rwnd=<input id="snR" value="16" style="width:70px">报文段　cwnd=<input id="snC" value="24" style="width:70px">报文段　<button class="btn" onclick="swCalc()">=</button><b id="snW" class="mono"></b></div>
+<div class="steps" id="cwSteps"></div>
  </div>
 
  <div class="card">
@@ -1188,7 +1189,11 @@ const BCQ_BANK = [
   ['无连接、开销小的传输层协议', 'UDP', '视频/语音/DNS 查询用它。'],
   ['共享式以太网（集线器组网）的介质访问协议', 'CSMA/CD', '先听后发、碰撞退避；交换式全双工不需要。'],
   ['交换机收到目的 MAC 不在表中的帧时的动作', '泛洪', '向除入端口外的所有端口转发（题14-50）。'],
-  ['TCP 主动关闭方最后等待的状态（等 2MSL）', 'TIME_WAIT', '确保最后的 ACK 到达、旧报文消亡。']
+  ['TCP 主动关闭方最后等待的状态（等 2MSL）', 'TIME_WAIT', '确保最后的 ACK 到达、旧报文消亡。'],
+  ['TCP 发送窗口取 rwnd 与 cwnd 中的较小值还是较大值', '较小值', '发送窗 = min(rwnd, cwnd)：别把对方压垮（rwnd），也别把网络压垮（cwnd）。'],
+  ['流量控制窗口 rwnd 由谁通知给发送方', '接收方', 'rwnd 搭载在 ACK 里由接收方通告；cwnd 由发送方自己按拥塞情况维护。'],
+  ['连续收到 3 个重复 ACK 触发什么机制', '快重传', '不等超时立刻重传丢失段，随后进入快速恢复。'],
+  ['快速恢复时拥塞窗口如何调整', '减半', '门限与 cwnd 都减半后线性增长——区别于超时的 cwnd 归 1。']
 ];
 NETTOOL.bcqGen = function(){
   const e = pickNet(BCQ_BANK);
@@ -1223,7 +1228,13 @@ function mkQuiz(pfx, gen){
 }
 mkQuiz('ccq', NETTOOL.ccqGen);
 mkQuiz('bcq', NETTOOL.bcqGen);
+NETTOOL.sendWin = function(r, c){ return (r > 0 && c > 0) ? Math.min(r, c) : null; };
+function swCalc(){
+  const v = NETTOOL.sendWin(+document.getElementById('snR').value, +document.getElementById('snC').value);
+  document.getElementById('snW').textContent = v === null ? '无效（需为正数）' : v + '（取较小值）';
+}
 cwCalc();
+swCalc();
 </script>
 </body>
 </html>
