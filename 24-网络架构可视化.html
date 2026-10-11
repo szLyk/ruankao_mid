@@ -451,58 +451,9 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
 
 <!-- ============ Tab 6.8 背诵测验（纯背诵） ============ -->
 <section id="s-memo">
- <div class="tip">纯背诵：设备看层、端口 8 个、协议作用对号、路由三兄弟 + 数字常识——碎片时间过，别整章背。</div>
-<div class="card">
-  <h2>📚 四张背诵表</h2>
-  <h4>① 层 ↔ 设备</h4>
-  <table>
-   <tr><th>物理层</th><th>链路层</th><th>网络层</th><th>传输层及以上</th></tr>
-   <tr><td><b>集线器</b>、中继器（不认地址）</td><td><b>交换机</b>、网桥（认 MAC）</td><td><b>路由器</b>（认 IP）</td><td>网关、防火墙（认端口）</td></tr>
-  </table>
-  <h4>② 端口（8 个：发 25 收 110）</h4>
-  <div style="font-size:13.5px">FTP <b class="mono">20/21</b>　SSH <b class="mono">22</b>　Telnet <b class="mono">23</b>　SMTP <b class="mono">25</b>　DNS <b class="mono">53</b>　HTTP <b class="mono">80</b>　POP3 <b class="mono">110</b>　HTTPS <b class="mono">443</b></div>
-  <h4>③ 协议作用对号</h4>
-  <div style="font-size:13.5px"><b>ARP</b> IP→MAC　<b>DHCP</b> 自动发 IP（Discover/Offer/Request/Ack）　<b>ICMP</b> 差错报告（ping）　<b>DNS</b> 域名→IP　<b>SMTP</b> 发信 / <b>POP3</b> 收信</div>
-  <h4>④ 路由协议三兄弟</h4>
-  <div style="font-size:13.5px"><b>RIP</b> 距离矢量 / 跳数 / 最大 15 跳　<b>OSPF</b> 链路状态 / 分区域 / 自治域内部　<b>BGP</b> 路径向量 / 自治域<b>之间</b></div>
- </div>
-
+ <div class="tip">速查 + 背诵二合一：公式计算器与端口表随查随用；对号表、数字常识 + 43 题对号随机刷——碎片时间过，别整章背。</div>
  <div class="card">
-  <h2>🔢 数字与特殊地址（纯背，年年 1-2 分）</h2>
-  <div class="grid2">
-   <div class="fcard"><b>私网三段</b>10.0.0.0/8　172.<b>16~31</b>.x.x　192.168.x.x（172.15/172.32 都是公网！）</div>
-   <div class="fcard"><b>特殊地址</b>127.x=回环　169.254.x=链路本地　255.255.255.255=受限广播　FF-FF-…=MAC 广播</div>
-   <div class="fcard"><b>数字卡</b>E1=2.048Mbps（30 话路）｜T1=1.544Mbps｜以太网最小帧长 <b>64B</b>｜IPv6 头固定 40B</div>
-   <div class="fcard"><b>PDU 对号</b>物理=比特　链路=帧　网络=分组　传输=报文段　应用=报文</div>
-   <div class="fcard"><b>DHCP 细账</b>UDP 67/68　租期 50% 单播续租　87.5% 广播另寻　四步 Discover→Offer→Request→Ack</div>
-   <div class="fcard"><b>DNS/HTTP</b>A 记录=域名→IP　MX=邮件　CNAME=别名；404=资源不存在　3xx 重定向</div>
-   <div class="fcard"><b>无线与新技术</b>802.11 用 CSMA/CA；5G 三场景 eMBB 大带宽 / uRLLC 低时延 / mMTC 大连接；SDN 转控分离</div>
-   <div class="fcard"><b>域计数</b>集线器 1 冲突 1 广播；交换机每口 1 冲突、整机 1 广播；路由器每口 1 广播</div>
-  </div>
- </div>
-
-<div class="card">
-  <h2>🎲 背诵对号随机出题</h2>
-  <div class="row"><button class="btn pri" onclick="bcqNew()">🎲 出一道</button><span id="bcqQ" style="font-size:13.5px"></span></div>
-  <div class="row">
-   <input id="bcqA" placeholder="答案" style="width:170px">
-   <button class="btn" onclick="bcqCheck()">检查</button>
-   <button class="btn" onclick="bcqShow()">显示解答</button>
-  </div>
-  <div id="bcqFb" style="font-size:13.5px"></div>
-  <div class="steps" id="bcqSteps" style="display:none"></div>
- </div>
-</section>
-
-<!-- ============ Tab 7 速查表 ============ -->
-<section id="s-ref">
- <div class="card">
-  <h2>常用端口（必背：发 25 收 110）</h2>
-  <div class="row"><input id="portFilter" style="width:220px" placeholder="筛选：端口/协议/用途…" oninput="renderPorts()"></div>
-  <table id="portTable"></table>
- </div>
- <div class="card">
-  <h2>公式卡 + 小计算器</h2>
+  <h2>🧮 公式卡 + 小计算器</h2>
   <div class="grid2">
    <div class="fcard"><b>香农（有噪声）</b>C = W·log₂(1+S/N)<br>dB→S/N：S/N = 10^(dB/10)，30dB=1000<br>
     <div class="row">W=<input id="shW" value="4" style="width:52px">kHz　dB=<input id="shDb" value="30" style="width:52px"><button class="btn" onclick="calcSh()">=</button><b id="shR" style="margin-left:6px"></b></div></div>
@@ -520,6 +471,11 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
   </div>
  </div>
  <div class="card">
+  <h2>常用端口（必背：发 25 收 110）</h2>
+  <div class="row"><input id="portFilter" style="width:220px" placeholder="筛选：端口/协议/用途…" oninput="renderPorts()"></div>
+  <table id="portTable"></table>
+ </div>
+ <div class="card">
   <h2>应用层对比卡（错题沉淀 · nt-12/20/21/79/99/100）</h2>
   <table>
    <tr><th>考点</th><th>必背结论</th></tr>
@@ -533,7 +489,7 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
   </table>
  </div>
  <div class="card">
-  <h2>路由协议对比</h2>
+  <h2>路由协议对比 + CSMA 对比</h2>
   <table>
    <tr><th>协议</th><th>类型</th><th>算法/度量</th><th>要点</th></tr>
    <tr><td>RIP</td><td>内部 IGP</td><td>距离向量，跳数</td><td>≤15跳（16=不可达），30s 整表广播，慢收敛，只适合小网</td></tr>
@@ -548,7 +504,43 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
    <tr><td>考点</td><td>最小帧长 64 字节；半双工</td><td>无线为什么不用 CD</td></tr>
   </table>
  </div>
+ <div class="card">
+  <h2>📚 对号背诵表</h2>
+  <h4>① 层 ↔ 设备</h4>
+  <table>
+   <tr><th>物理层</th><th>链路层</th><th>网络层</th><th>传输层及以上</th></tr>
+   <tr><td><b>集线器</b>、中继器（不认地址）</td><td><b>交换机</b>、网桥（认 MAC）</td><td><b>路由器</b>（认 IP）</td><td>网关、防火墙（认端口）</td></tr>
+  </table>
+  <h4>② 协议作用对号</h4>
+  <div style="font-size:13.5px"><b>ARP</b> IP→MAC　<b>DHCP</b> 自动发 IP（Discover/Offer/Request/Ack）　<b>ICMP</b> 差错报告（ping）　<b>DNS</b> 域名→IP　<b>SMTP</b> 发信 / <b>POP3</b> 收信</div>
+ </div>
+ <div class="card">
+  <h2>🔢 数字与特殊地址（纯背，年年 1-2 分）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>特殊地址</b>127.x=回环　169.254.x=链路本地　255.255.255.255=受限广播　FF-FF-…=MAC 广播</div>
+   <div class="fcard"><b>PDU 对号</b>物理=比特　链路=帧　网络=分组　传输=报文段　应用=报文</div>
+   <div class="fcard"><b>DHCP 细账</b>UDP 67/68　租期 50% 单播续租　87.5% 广播另寻　四步 Discover→Offer→Request→Ack</div>
+   <div class="fcard"><b>HTTP 状态码</b>2xx 成功　3xx 重定向　<b>404</b>=资源不存在　4 开头客户端错、5 开头服务器错</div>
+   <div class="fcard"><b>无线与新技术</b>802.11 用 CSMA/CA；5G 三场景 eMBB 大带宽 / uRLLC 低时延 / mMTC 大连接；SDN 转控分离</div>
+   <div class="fcard"><b>域计数</b>集线器 1 冲突 1 广播；交换机每口 1 冲突、整机 1 广播；路由器每口 1 广播</div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>🎲 背诵对号随机出题（43 条）</h2>
+  <div class="row"><button class="btn pri" onclick="bcqNew()">🎲 出一道</button><span id="bcqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="bcqA" placeholder="答案" style="width:170px">
+   <button class="btn" onclick="bcqCheck()">检查</button>
+   <button class="btn" onclick="bcqShow()">显示解答</button>
+  </div>
+  <div id="bcqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="bcqSteps" style="display:none"></div>
+ </div>
 </section>
+
+
+
+
 
 
 <!-- ============ Tab 9 知识图谱 ============ -->
@@ -667,7 +659,7 @@ const TCP_TD = [
 ];
 
 /* ================= Tab 导航 ================= */
-const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['cong','📈 TCP 拥塞'],['memo','🧠 背诵测验'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
+const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['cong','📈 TCP 拥塞'],['memo','📋 速查与背诵'],['graph','🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
