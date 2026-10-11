@@ -415,6 +415,65 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
  </div>
 </section>
 
+<!-- ============ Tab 6.5 背诵测验 ============ -->
+<section id="s-memo">
+ <div class="tip">背诵三件套：①拥塞控制推算（超时=门限减半、窗口归 1）②四张对号表（设备/端口/协议/路由）③数字常识——碎片时间刷，别整章背。</div>
+
+ <div class="card">
+  <h2>📈 TCP 拥塞控制推算器</h2>
+  <div class="grid2">
+   <div class="fcard"><b>三条规则</b>慢开始：每 RTT <b>翻倍</b>（1→2→4→8…）｜达到门限转<b>拥塞避免</b>：每 RTT <b>+1</b>｜<b>超时</b>：ssthresh = 当前 cwnd ÷ 2，cwnd 归 1 重新慢开始</div>
+   <div class="fcard"><b>易错点</b>超时后 cwnd 归 <b>1</b>（不是停在门限、也不是减半）；减半的是<b>门限</b>；"3 个重复 ACK"触发的快速重传才走窗口减半的快速恢复，超时是归 1</div>
+  </div>
+  <div class="row">
+   <span>门限初值 ssthresh</span><input id="cwSS" value="16" style="width:70px">
+   <span>超时发生在 cwnd=</span><input id="cwLim" value="24" style="width:70px">
+   <button class="btn pri" onclick="cwCalc()">推演</button>
+  </div>
+  <div class="steps" id="cwSteps"></div>
+ </div>
+
+ <div class="card">
+  <h2>🎲 拥塞控制随机出题（真题形态）</h2>
+  <div class="row"><button class="btn pri" onclick="ccqNew()">🎲 出一道</button><span id="ccqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="ccqA" placeholder="新 ssthresh" style="width:110px">
+   <input id="ccqB" placeholder="新 cwnd" style="width:90px">
+   <button class="btn" onclick="ccqCheck()">检查</button>
+   <button class="btn" onclick="ccqShow()">显示解答</button>
+  </div>
+  <div id="ccqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="ccqSteps" style="display:none"></div>
+ </div>
+
+ <div class="card">
+  <h2>📚 四张背诵表</h2>
+  <h4>① 层 ↔ 设备</h4>
+  <table>
+   <tr><th>物理层</th><th>链路层</th><th>网络层</th><th>传输层及以上</th></tr>
+   <tr><td><b>集线器</b>、中继器（不认地址）</td><td><b>交换机</b>、网桥（认 MAC）</td><td><b>路由器</b>（认 IP）</td><td>网关、防火墙（认端口）</td></tr>
+  </table>
+  <h4>② 端口（8 个：发 25 收 110）</h4>
+  <div style="font-size:13.5px">FTP <b class="mono">20/21</b>　SSH <b class="mono">22</b>　Telnet <b class="mono">23</b>　SMTP <b class="mono">25</b>　DNS <b class="mono">53</b>　HTTP <b class="mono">80</b>　POP3 <b class="mono">110</b>　HTTPS <b class="mono">443</b></div>
+  <h4>③ 协议作用对号</h4>
+  <div style="font-size:13.5px"><b>ARP</b> IP→MAC　<b>DHCP</b> 自动发 IP（Discover/Offer/Request/Ack）　<b>ICMP</b> 差错报告（ping）　<b>DNS</b> 域名→IP　<b>SMTP</b> 发信 / <b>POP3</b> 收信</div>
+  <h4>④ 路由协议三兄弟</h4>
+  <div style="font-size:13.5px"><b>RIP</b> 距离矢量 / 跳数 / 最大 15 跳　<b>OSPF</b> 链路状态 / 分区域 / 自治域内部　<b>BGP</b> 路径向量 / 自治域<b>之间</b></div>
+ </div>
+
+ <div class="card">
+  <h2>🎲 背诵对号随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="bcqNew()">🎲 出一道</button><span id="bcqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="bcqA" placeholder="答案" style="width:170px">
+   <button class="btn" onclick="bcqCheck()">检查</button>
+   <button class="btn" onclick="bcqShow()">显示解答</button>
+  </div>
+  <div id="bcqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="bcqSteps" style="display:none"></div>
+ </div>
+</section>
+
 <!-- ============ Tab 7 速查表 ============ -->
 <section id="s-ref">
  <div class="card">
@@ -588,7 +647,7 @@ const TCP_TD = [
 ];
 
 /* ================= Tab 导航 ================= */
-const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
+const SECTIONS = [['osi','🏛 七层模型'],['caps','📦 数据封装'],['l7','🪜 七层流转'],['frame','🔗 帧与MAC'],['flow','🔀 端到端流转'],['subnet','🧮 子网计算器'],['tcp','🤝 TCP 连接'],['crypto','🔐 加密与密钥'],['memo','🧠 背诵测验'],['ref','📋 速查表'],['graph','🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-'+s[0]).classList.toggle('on', s[0]===id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
@@ -1075,6 +1134,96 @@ window.addEventListener('mouseup', () => { pan = null; svg.classList.remove('pan
 
 build();
 
+/* ================= 背诵测验（拥塞控制 + 对号） ================= */
+function pickNet(a){ return a[Math.floor(Math.random()*a.length)]; }
+const normNet = s => String(s).replace(/\s+/g,'').replace(/：/g,':').toUpperCase();
+NETTOOL.cwndTrace = function(ss, limit){
+  if(!(ss >= 1) || !(limit >= 1) || limit > 100) return null;
+  let c = 1, r = 0, hit = false;
+  const tl = ['RTT0：cwnd=1（慢开始，门限 ssthresh=' + ss + '）'];
+  while(c < limit && r < 100){
+    r++;
+    if(c < ss) c = Math.min(c * 2, ss, limit); else c = Math.min(c + 1, limit);
+    if(c >= ss && !hit){ hit = true; tl.push('RTT' + r + '：cwnd=' + c + ' ←到达门限，转拥塞避免（+1）'); }
+    else tl.push('RTT' + r + '：cwnd=' + c);
+  }
+  const half = Math.floor(limit / 2);
+  tl.push('—— cwnd=' + limit + ' 时超时 ——');
+  tl.push('新 ssthresh = ' + limit + ' ÷ 2 = ' + half);
+  tl.push('新 cwnd = 1（重新慢开始，爬到 ' + half + ' 后再拥塞避免）');
+  return { tl: tl.join('\n'), newSS: half, newCwnd: 1 };
+};
+function cwCalc(){
+  const r = NETTOOL.cwndTrace(+document.getElementById('cwSS').value, +document.getElementById('cwLim').value);
+  const st = document.getElementById('cwSteps');
+  if(!r){ st.style.display='block'; st.textContent='输入无效：门限、超时点需为 ≥1 的整数（≤100）'; return; }
+  st.style.display='block'; st.textContent = r.tl;
+}
+NETTOOL.ccqGen = function(){
+  const ss = pickNet([2,4,8,16,32]);
+  const limit = ss + 1 + Math.floor(Math.random()*10);
+  const r = NETTOOL.cwndTrace(ss, limit);
+  return { stem:'TCP 拥塞控制：ssthresh 初始为 <b>'+ss+'</b>，cwnd 从 1 开始每 RTT 翻倍，达到门限后进入拥塞避免（每 RTT 加 1）。当 cwnd=<b>'+limit+'</b> 时发生超时，新的 ssthresh 和 cwnd 分别为（　）',
+    clear:['ccqA','ccqB'], ans:{ccqA:r.newSS, ccqB:r.newCwnd},
+    steps:'超时 → ssthresh = '+limit+' ÷ 2 = '+r.newSS+'；cwnd 归 1 重新慢开始。\n过程：\n' + r.tl };
+};
+const BCQ_BANK = [
+  ['集线器工作的 OSI 层', '物理层', '集线器不认地址、所有口广播转发。'],
+  ['交换机工作的 OSI 层', '链路层', '交换机按 MAC 地址表转发（数据链路层）。'],
+  ['路由器工作的 OSI 层', '网络层', '路由器按 IP 地址选路（网络层）。'],
+  ['把 IP 地址解析成 MAC 地址的协议', 'ARP', 'ARP 喊话（广播询问），回应写入缓存。'],
+  ['自动给主机分配 IP 地址的协议', 'DHCP', '四步：Discover→Offer→Request→Ack。'],
+  ['ping 命令用到的协议（差错报告）', 'ICMP', 'ICMP 是网络层协议，封装在 IP 里。'],
+  ['把域名解析成 IP 地址的协议', 'DNS', '端口 53；先递归问本地、本地再迭代问根/顶级。'],
+  ['HTTPS 的默认端口', '443', 'HTTPS = HTTP + SSL/TLS。'],
+  ['DNS 的默认端口', '53', ''],
+  ['POP3 的默认端口（收邮件）', '110', '发 25 收 110。'],
+  ['Telnet 的默认端口', '23', 'SSH 是加密的远程登录，端口 22。'],
+  ['距离矢量、按跳数计数、最大 15 跳的路由协议', 'RIP', '16 跳即不可达；只适合小网络。'],
+  ['链路状态、分区域、用于自治域内部的路由协议', 'OSPF', '收敛快、支持分层（区域 0 骨干）。'],
+  ['自治域之间的外部网关协议（路径向量）', 'BGP', '域内 OSPF/RIP，域间 BGP。'],
+  ['IPv6 地址的位数', '128', 'IPv4 是 32 位；IPv6 冒号十六进制。'],
+  ['10.x / 172.16-31.x / 192.168.x 这三类地址属于', '私网地址', '私网不能直接上公网，需 NAT 转换。'],
+  ['面向连接、可靠传输的传输层协议', 'TCP', '三次握手、确认重传、流量/拥塞控制。'],
+  ['无连接、开销小的传输层协议', 'UDP', '视频/语音/DNS 查询用它。'],
+  ['共享式以太网（集线器组网）的介质访问协议', 'CSMA/CD', '先听后发、碰撞退避；交换式全双工不需要。'],
+  ['交换机收到目的 MAC 不在表中的帧时的动作', '泛洪', '向除入端口外的所有端口转发（题14-50）。'],
+  ['TCP 主动关闭方最后等待的状态（等 2MSL）', 'TIME_WAIT', '确保最后的 ACK 到达、旧报文消亡。']
+];
+NETTOOL.bcqGen = function(){
+  const e = pickNet(BCQ_BANK);
+  return { stem:'「<b>'+e[0]+'</b>」——（填空）', clear:['bcqA'], ans:{bcqA:e[1]}, steps:'答案：'+e[1]+(e[2] ? '\n'+e[2] : '') };
+};
+function mkQuiz(pfx, gen){
+  let q = null;
+  window[pfx + 'New'] = function(){
+    q = gen();
+    document.getElementById(pfx + 'Q').innerHTML = q.stem;
+    (q.clear || []).forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+    document.getElementById(pfx + 'Fb').innerHTML = '';
+    const s = document.getElementById(pfx + 'Steps'); if(s) s.style.display = 'none';
+  };
+  window[pfx + 'Check'] = function(){
+    if(!q) return;
+    let all = true, html = '';
+    Object.keys(q.ans).forEach(k => {
+      const inp = document.getElementById(k); if(!inp) return;
+      const ok = normNet(inp.value) === normNet(String(q.ans[k]));
+      all = all && ok;
+      html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+    });
+    document.getElementById(pfx + 'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+  };
+  window[pfx + 'Show'] = function(){
+    if(!q) return;
+    Object.keys(q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
+    const s = document.getElementById(pfx + 'Steps'); if(s){ s.style.display = 'block'; s.textContent = q.steps; }
+  };
+  window[pfx + 'New']();
+}
+mkQuiz('ccq', NETTOOL.ccqGen);
+mkQuiz('bcq', NETTOOL.bcqGen);
+cwCalc();
 </script>
 </body>
 </html>
