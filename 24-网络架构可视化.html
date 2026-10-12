@@ -56,7 +56,8 @@ input:focus,select:focus{outline:2px solid #bfdbfe}
 .steps{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px 14px;font-family:Consolas,Menlo,monospace;font-size:13px;margin-top:10px;white-space:pre-wrap;line-height:1.9}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
 .fcard{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;font-size:13.5px}
-.fcard b{color:var(--acc);display:block;margin-bottom:4px;font-size:13px}
+.fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 .hs{display:flex;gap:10px;justify-content:space-between;max-width:560px;margin:12px auto 6px}
 .peer{flex:1;background:#eff6ff;border:2px solid var(--acc);border-radius:10px;text-align:center;padding:10px;font-weight:700;font-size:14px}
 .peer small{display:block;font-weight:400;color:var(--mut);font-size:11.5px}
@@ -466,6 +467,7 @@ footer{max-width:1000px;margin:0 auto 30px;padding:0 16px;color:var(--mut);font-
    <div class="fcard"><b>数字话路</b>E1 = 32路×64k = 2.048Mbps（30话音）<br>T1 = 24路 = 1.544Mbps（美日）</div>
    <div class="fcard"><b>头部大小</b>UDP 固定 8B；TCP 最小 20B（可到60）<br>IPv6 基本头固定 40B；MAC 地址 48 位</div>
    <div class="fcard"><b>TCP vs UDP（专项卷高频）</b>TCP：面向连接、可靠、<b>一对一</b>字节流，头20~60B<br>UDP：无连接、不可靠、<b>可一对多</b>报文，头固定8B；用于 DNS/DHCP/SNMP/RIP/流媒体</div>
+   <div class="fcard"><b>什么是内网（私网）</b>IPv4 不够分 → 划出<b>三段只准内部用</b>的地址：10/8（大企业）、172.16-31（中型）、192.168（家用）。三特点：①可全球重复用（不出公网就不冲突）②<b>出门靠 NAT</b> 换成公网地址 ③外网主动进不来（天然隔离一层）</div>
    <div class="fcard"><b>私网判定三问</b>① 第一段=10？② 第一段=172 且<b>第二段 16~31</b>（172.15/172.32 都是公网）？③ 前两段=192.168？其余为公网；127 回环、169.254 链路本地是特殊段</div>
    <div class="fcard"><b>TCP 确认号 & 状态机（专项卷 nt-8/68/9/97）</b>确认号 N = "N−1 及之前的都收到了，请从 N 发"（<b>累计确认</b>）；ack = 对方 seq+1。挥手状态机：主动方 FIN_WAIT_1→FIN_WAIT_2→<b>TIME_WAIT</b>(等2MSL)；被动方 <b>CLOSE_WAIT</b>（收到FIN还能发数据）→<b>LAST_ACK</b></div>
   </div>
