@@ -127,6 +127,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   <div class="grid2" style="margin-top:10px">
    <div class="fcard"><b>三步法</b>① 信息码左移 r 位（r=多项式最高次数）② 与生成多项式做<b>模 2 除</b>（异或、不借位）③ 余数拼在信息码后</div>
    <div class="fcard"><b>常考口径（题34）</b>模 2 除法 = 按位<b>异或</b>、不借位不进位；余数位数固定 = 最高次数（本例 4 位，不够补 0）</div>
+   <div class="fcard"><b>生成多项式哪来的</b>题干给的，如 G(X)=X⁴+X+1 → <b>从最高次幂到 0 次幂写系数，缺幂补 0</b>：1,0,0,1,1 → 10011。反推也要会：10011 = X⁴+X+1；<b>r = 最高次数 = 位数−1</b></div>
   </div>
   <div class="row" style="margin-top:8px"><button class="btn pri" onclick="crcqNew()">🎲 出一道</button><span id="crcqQ" style="font-size:13.5px"></span></div>
   <div class="row">
