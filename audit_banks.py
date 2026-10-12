@@ -7,12 +7,12 @@
 import re, math, sys
 
 BANKS = [
-    ('10-讲义题库-软件工程.md', '软件工程', 'sw', 64),
+    ('10-讲义题库-软件工程.md', '软件工程', 'sw', 72),
     ('11-讲义题库-数据结构与算法.md', '数据结构与算法', 'ds', 59),
     ('12-讲义题库-数据库.md', '数据库', 'db', 51),
-    ('13-讲义题库-操作系统.md', '操作系统', 'os', 57),
-    ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 58),
-    ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 49),
+    ('13-讲义题库-操作系统.md', '操作系统', 'os', 58),
+    ('14-讲义题库-组成原理与网络.md', '组成原理与网络', 'hw', 65),
+    ('15-讲义题库-程序语言与背诵类.md', '程序语言与背诵类', 'pl', 50),
 ]
 fails, checked = [], 0
 
@@ -339,9 +339,9 @@ print('[数据] 17-练习数据.js 六库答案与 md 逐位一致: %s' % ('OK' 
 p00 = open('00-总计划.md', encoding='utf-8').read()
 p02 = open('02-每日学习计划表.md', encoding='utf-8').read()
 rd = open('README.md', encoding='utf-8').read()
-check(p00.count('556项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00 and '544项' not in p00 and '552项' not in p00, '00 总数引用异常')
-check('题库438' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02 and '题库406' not in p02 and '题库426' not in p02 and '题库434' not in p02, '02 题库数引用异常')
-check('438' in rd and '556' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd and '406' not in rd and '426' not in rd and '434' not in rd and '544' not in rd and '552' not in rd, 'README 题库数引用异常')
+check(p00.count('573项') == 2 and '397项' not in p00 and '297项' not in p00 and '254题' not in p00 and '497项' not in p00 and '510项' not in p00 and '516项' not in p00 and '524项' not in p00 and '544项' not in p00 and '552项' not in p00 and '556项' not in p00, '00 总数引用异常')
+check('题库455' in p02 and '题库179' not in p02 and '题库279' not in p02 and '题库392' not in p02 and '题库398' not in p02 and '题库406' not in p02 and '题库426' not in p02 and '题库434' not in p02 and '题库438' not in p02, '02 题库数引用异常')
+check('455' in rd and '573' in rd and '179' not in rd and '279' not in rd and '392' not in rd and '398' not in rd and '406' not in rd and '426' not in rd and '434' not in rd and '544' not in rd and '552' not in rd and '556' not in rd and '438' not in rd, 'README 题库数引用异常')
 check(all(f'（{n} 题）' in open(f, encoding='utf-8').read() for f, _, _, n in BANKS), '题库标题题数与期望不符')
 print('[引用] 00/02/README 总数与标签: %s' % ('OK' if not [f for f in fails if '引用' in f] else 'FAIL'))
 
@@ -351,4 +351,4 @@ if fails:
     print('审计未通过，%d 个问题:' % len(fails))
     for f in fails: print(' ✘', f)
     sys.exit(1)
-print('审计全部通过 ✅  题库 438 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
+print('审计全部通过 ✅  题库 455 题 | 编号连续 | 选项完整 | 速查行逐位一致 | 独立重算 %d 项 | 数据/引用一致' % (len(M)+len(C)))
