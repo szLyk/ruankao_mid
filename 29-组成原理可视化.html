@@ -128,6 +128,14 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
    <div class="fcard"><b>三步法</b>① 信息码左移 r 位（r=多项式最高次数）② 与生成多项式做<b>模 2 除</b>（异或、不借位）③ 余数拼在信息码后</div>
    <div class="fcard"><b>常考口径（题34）</b>模 2 除法 = 按位<b>异或</b>、不借位不进位；余数位数固定 = 最高次数（本例 4 位，不够补 0）</div>
   </div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="crcqNew()">🎲 出一道</button><span id="crcqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="crcqA" placeholder="CRC 码字" style="width:150px">
+   <button class="btn" onclick="crcqCheck()">检查</button>
+   <button class="btn" onclick="crcqShow()">显示解答</button>
+  </div>
+  <div id="crcqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="crcqSteps" style="display:none"></div>
  </div>
 </section>
 
@@ -539,6 +547,14 @@ CTOOL.crcSteps = function(info, poly, rem){
     '④ CRC 码字 = 信息码 + 余数 = ' + info + rem];
   return log.join('\n');
 };
+CTOOL.crcqGen = function(){
+  const len = 4 + Math.floor(Math.random() * 3);
+  const info = '1' + Array.from({length: len - 1}, () => Math.round(Math.random())).join('');
+  const poly = pick(['1101', '10011', '11011', '10111']);
+  const r = CTOOL.crcRem(info, poly);
+  return { stem: '信息码 <b>' + info + '</b>，生成多项式 <b>' + poly + '</b>（最高次数 r=' + (poly.length - 1) + '），求 CRC 码字', clear: ['crcqA'], ans: { crcqA: r.code },
+    steps: r.steps + '\n答：' + r.code + '（余数 ' + r.rem + ' 固定 ' + (poly.length - 1) + ' 位）' };
+};
 CTOOL.pipeT = function(k, dt, n){
   if(!(k >= 1) || !(dt > 0) || !(n >= 1)) return null;
   const T = (k + n - 1) * dt;
@@ -826,6 +842,7 @@ function mkQuiz(pfx, gen){
   };
   window[pfx + 'New']();
 }
+mkQuiz('crcq', CTOOL.crcqGen);
 mkQuiz('nq', CTOOL.nqGen);
 mkQuiz('hmq', CTOOL.hmqGen);
 mkQuiz('pmq', CTOOL.pmqGen);
