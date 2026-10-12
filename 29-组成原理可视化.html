@@ -184,6 +184,15 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 <!-- ============ Tab4 存储与 Cache ============ -->
 <section id="s-cache">
  <div class="tip">口诀：Cache 解决<b>速度</b>、主存-辅存解决<b>容量</b>（题12）；<b>t = h×tc + (1−h)×tm</b>（题11）；程序循环重复执行=时间局部性（题13）。</div>
+ <div class="card">
+  <h2>📚 存储器家族 + 编址速查（题40/60/63 同族）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>SRAM vs DRAM（题60）</b>SRAM=触发器、快、贵、<b>无需刷新</b>→<b>Cache</b>；DRAM=电容、慢、便宜、集成度高、<b>需定期刷新</b>→<b>主存</b>（断电即失=易失性）</div>
+   <div class="fcard"><b>ROM 家族</b>PROM 一次编程 → <b>EPROM</b> 紫外线擦 → <b>EEPROM</b> 电擦 → <b>Flash</b> 按块擦写（U盘/SSD）；BIOS 常驻 Flash</div>
+   <div class="fcard"><b>主存编址计算（题63）</b>容量 = 末地址 − 首地址 + 1。例 A0000H~BFFFFH：(BFFFF+1)−A0000=20000H=2¹⁷=<b>128K</b>；芯片数=总容量÷单片容量</div>
+   <div class="fcard"><b>汉字点阵字库</b>n×n 点阵占 <b>n×n÷8 字节</b>：24×24→<b>72B</b>、32×32→<b>128B</b>（一个点 1 位，8 个点凑 1 字节）</div>
+  </div>
+ </div>
 
  <div class="card">
   <h2>🧮 Cache 平均访问时间 + 随机出题（题11）</h2>
@@ -280,6 +289,15 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 <!-- ============ Tab6 CPU 与总线 ============ -->
 <section id="s-cpu">
  <div class="tip">口诀：<b>PC 存下一条指令地址</b>（题52）；指令周期 ⊃ 机器周期 ⊃ 时钟周期（题43）；<b>总线带宽 = 宽度/8 × 频率</b>（题41）；变址适合数组循环（题53）。</div>
+ <div class="card">
+  <h2>🧠 Flynn / 控制器 / 总线仲裁速查（题59/61/62 同族）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>Flynn 分类法（题59）</b>按指令流×数据流：<b>SISD</b>单处理器 / <b>SIMD</b>阵列机·GPU（一条指令打一批数据）/ MISD 罕见 / <b>MIMD</b>多处理机·多核·集群</div>
+   <div class="fcard"><b>微程序 vs 硬布线（题61）</b>微程序=控制信号编成<b>微指令</b>存<b>控制存储器 CM</b>，灵活易改但慢（<b>CISC</b>）；硬布线=组合逻辑直出，快但难改（<b>RISC</b>）</div>
+   <div class="fcard"><b>总线仲裁（题62）</b>集中式：<b>链式查询</b>串行传、<b>离控制器越近优先级越高</b>、省线但远端饿死；计数器查询居中；<b>独立请求</b>每设备一线最快但线最多；分布式=无中央仲裁</div>
+   <div class="fcard"><b>三模冗余（题54）</b>至少 2 个正常：Rsys = <b>3R²(1−R) + R³</b>；对照串联 R=∏Ri、并联 1−∏(1−Ri)</div>
+  </div>
+ </div>
 
  <div class="card">
   <h2>🚌 总线带宽计算器 + 随机出题（题41）</h2>
@@ -503,7 +521,7 @@ kgBuild();
 </script>
 
 </main>
-<footer>学习主线：14-讲义题库-组成原理与网络（58 题，硬件部分）→ 本页 → 17 系统 → 错题重练。网络分层/子网/TCP 请用 24-网络架构可视化；I/O 与中断细节配合 26-操作系统可视化。</footer>
+<footer>学习主线：14-讲义题库-组成原理与网络（63 题，硬件部分）→ 本页 → 17 系统 → 错题重练。网络分层/子网/TCP 请用 24-网络架构可视化；I/O 与中断细节配合 26-操作系统可视化。</footer>
 <script>
 /* ================= 纯函数（独立可测） ================= */
 const CTOOL = {};
