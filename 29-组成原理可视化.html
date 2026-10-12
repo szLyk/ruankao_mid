@@ -549,7 +549,7 @@ CTOOL.crcSteps = function(info, poly, rem){
     if(cur[0] === '1'){ q += '1'; const v = xs(cur, poly); tr.push(cur + ' ⊕ ' + poly + ' = ' + v); cur = v.slice(1) + (a[poly.length + i] || ''); }
     else { q += '0'; tr.push(cur + '（首位 0 → 商 0，跳过）'); cur = cur.slice(1) + (a[poly.length + i] || ''); }
   }
-  tr.push('→ 位拉完，余数 = ' + cur + '（商 ' + q + ' 在 CRC 里用不上）');
+  tr.push('→ 共 ' + q.length + ' 步（= 信息码位数，其中异或 ' + (q.match(/1/g) || []).length + ' 次跳过 ' + (q.match(/0/g) || []).length + ' 次）拉完，余数 = ' + cur + '（商 ' + q + ' 在 CRC 里用不上）');
   const log = ['① 信息码左移 ' + (poly.length - 1) + ' 位：' + info + ' → ' + a,
     '② 模 2 除竖式（⊕ = 对齐逐位比，相同出 0 不同出 1；首位 1 → 商 1 异或除数；首位 0 → 商 0 跳过）：',
     tr.join('\n'),
