@@ -120,6 +120,20 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   </div>
  </div>
  <div class="card">
+  <h2>🔤 常考"文字 ↔ 正规式"对照（认字即得分）</h2>
+  <table>
+   <tr><th>文字描述</th><th>正规式</th><th>记忆点</th></tr>
+   <tr><td>所有以 a <b>结尾</b></td><td class="mono">(a|b)*a</td><td>结尾写最后，前面 (a|b)* 兜底</td></tr>
+   <tr><td>所有以 ab <b>结尾</b></td><td class="mono">(a|b)*ab</td><td>同上，结尾写死</td></tr>
+   <tr><td>所有以 a <b>开头</b></td><td class="mono">a(a|b)*</td><td>开头写最前，后面兜底</td></tr>
+   <tr><td><b>含</b> a（至少一个）</td><td class="mono">(a|b)*a(a|b)*</td><td>a 两边都能有东西</td></tr>
+   <tr><td><b>不含</b> b</td><td class="mono">a*</td><td>全是 a（含空串）</td></tr>
+   <tr><td><b>任意串</b>（含空串）</td><td class="mono">(a|b)*</td><td>* 含 0 次</td></tr>
+   <tr><td>以 aa 开头，其余任意</td><td class="mono">aa(a|b)*</td><td>开头两位写死</td></tr>
+  </table>
+  <div style="font-size:13px;margin-top:8px">反向技巧：给正规式说人话——看<b>最前</b>面的字面符定"开头"，<b>最后</b>面的字面符定"结尾"，中间 (a|b)* = "随便"。如 b(a|b)*a = 以 b 开头、以 a 结尾。</div>
+ </div>
+ <div class="card">
   <h2>🗺 图形考题：状态图识别（真题画图型，随机出题）</h2>
   <div id="stqSvg"></div>
   <div class="row"><button class="btn pri" onclick="stqNew()">🎲 出一道</button><span id="stqQ" style="font-size:13.5px"></span></div>
