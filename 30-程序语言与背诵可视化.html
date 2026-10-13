@@ -135,6 +135,12 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
  </div>
  <div class="card">
   <h2>🗺 图形考题：状态图识别（真题画图型，随机出题）</h2>
+  <div class="grid2" style="margin-bottom:10px">
+   <div class="fcard"><b>符号约定</b><b>双圈 = 终态</b>（接受状态，页面上方还会标"终态"两字）；单圈 = 普通状态；无来源箭头 = <b>初态</b>（标"开始"）；进入后无出边/出边全是自环 = 陷阱态</div>
+   <div class="fcard"><b>判定三步</b>① 从"开始"箭头的状态出发 ② 按字符串<b>逐个字符</b>沿箭头走（没有对应箭头 = 直接拒绝）③ <b>字符走完看停点</b>：双圈 ✔ 接受，单圈 ✘ 拒绝</div>
+   <div class="fcard"><b>易错一：路过不算</b>中途踩过终态没用——如 (a|b)*a 机器走 ab：S—a→A（此刻在终态！）—b→S，读完停在单圈 → <b>拒绝</b></div>
+   <div class="fcard"><b>易错二：认准陷阱态</b>出边全是自环的状态（页面上标"陷阱：进不来也出不去"）一旦进入就永远停在那 → 后面读什么都不可能接受</div>
+  </div>
   <div id="stqSvg"></div>
   <div class="row"><button class="btn pri" onclick="stqNew()">🎲 出一道</button><span id="stqQ" style="font-size:13.5px"></span></div>
   <div id="stqOpts" style="display:grid;gap:6px;margin-top:8px"></div>
