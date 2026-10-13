@@ -119,6 +119,13 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
    <div class="fcard"><b>对号</b>正规式 ↔ 有限自动机 ↔ 正规文法（都属 3 型语言）；程序语言的语法用 2 型描述（题5）</div>
   </div>
  </div>
+ <div class="card">
+  <h2>🗺 图形考题：状态图识别（真题画图型，随机出题）</h2>
+  <div id="stqSvg"></div>
+  <div class="row"><button class="btn pri" onclick="stqNew()">🎲 出一道</button><span id="stqQ" style="font-size:13.5px"></span></div>
+  <div id="stqOpts" style="display:grid;gap:6px;margin-top:8px"></div>
+  <div id="stqFb" style="font-size:13.5px;margin-top:8px"></div>
+ </div>
 </section>
 
 <!-- ============ Tab3 表达式与传参 ============ -->
@@ -832,5 +839,114 @@ psRun();
 knCalc();
 miCalc(); maCalc(); mvCalc();
 </script>
-</body>
+<script>
+/* ================= 图形考题：状态图识别 ================= */
+const STQ_T = [
+ { desc: '读到 a 进 A、读到 b 回 S：停在 A 当且仅当以 a 结尾', regex: '(a|b)*a',
+   wrongR: ['(a|b)*b', 'a(a|b)*', '(a|b)*a(a|b)*'],
+   states: [{x:90,y:80,n:'S'},{x:310,y:80,n:'A',acc:1}], start: 0,
+   edges: [[0,'a',1],[0,'b',0],[1,'a',1],[1,'b',0]] },
+ { desc: 'b 都回 S；a 先进 A（等 b）；A 读到 b 进终态 B——停在 B 当且仅当以 ab 结尾', regex: '(a|b)*ab',
+   wrongR: ['(a|b)*ba', '(ab)*', 'a*b'],
+   states: [{x:70,y:80,n:'S'},{x:210,y:80,n:'A'},{x:350,y:80,n:'B',acc:1}], start: 0,
+   edges: [[0,'a',1],[0,'b',0],[1,'a',1],[1,'b',2],[2,'a',1],[2,'b',0,'arc']] },
+ { desc: '开头读到 a 进 A 并停住（b 全在 A 内自环）；首位是 b 直接进陷阱 T 永不回头', regex: 'a(a|b)*',
+   wrongR: ['(a|b)*a', 'a(a|b)*b', 'b(a|b)*'],
+   states: [{x:70,y:80,n:'S'},{x:210,y:80,n:'A',acc:1},{x:350,y:80,n:'T'}], start: 0,
+   edges: [[0,'a',1],[0,'b',2,'arc'],[1,'a',1],[1,'b',1],[2,'a',2],[2,'b',2]] }
+];
+function stqRun(t, str){
+  let cur = t.start;
+  for(const ch of str){
+    let nxt = -1;
+    for(const e of t.edges) if(e[0] === cur && e[1] === ch){ nxt = e[2]; break; }
+    if(nxt < 0) return false;
+    cur = nxt;
+  }
+  return t.states[cur].acc === 1;
+}
+function stqPath(t, str){
+  let cur = t.start, out = t.states[cur].n;
+  for(const ch of str){
+    for(const e of t.edges) if(e[0] === cur && e[1] === ch){ cur = e[2]; break; }
+    out += ' -' + ch + '→ ' + t.states[cur].n;
+  }
+  return out;
+}
+function stqDraw(t){
+  let s = '<svg viewBox="0 0 420 168" style="width:100%;max-width:520px;font-family:Consolas,monospace">';
+  s += '<defs><marker id="stqArr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0f766e"/></marker></defs>';
+  const st0 = t.states[t.start];
+  // 状态圆先画：边和标签永远压在圆之上，不会被遮挡
+  for(const st of t.states){
+    if(st.acc) s += '<circle cx="' + st.x + '" cy="' + st.y + '" r="27" fill="none" stroke="#0f766e" stroke-width="1.5"/>';
+    s += '<circle cx="' + st.x + '" cy="' + st.y + '" r="22" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>';
+    s += '<text x="' + st.x + '" y="' + (st.y + 5) + '" text-anchor="middle" font-size="14" font-weight="bold" fill="#134e4a">' + st.n + '</text>';
+    if(st.acc) s += '<text x="' + st.x + '" y="' + (st.y + 44) + '" text-anchor="middle" font-size="11" fill="#64748b">终态</text>';
+  }
+  s += '<line x1="' + (st0.x - 56) + '" y1="' + st0.y + '" x2="' + (st0.x - 28) + '" y2="' + st0.y + '" stroke="#0f766e" stroke-width="2" marker-end="url(#stqArr)"/>';
+  s += '<text x="' + (st0.x - 44) + '" y="' + (st0.y - 10) + '" font-size="11" fill="#0f766e">开始</text>';
+  const loopCnt = {};
+  for(const e of t.edges){
+    const a = t.states[e[0]], b = t.states[e[2]];
+    if(a === b){
+      loopCnt[e[0]] = (loopCnt[e[0]] || 0) + 1;
+      if(loopCnt[e[0]] === 1){
+        s += '<path d="M ' + (a.x - 12) + ',' + (a.y - 18) + ' A 18 18 0 1,1 ' + (a.x + 12) + ',' + (a.y - 18) + '" fill="none" stroke="#0f766e" stroke-width="2" marker-end="url(#stqArr)"/>';
+        s += '<text x="' + a.x + '" y="' + (a.y - 46) + '" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">' + e[1] + '</text>';
+      } else {
+        s += '<path d="M ' + (a.x + 18) + ',' + (a.y - 12) + ' A 18 18 0 1,1 ' + (a.x + 18) + ',' + (a.y + 12) + '" fill="none" stroke="#0f766e" stroke-width="2" marker-end="url(#stqArr)"/>';
+        s += '<text x="' + (a.x + 54) + '" y="' + (a.y + 4) + '" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">' + e[1] + '</text>';
+      }
+    } else if(e[3] === 'arc'){
+      s += '<path d="M ' + (a.x + 8) + ',' + (a.y + 18) + ' C ' + ((a.x + b.x) / 2) + ',' + (b.y + 78) + ' ' + ((a.x + b.x) / 2) + ',' + (b.y + 78) + ' ' + (b.x - 8) + ',' + (b.y + 18) + '" fill="none" stroke="#0f766e" stroke-width="2" marker-end="url(#stqArr)"/>';
+      s += '<text x="' + ((a.x + b.x) / 2) + '" y="' + (b.y + 66) + '" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">' + e[1] + '</text>';
+    } else {
+      const both = t.edges.some(x => x[0] === e[2] && x[2] === e[0]);
+      const dir = (b.x >= a.x) ? 1 : -1;
+      const yoff = both ? 7 * dir * -1 : 0;
+      s += '<line x1="' + (a.x + dir * 26) + '" y1="' + (a.y + yoff) + '" x2="' + (b.x - dir * 26) + '" y2="' + (b.y + yoff) + '" stroke="#0f766e" stroke-width="2" marker-end="url(#stqArr)"/>';
+      const mx = (a.x + b.x) / 2, my = (a.y + yoff);
+      s += '<text x="' + mx + '" y="' + (dir === 1 ? my - 10 : my + 24) + '" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">' + e[1] + '</text>';
+    }
+  }
+  return s + '</svg>';
+}
+let stq = null;
+function stqShuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function stqNew(){
+  const t = STQ_T[Math.floor(Math.random() * STQ_T.length)];
+  const pool = ['a','b','aa','ab','ba','bb','aab','aba','abb','baa','bab','bba','aabb','abba','baab','abab','baba','aaab','bbba','ababa'];
+  const yes = pool.filter(x => stqRun(t, x)), no = pool.filter(x => !stqRun(t, x));
+  let opts;
+  if(Math.random() < 0.5){
+    opts = stqShuffle([{t: t.regex, ok: 1}].concat(t.wrongR.map(r => ({t: r, ok: 0}))));
+    stq = { t, kind: 'regex', opts };
+    document.getElementById('stqQ').innerHTML = '该状态图自动机<b>接受的语言</b>（能识别的字符串集合）是（　）　Σ={a,b}';
+  } else {
+    const c = yes[Math.floor(Math.random() * yes.length)];
+    const wrongs = stqShuffle(no).slice(0, 3);
+    opts = stqShuffle([{t: c, ok: 1}].concat(wrongs.map(x => ({t: x, ok: 0}))));
+    stq = { t, kind: 'str', opts, c };
+    document.getElementById('stqQ').innerHTML = '下列字符串中，<b>能被该状态图自动机接受</b>的是（　）';
+  }
+  document.getElementById('stqSvg').innerHTML = stqDraw(t);
+  document.getElementById('stqOpts').innerHTML = opts.map((o, i) =>
+    '<button class="btn" style="text-align:left" onclick="stqPick(' + i + ')">' + 'ABCD'[i] + '. <span class="mono">' + o.t + '</span></button>').join('');
+  document.getElementById('stqFb').innerHTML = '';
+}
+function stqPick(i){
+  if(!stq) return;
+  const ok = stq.opts[i].ok === 1;
+  let fb = ok ? '<span class="ok">✔ 正确</span>' : '<span class="bad">✘ 不对，正确答案是 ' + 'ABCD'[stq.opts.findIndex(o => o.ok === 1)] + '</span>';
+  if(stq.kind === 'str') fb += '<br>走一遍：<span class="mono">' + stqPath(stq.t, stq.c) + '</span> → ' + (stqRun(stq.t, stq.c) ? '停在<b>终态</b>，接受' : '不在终态，拒绝');
+  else fb += '<br>' + stq.t.desc + '。验证样本：接受 ' + ['a','ab','bba'].filter(x => stqRun(stq.t, x)).join('、') + '；拒绝 ' + ['b','ab','aab'].filter(x => !stqRun(stq.t, x)).join('、');
+  document.getElementById('stqFb').innerHTML = fb;
+}
+stqNew();
+</script></body>
 </html>
