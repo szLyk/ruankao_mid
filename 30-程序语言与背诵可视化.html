@@ -182,6 +182,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   </div>
   <div class="res" id="psRes"></div>
   <div class="steps" id="psSteps"></div>
+  <div style="font-size:12.5px;color:var(--mut)">题9 对照：a=2、b=2 → f(a,&b) 后 a=2（x 是副本改了白改）、b=4（*y 按地址真改）→ 选 B。改上面的初值再推一遍试试。</div>
  </div>
 
  <div class="card">
@@ -196,6 +197,7 @@ void g(){ int x = 2; f(); }
    <b id="scR" class="mono"></b>
   </div>
   <div class="steps" id="scSteps"></div>
+  <div style="font-size:12.5px;color:var(--mut)">题45 三步：①C/Java = 静态作用域 → ②从 f 的定义处往外层找 x（f 定义在全局 → x=1）③g 的局部 x=2 与 f 无关（"看调用链"是动态作用域）。结论：输出 1，选 A。</div>
  </div>
 </section>
 
@@ -329,7 +331,7 @@ void g(){ int x = 2; f(); }
   <div class="grid2">
    <div class="fcard"><b>独立事件（题24）</b>P(至少一个) = 1 − (1−p)(1−q)；两独立 0.9 → 1−0.01 = 0.99</div>
    <div class="fcard"><b>排列组合（题26、27）</b>全排列 n!；选 2 人 C(n,2)=n(n−1)/2；分类相加、分步相乘</div>
-   <div class="fcard"><b>命题逻辑（题25、41）</b>P→Q <b>前真后假才为假</b>；P→Q、Q→R ⊢ P→R（假言三段论）</div>
+   <div class="fcard"><b>蕴含真值表（题25、41）</b><table style="margin-top:4px"><tr><th>P</th><th>Q</th><th>P→Q</th></tr><tr><td>真</td><td>真</td><td>真</td></tr><tr><td>真</td><td>假</td><td class="bad">假 ★</td></tr><tr><td>假</td><td>真</td><td>真</td></tr><tr><td>假</td><td>假</td><td>真</td></tr></table>前真后假才为假（P 假则空虚真）；<b>P→Q ≡ ¬Q→¬P</b>（逆否才等价，¬P→¬Q 不等价）；P→Q ∧ Q→R ⇒ P→R</div>
    <div class="fcard"><b>古典概率（题42）</b>两骰子和 8：枚举 (2,6)(3,5)(4,4)(5,3)(6,2) 共 5/36</div>
    <div class="fcard"><b>可靠性概率</b>串并联即可靠性公式（29 号页签），数字口径一致</div>
    <div class="fcard"><b>英语（5 分）</b>先通读抓主题 → 选固定搭配术语；真题见《19-专业英语》20 篇</div>
@@ -677,7 +679,7 @@ LTOOL.mmqGen = function(){
   return { stem: '模拟信号最高频率 <b>' + f + 'kHz</b>，按采样定理不失真采样频率至少为（　）kHz', clear: ['mmqA'], ans: { mmqA: 2 * f }, cmp: cmpNum, steps: '采样定理：fs ≥ 2×fmax = 2×' + f + ' = ' + (2 * f) + 'kHz（电话语音 4kHz → 8kHz 采样）' };
 };
 LTOOL.mqGen = function(){
-  const t = pick(['perm', 'comb', 'dice', 'opp', 'logic']);
+  const t = pick(['perm', 'comb', 'dice', 'opp', 'logic', 'imp', 'imp']);
   if(t === 'perm'){
     const n = 3 + Math.floor(Math.random() * 4), f = [1, 1, 2, 6, 24, 120, 720][n];
     return { stem: '<b>' + n + '</b> 个元素的全排列数是（　）', clear: ['mqA'], ans: { mqA: f }, cmp: cmpNum, steps: '全排列 = n! = ' + [1, 2, 3, 4, 5, 6].slice(0, n).map(x => x).join('×') + ' = ' + f };
@@ -693,6 +695,11 @@ LTOOL.mqGen = function(){
   if(t === 'opp'){
     const p = pick([0.1, 0.2, 0.3]);
     return { stem: '两个独立部件可靠度均为 <b>' + p + '</b>，至少一个正常工作的概率是（　）', clear: ['mqA'], ans: { mqA: Math.round((1 - (1 - p) * (1 - p)) * 10000) / 10000 }, cmp: cmpTol(0.001), steps: 'P(至少一个) = 1 − (1−p)² = 1 − ' + ((1 - p) * (1 - p)).toFixed(4) + ' = ' + (1 - (1 - p) * (1 - p)).toFixed(4) + '（= 并联可靠性公式，题24）' };
+  }
+  if(t === 'imp'){
+    const p = Math.random() < 0.5, q = Math.random() < 0.5, v = (!p || q);
+    return { stem: '命题 P 为<b>' + (p ? '真' : '假') + '</b>、Q 为<b>' + (q ? '真' : '假') + '</b>，则 P→Q 的真值是（　）（填：真/假）', clear: ['mqA'], ans: { mqA: v ? '真' : '假' },
+      steps: 'P=' + (p ? '真' : '假') + '，Q=' + (q ? '真' : '假') + '：前' + (p ? '真' : '假') + '后' + (q ? '真' : '假') + (v ? '，不构成「前真后假」' + (!p ? '，P 假则空虚真' : '') + ' → 真' : '，恰好前真后假 → 假') + '\n口诀：前真后假才为假，其余全真。' };
   }
   return { stem: '由 P→Q 与 Q→R 可以推出（　）（填推理名，如：P→R）', clear: ['mqA'], ans: { mqA: 'P→R' }, steps: '假言三段论：传递性，P→Q、Q→R ⊢ P→R（题41）。\n蕴含口诀：前真后假才为假（题25）。' };
 };
