@@ -852,7 +852,7 @@ const STQ_T = [
    edges: [[0,'a',1],[0,'b',0],[1,'a',1],[1,'b',2],[2,'a',1],[2,'b',0,'arc']] },
  { desc: '开头读到 a 进 A 并停住（b 全在 A 内自环）；首位是 b 直接进陷阱 T 永不回头', regex: 'a(a|b)*',
    wrongR: ['(a|b)*a', 'a(a|b)*b', 'b(a|b)*'],
-   states: [{x:70,y:80,n:'S'},{x:210,y:80,n:'A',acc:1},{x:350,y:80,n:'T'}], start: 0,
+   states: [{x:70,y:80,n:'S'},{x:210,y:80,n:'A',acc:1},{x:350,y:80,n:'T',trap:1}], start: 0,
    edges: [[0,'a',1],[0,'b',2,'arc'],[1,'a',1],[1,'b',1],[2,'a',2],[2,'b',2]] }
 ];
 function stqRun(t, str){
@@ -883,6 +883,7 @@ function stqDraw(t){
     s += '<circle cx="' + st.x + '" cy="' + st.y + '" r="22" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>';
     s += '<text x="' + st.x + '" y="' + (st.y + 5) + '" text-anchor="middle" font-size="14" font-weight="bold" fill="#134e4a">' + st.n + '</text>';
     if(st.acc) s += '<text x="' + st.x + '" y="' + (st.y + 44) + '" text-anchor="middle" font-size="11" fill="#64748b">终态</text>';
+    if(st.trap) s += '<text x="' + st.x + '" y="' + (st.y + 44) + '" text-anchor="middle" font-size="11" fill="#b91c1c">陷阱：进不来也出不去</text>';
   }
   s += '<line x1="' + (st0.x - 56) + '" y1="' + st0.y + '" x2="' + (st0.x - 28) + '" y2="' + st0.y + '" stroke="#0f766e" stroke-width="2" marker-end="url(#stqArr)"/>';
   s += '<text x="' + (st0.x - 44) + '" y="' + (st0.y - 10) + '" font-size="11" fill="#0f766e">开始</text>';
