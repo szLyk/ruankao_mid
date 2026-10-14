@@ -228,6 +228,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
    <tr><td><b>直接映像</b></td><td>主存块只能进<b>唯一固定行</b>（题39）</td><td>硬件简单、冲突率高</td></tr>
    <tr><td><b>全相联</b></td><td>任意块放任意行</td><td>灵活、比较电路贵</td></tr>
    <tr><td><b>组相联</b></td><td>分组定组、组内随意</td><td>折中，最常用</td></tr>
+   <tr><td><b>地址结构</b></td><td class="mono" colspan="2">直接映射：标记 | 行号 | 块内偏移——行号 = 主存块号 mod 行数（Cache 8 行：第 35 块→35 mod 8=<b>3 行</b>，题67）；全相联：标记 | 块内偏移；组相联：标记 | 组号 | 块内偏移</td></tr>
   </table>
   <div class="row" style="margin-top:10px">
    <span>总容量</span><input id="chTot" value="64" style="width:64px">K×
@@ -355,6 +356,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   <div class="grid2" style="margin-top:12px">
    <div class="fcard"><b>中断（题18、42）</b>中断向量=中断服务程序的<b>入口地址</b>；多重中断：优先级更高的可打断低优先级（屏蔽字控制）</div>
    <div class="fcard"><b>I/O 三方式（题17）</b>程序查询→中断→DMA：CPU 介入依次减少；<b>DMA 数据直接在设备与内存间传</b>，仅传送前后打扰 CPU（详见 26 号）</div>
+   <div class="fcard"><b>DMA 四步（题66）</b>① CPU 初始化 DMAC 后继续干活 ② 抢总线——<b>周期挪用</b>：一总线周期传一数 ③ 设备↔内存<b>成块直传</b>（不过 CPU、不破坏现场）④ 传完发中断善后。对比中断：中断每字打扰一次；DMA 整块两次</div>
    <div class="fcard"><b>指令周期层级（题43）</b>指令周期 ⊃ 机器周期（CPU 周期）⊃ 时钟周期（节拍，最小单位）</div>
    <div class="fcard"><b>芯片扩展（题40）</b>片数 = (总字数/片字数) × (总位数/片位数)；64K×8 用 8K×8 → 8×1 = 8 片</div>
   </div>
