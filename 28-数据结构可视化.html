@@ -113,6 +113,54 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
  <div class="tip">口诀：<b>n₀=n₂+1</b>（题4）；完全二叉树高 ⌊log₂n⌋+1（题5）；哈夫曼 n 叶共 <b>2n−1</b> 结点（题7、8）；<b>前/后序定根、中序分左右</b>（题6、57）。</div>
 
  <div class="card">
+  <h2>📖 先把定义立住（术语 + 满vs完全辨析）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>树（定义）</b>n≥0 个结点的有限集：有且仅有一个<b>根</b>（无前驱）；其余结点有且仅有一个前驱（双亲）、可有多个孩子；子树也是树（<b>递归定义</b>）</div>
+   <div class="fcard"><b>术语四件套</b><b>度</b>=孩子数（树的度=最大值）；<b>叶子</b>=度 0；<b>层次</b>=根为第 1 层；<b>深度</b>=最大层数</div>
+   <div class="fcard"><b>二叉树（定义）</b>每个结点<b>至多两棵子树</b>，且<b>左右有序不能换</b>——所以二叉树≠"度为 2 的树"（二叉树可以只有 0/1 棵子树；真题辨析）</div>
+   <div class="fcard"><b>存储</b>二叉链表：每结点 left/right 两指针（2n 个用掉 n−1 个 → <b>n+1 个空链域</b>，线索树用它们）；完全二叉树可用数组存（孩子 2i、2i+1）</div>
+  </div>
+  <svg viewBox="0 0 960 235" style="width:100%;max-width:960px;font-family:'Microsoft YaHei',sans-serif">
+   <g fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5">
+    <line x1="160" y1="44" x2="80" y2="98"/><line x1="160" y1="44" x2="240" y2="98"/>
+    <line x1="80" y1="112" x2="40" y2="166"/><line x1="80" y1="112" x2="120" y2="166"/>
+    <line x1="240" y1="112" x2="200" y2="166"/><line x1="240" y1="112" x2="280" y2="166"/>
+    <circle cx="160" cy="30" r="15"/><circle cx="80" cy="98" r="15"/><circle cx="240" cy="98" r="15"/>
+    <circle cx="40" cy="180" r="15"/><circle cx="120" cy="180" r="15"/><circle cx="200" cy="180" r="15"/><circle cx="280" cy="180" r="15"/>
+   </g>
+   <g text-anchor="middle" font-size="12" fill="#134e4a">
+    <text x="160" y="35">1</text><text x="80" y="103">2</text><text x="240" y="103">3</text>
+    <text x="40" y="185">4</text><text x="120" y="185">5</text><text x="200" y="185">6</text><text x="280" y="185">7</text>
+   </g>
+   <text x="160" y="216" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#15803d"><tspan x="160">满二叉树：每层全满</tspan><tspan x="160" dy="16">2³−1=7 结点，必是完全二叉树</tspan></text>
+   <g fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5">
+    <line x1="480" y1="44" x2="400" y2="98"/><line x1="480" y1="44" x2="560" y2="98"/>
+    <line x1="400" y1="112" x2="360" y2="166"/><line x1="400" y1="112" x2="440" y2="166"/>
+    <line x1="560" y1="112" x2="520" y2="166"/>
+    <circle cx="480" cy="30" r="15"/><circle cx="400" cy="98" r="15"/><circle cx="560" cy="98" r="15"/>
+    <circle cx="360" cy="180" r="15"/><circle cx="440" cy="180" r="15"/><circle cx="520" cy="180" r="15"/>
+   </g>
+   <g text-anchor="middle" font-size="12" fill="#134e4a">
+    <text x="480" y="35">1</text><text x="400" y="103">2</text><text x="560" y="103">3</text>
+    <text x="360" y="185">4</text><text x="440" y="185">5</text><text x="520" y="185">6</text>
+   </g>
+   <text x="480" y="216" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#15803d"><tspan x="480">完全二叉树：只缺最底层</tspan><tspan x="480" dy="16">「最右边」的连续结点→堆长这样</tspan></text>
+   <g fill="#fef2f2" stroke="#dc2626" stroke-width="1.5">
+    <line x1="800" y1="44" x2="720" y2="98"/><line x1="800" y1="44" x2="880" y2="98"/>
+    <line x1="720" y1="112" x2="680" y2="166"/>
+    <line x1="880" y1="112" x2="840" y2="166"/><line x1="880" y1="112" x2="920" y2="166"/>
+    <circle cx="800" cy="30" r="15"/><circle cx="720" cy="98" r="15"/><circle cx="880" cy="98" r="15"/>
+    <circle cx="680" cy="180" r="15"/><circle cx="840" cy="180" r="15"/><circle cx="920" cy="180" r="15"/>
+   </g>
+   <g text-anchor="middle" font-size="12" fill="#7f1d1d">
+    <text x="800" y="35">1</text><text x="720" y="103">2</text><text x="880" y="103">3</text>
+    <text x="680" y="185">4</text><text x="840" y="185">6</text><text x="920" y="185">7</text>
+   </g>
+   <text x="800" y="216" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#b91c1c"><tspan x="800">✘ 非完全：缺 5 却留 6、7</tspan><tspan x="800" dy="16">只能缺最右边，不能跳着缺</tspan></text>
+  </svg>
+ </div>
+
+ <div class="card">
   <h2>🧮 树公式知识卡 + 随机出题</h2>
   <div class="grid2">
    <div class="fcard"><b>度数定律（题4）</b>n₀ = n₂ + 1（任何二叉树成立；推导：边数=结点数−1）</div>
