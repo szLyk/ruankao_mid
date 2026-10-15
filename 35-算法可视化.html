@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>算法可视化 · 软件设计师</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.7;color:#0f172a;background:#f8fafc}
+:root{--acc:#0d9488;--bg:#f0fdfa;--bd:#99f6e4;--mut:#64748b}
+header{position:sticky;top:0;z-index:9;background:#134e4a;color:#fff;padding:12px 16px}
+h1{font-size:16px;font-weight:600}h1 small{font-size:12px;opacity:.75;display:block}
+nav{margin-top:8px}nav button{border:none;border-radius:16px;padding:5px 12px;margin-right:6px;margin-bottom:6px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:12.5px}
+nav button.on{background:#fff;color:#134e4a;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:var(--bg);border:1px solid var(--bd);color:#115e59;padding:8px 12px;border-radius:10px;font-size:13px;margin-bottom:14px}
+h2{font-size:16px;margin-bottom:10px}h4{font-size:13.5px;color:#334155;margin:10px 0 6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select{border:1px solid #cbd5e1;border-radius:8px;padding:7px 9px;font-size:13px;font-family:Consolas,monospace}
+input:focus,select:focus{outline:2px solid var(--bd)}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.btn.pri:hover{opacity:.88;color:#fff}
+.steps{background:#0f172a;color:#99f6e4;font-family:Consolas,monospace;font-size:13px;padding:12px 14px;border-radius:10px;white-space:pre-wrap;line-height:1.9;margin-top:10px;display:none}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{border:1px solid #e2e8f0;padding:5px 8px;text-align:left}
+th{background:var(--bg)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:8px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
+.fcard b{color:var(--acc)}
+.mono{font-family:Consolas,monospace}
+footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
+svg text{font-family:"Microsoft YaHei",sans-serif}
+.code{background:#0f172a;color:#99f6e4;font-family:Consolas,monospace;font-size:12.5px;padding:10px 12px;border-radius:8px;white-space:pre-wrap;word-break:break-word;line-height:1.8;margin-top:8px}
+.code input{width:130px;padding:2px 6px;font-size:12.5px}
+.star{color:#dc2626;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+ <h1>🧮 算法可视化 <small>软件设计师 · 严格按考纲全算法（排序8/查找3/递归分治/贪心/动态规划/图/字符串/回溯）· 配套《21-算法大全》《03-C语言速成》· 大题④ 8分 + 选择题</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 考纲地图 ============ -->
+<section id="s-map" class="on">
+ <div class="tip">考纲算法全景（三级考频照搬《21-算法大全》§〇）：<b>⭐⭐⭐ 是大题④反复考的，必须会默写；⭐⭐ 偶考+选择题；⭐ 选择题扫一眼。</b>每项标了 21 号对应节与"填空热区"。</div>
+ <div class="card">
+  <h2>⭐⭐⭐ 必考（大题④真题反复考）</h2>
+  <div class="grid2" id="hotCards"></div>
+ </div>
+ <div class="card">
+  <h2>⭐⭐ 高频（偶考大题 + 选择题常客）</h2>
+  <div class="grid3" id="midCards"></div>
+ </div>
+ <div class="card">
+  <h2>⭐ 了解（主要选择题）</h2>
+  <div class="grid3" id="lowCards"></div>
+ </div>
+ <div class="card">
+  <h2>📌 大题④ 五空分布（21号§十）</h2>
+  <table>
+   <tr><th>空位</th><th>答案特征</th></tr>
+   <tr><td>循环边界</td><td class="mono">lo &lt;= hi ／ j &lt; n-1-i ／ i &lt;= n</td></tr>
+   <tr><td>指针/下标推进</td><td class="mono">p = p-&gt;next ／ lo = mid+1 ／ i++</td></tr>
+   <tr><td>递归出口</td><td class="mono">n &lt;= 1 ／ p == NULL</td></tr>
+   <tr><td>递推/转移方程</td><td class="mono">dp[i][j] = dp[i-1][j-1]+1 ／ d[i][j]+max(f[i+1][j], f[i+1][j+1])</td></tr>
+   <tr><td>交换/存表</td><td class="mono">temp 三行 ／ memo[n] = ...</td></tr>
+  </table>
+ </div>
+</section>
+
+<!-- ============ Tab2 排序与查找 ============ -->
+<section id="s-sort">
+ <div class="tip">排序 8 种（考纲点名全考概念）+ 查找 3 种。28 号有必背表，这里练<b>"看代码认算法"</b>——大题④代码认不出来的第一原因。</div>
+ <div class="card">
+  <h2>👀 代码片段识别随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="cdNew()">🎲 出一道</button><span id="cdQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="cdA" placeholder="算法名" style="width:170px">
+   <button class="btn" onclick="cdCheck()">检查</button>
+   <button class="btn" onclick="cdShow()">显示解答</button>
+  </div>
+  <div id="cdFb" style="font-size:13.5px"></div>
+  <div class="steps" id="cdSteps" style="display:none"></div>
+ </div>
+ <div class="card">
+  <h2>📋 查找三兄弟卡</h2>
+  <div class="grid2">
+   <div class="fcard"><b>顺序查找（哨兵技巧，21号§2.1）</b>把 key 放到 a[n] 当哨兵，循环不用判 i&lt;n——<b>一定找得到</b>，出循环看 i==n 则失败。O(n)</div>
+   <div class="fcard"><b>二分查找（21号§2.2）</b>要<b>有序 + 顺序存储</b>；最多 ⌈log₂(n+1)⌉ 次；边界取等 lo&lt;=hi；变体"找第一次出现"命中后继续向左（31号有挖空练习）</div>
+   <div class="fcard"><b>哈希（21号§2.3）</b>ASL 与<b>装填因子</b>有关、与表长无关；线性探测会堆积；链地址无堆积</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab3 策略与NP ============ -->
+<section id="s-strat">
+ <div class="tip">四大策略判定总纲：<b>分治=子问题相互独立；DP=子问题重叠+最优子结构；贪心=每步局部最优不回头；回溯=走不通退回来。</b>子问题"独立 vs 重叠"是分治与 DP 的唯一分界线（21号§3.2）。</div>
+ <div class="card">
+  <h2>🧭 四大策略 + NP 概念（识别随机出题）</h2>
+  <div class="row"><button class="btn pri" onclick="agNew()">🎲 出一道</button><span id="agQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="agA" placeholder="策略/概念" style="width:180px">
+   <button class="btn" onclick="agCheck()">检查</button>
+   <button class="btn" onclick="agShow()">显示解答</button>
+  </div>
+  <div id="agFb" style="font-size:13.5px"></div>
+  <div class="steps" id="agSteps" style="display:none"></div>
+ </div>
+ <div class="card">
+  <h2>📋 策略判定卡（21号§三~§九）</h2>
+  <div class="grid2">
+   <div class="fcard"><b>分治</b>子问题<b>相互独立</b>：归并、快排、二分、汉诺塔。分解→求解→合并三步。</div>
+   <div class="fcard"><b>贪心</b>每步局部最优、<b>不回头</b>：活动选择（按结束时间排序）、部分背包（可分割）。反例：0-1 背包贪心不保证最优。</div>
+   <div class="fcard"><b>动态规划</b>子问题<b>重叠</b>+最优子结构：背包/LCS/LIS/编辑距离/最大子段和/数字三角形。自底向上打表。</div>
+   <div class="fcard"><b>回溯</b>试探+回退（深度优先+剪枝）：N 皇后、迷宫、子集枚举。</div>
+   <div class="fcard"><b>P / NP / NPC（选择题）</b>P=多项式时间<b>可解</b>；NP=多项式时间<b>可验证</b>；NPC=NP 中最难的一类；P=NP 尚未证明。</div>
+   <div class="fcard"><b>近似算法</b>不求最优求"够好"，用于 NPC 问题（如旅行商）；概率算法（随机化）结果可能带概率保证。</div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ Tab4 C代码填空 ============ -->
+<section id="s-fill">
+ <div class="tip">与 31 号的 5 个程序<b>不重复</b>：这里是 ①直接插入 ②顺序查找哨兵 ③数字三角形 ④LCS 核心 ⑤活动选择——全部出自 21号 §1.3/§2.1/§5.1/§5.3/§4.1。比较用"去空白、区分大小写"的 C 口径。</div>
+ <div class="card">
+  <h2>☕ C 代码填空演练（5 程序轮换）</h2>
+  <div class="row"><button class="btn pri" onclick="c5New()">🎲 出一道</button><span id="c5Kind" style="font-size:13.5px;color:var(--mut)"></span></div>
+  <div id="c5Q" style="margin-top:6px"></div>
+  <div class="row">
+   <button class="btn" onclick="c5Check()">检查</button>
+   <button class="btn" onclick="c5Show()">显示解答</button>
+  </div>
+  <div id="c5Fb" style="font-size:13.5px"></div>
+  <div class="steps" id="c5Steps" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab5 知识图谱 ============ -->
+<section id="s-kgmap">
+ <div class="card">
+  <h2>🕸 算法知识图谱 <span style="font-size:12px;color:var(--mut);font-weight:400">红框=⭐⭐⭐必考 · 点节点看要点与考频 · 滚轮缩放/拖拽平移</span></h2>
+  <div class="row"><span id="kgchips" style="display:contents"></span><button class="btn" onclick="kgReset()">⤢ 重置视图</button><span style="font-size:12px;color:var(--mut)" id="kgstats"></span></div>
+  <div>
+   <div style="border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff"><svg id="kgsvg" viewBox="0 0 1200 800" style="width:100%;height:640px;display:block;cursor:grab" preserveAspectRatio="xMidYMin meet"></svg></div>
+   <aside id="kgpanel" style="margin-top:12px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;max-height:300px;overflow-y:auto;font-size:13.5px"><div style="color:var(--mut)">点击任意节点查看要点与 21 号对应节。</div></aside>
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：21-算法大全（按本页考纲地图逐节读）→ 03 号补 C 语法 → 本页填空演练 → 31 号另一组 5 程序 → 16 卷④限时。对照表：本题库 474 题中算法概念题见「数据结构与算法」「程序语言与背诵」标签。</footer>
+<script>
+/* ================= 考纲地图数据（照搬 21号§〇） ================= */
+const HOT = [
+ ['0-1 背包', 'dp[i][j] = max(不放, 放)：f[i][j] = max(f[i-1][j], f[i-1][j-w]+v)', '21号§5.2 · 16卷④', '第二重循环的 j 遍历方向（逆序=每件只用一次）'],
+ ['LCS 最长公共子序列', '相等取左上+1，不等取上左最大', '21号§5.3 · 本页C填空', '相等分支 dp[i-1][j-1]+1 是唯一+1 处'],
+ ['LIS 最长递增子序列', 'j&lt;i 且 a[j]&lt;a[i] 时 dp[i]=max(dp[j]+1)', '21号§5.4', '外层逐个 i、内层 j&lt;i 全扫，f[i] 先置 1'],
+ ['编辑距离', '相等取左上，否则 min(上,左,左上)+1', '21号§5.5', '边界：空串到 len 的全操作'],
+ ['快排 / 归并', '分治代表：partition / merge 双指针合并', '21号§1.5/1.6', '快排挖 partition 内层 while；归并挖合并双 while'],
+ ['二分查找', 'lo&lt;=hi + mid±1', '21号§2.2 · 31号挖空', '变体"找第一次出现"命中后 hi=mid-1'],
+ ['DFS / BFS', 'DFS 递归/栈，BFS 队列层次', '21号§6.2', 'vis[] 标记必挖'],
+ ['Dijkstra', '贪心选最近未定结点 + 松弛', '21号§6.4', '松弛条件 dist[v] > dist[u]+w 必挖'],
+];
+const MID = [
+ ['拓扑排序', '入度归零反复拿（或 DFS）', '21号§6.3'],
+ ['Prim / Kruskal', '点扩张 vs 边排序+并查集', '21号§6.5'],
+ ['KMP', 'next 数组 = 最长相等真前后缀', '21号§7.2'],
+ ['活动选择（贪心）', '按结束时间排序，选兼容的', '21号§4.1 · 本页C填空'],
+ ['数字三角形', '自底向上 f[i][j]+=max(下,右下)', '21号§5.1 · 本页C填空'],
+ ['哈希', '装填因子定 ASL；探测/链地址', '21号§2.3'],
+];
+const LOW = [
+ ['汉诺塔（递归）', 'N 皇后（回溯）', '最大子段和（DP）', '关键路径（AOE）', '基数排序（分配收集）'],
+];
+/* 渲染考纲地图 */
+(function(){
+  document.getElementById('hotCards').innerHTML = HOT.map(h =>
+    '<div class="fcard"><b>' + h[0] + '</b>　<span class="mono">' + h[1] + '</span><br><span style="color:#94a3b8">' + h[2] + '</span><br><span style="color:#9f1239">填空热区：' + h[3] + '</span></div>').join('');
+  document.getElementById('midCards').innerHTML = MID.map(h =>
+    '<div class="fcard"><b>' + h[0] + '</b>　' + h[1] + '<br><span style="color:#94a3b8">' + h[2] + '</span></div>').join('');
+  document.getElementById('lowCards').innerHTML = LOW[0].map(x =>
+    '<div class="fcard"><b>' + x.split('（')[0] + '</b>　' + (x.match(/（(.+?)）/)?x.match(/（(.+?)）/)['1']:'') + '</div>').join('');
+})();
+
+/* ================= 页面骨架 ================= */
+const SECTIONS = [['map','📋 考纲地图'],['sort','🔢 排序与查找'],['strat','🧭 策略与NP'],['fill','☕ C代码填空'],['kgmap','🕸 知识图谱']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0] === 'map') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= 工具 ================= */
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+const normTxt = s => String(s).replace(/\s+/g, '').toUpperCase();
+/* ================= 排序/查找代码识别 ================= */
+const CD = [
+ ['for (i = 1; i &lt; n; i++) {\n    tmp = a[i];\n    for (j = i - 1; j &gt;= 0 &amp;&amp; a[j] &gt; tmp; j--)\n        a[j+1] = a[j];\n    a[j+1] = tmp;\n}', '直接插入排序', 'tmp 暂存待插元素，比它大的整体后移。'],
+ ['gap 每轮除以 2 缩小，按 gap 分组做插入排序。', '希尔排序', '增量分组插入 = 希尔的唯一特征。'],
+ ['每轮在无序区找最小值下标，与区首交换。', '简单选择排序', '先找 min 下标再一次交换。'],
+ ['for (j = 0; j &lt; n-1-i; j++)\n    if (a[j] &gt; a[j+1]) swap;', '冒泡排序', '相邻比较、大数右移，内层边界随 i 收缩。'],
+ ['双指针 partition：j 扫描、i 指小于区尾，最后基准落位。', '快速排序', 'partition + 分治递归。'],
+ ['把两段各自有序的子数组用双指针合并成一个有序数组。', '归并排序', 'merge 是它的招牌动作。'],
+ ['建堆后堆顶与末尾交换，再对堆顶向下调整（sift 与孩子比）。', '堆排序', '下标 2i+1/2i+2 找孩子。'],
+ ['按个位/十位分桶收集，共 d 轮，不比较关键字。', '基数排序', '分配-收集，队列做桶。']
+];
+window.cdNew = function(){
+  const e = pick(CD);
+  window._cd = e;
+  document.getElementById('cdQ').innerHTML = '以下 C 代码片段实现的算法是（　）<div class="code">' + e[0] + '</div>';
+  document.getElementById('cdA').value = '';
+  document.getElementById('cdFb').innerHTML = '';
+  document.getElementById('cdSteps').style.display = 'none';
+};
+window.cdCheck = function(){
+  const f = document.getElementById('cdFb');
+  const v = document.getElementById('cdA').value;
+  if(!v.trim()){ f.innerHTML = '<span class="bad">先填算法名</span>'; return; }
+  const want = normTxt(window._cd[1]);
+  const alias = { '直接插入排序': '插入排序', '简单选择排序': '选择排序', '快速排序': '快排' };
+  const got = normTxt(v);
+  const okv = got === want || (alias[want] !== undefined && got === normTxt(alias[want]));
+  f.innerHTML = okv ? '<span class="ok">✔ 正确！' + window._cd[1] + '</span>' : '<span class="bad">✘ 看解析</span>';
+};
+window.cdShow = function(){
+  document.getElementById('cdA').value = window._cd[1];
+  const f = document.getElementById('cdFb');
+  f.innerHTML = '<span class="ok">' + window._cd[1] + '</span>';
+  const st = document.getElementById('cdSteps'); st.style.display = 'block'; st.textContent = '识别点：' + window._cd[2];
+};
+/* ================= 策略与NP ================= */
+const AG = [
+ ['归并排序把数组分成两半分别排序再合并，两个子问题的排序互不影响。', '分治'],
+ ['求最短路径时，路径的前缀本身也是最短路径，且中间结果被反复使用。', '动态规划'],
+ ['活动选择问题每次都选结束时间最早的活动，选完不再回头。', '贪心'],
+ ['N 皇后逐行放皇后，冲突就退回上一行换位置。', '回溯'],
+ ['0-1 背包用"单位重量价值最高优先"的选法不能保证总体最优。', '贪心'],
+ ['一个问题能在多项式时间内"验证"一个给定答案是否正确，但未必能高效求解。', 'NP'],
+ ['旅行商这类 NPC 问题，实践中常用放弃最优、换取可接受解的算法。', '近似算法'],
+ ['斐波那契直接递归是指数级，加数组保存中间结果后变成线性——用到的思想。', '动态规划'],
+ ['二分查找每轮把规模减半，子问题之间互不重叠。', '分治'],
+ ['Dijkstra 每次从候选中选距离最小的未定结点固定下来。', '贪心'],
+];
+window.agNew = function(){
+  const e = pick(AG);
+  window._ag = e;
+  document.getElementById('agQ').innerHTML = '「<b>' + e[0] + '</b>」——这是哪种算法策略/概念？（填：分治/动态规划/贪心/回溯/NP/近似算法）';
+  document.getElementById('agA').value = '';
+  document.getElementById('agFb').innerHTML = '';
+  document.getElementById('agSteps').style.display = 'none';
+};
+window.agCheck = function(){
+  const f = document.getElementById('agFb');
+  const v = document.getElementById('agA').value;
+  if(!v.trim()){ f.innerHTML = '<span class="bad">先填策略/概念</span>'; return; }
+  f.innerHTML = normTxt(v) === normTxt(window._ag[1]) ? '<span class="ok">✔ 正确！' + window._ag[1] + '</span>' : '<span class="bad">✘ 看解析</span>';
+};
+window.agShow = function(){
+  document.getElementById('agA').value = window._ag[1];
+  const f = document.getElementById('agFb');
+  f.innerHTML = '<span class="ok">' + window._ag[1] + '</span>';
+  const st = document.getElementById('agSteps'); st.style.display = 'block';
+  st.textContent = '对照：分治=独立子问题；DP=重叠子问题+最优子结构；贪心=局部最优不回头；回溯=可退回。';
+};
+/* ================= C 代码填空（5 程序 · 不与 31号重复） ================= */
+const cmpC = (k, v, a) => String(v).replace(/\s+/g, '') === String(a).replace(/\s+/g, '');
+const C5 = [
+ { kind: '直接插入排序（21号§1.3）', build(){
+   return { stem:
+    '<div class="code">void insertSort(int a[], int n) {\n' +
+    '    for (int i = 1; i &lt; n; i++) {        /* 从第 2 个元素开始插 */\n' +
+    '        int tmp = a[i];\n' +
+    '        int j = i - 1;\n' +
+    '        while (j &gt;= 0 &amp;&amp; <input id="c5a1" placeholder="空1:插入条件" style="width:170px">) {\n' +
+    '            a[j+1] = <input id="c5a2" placeholder="空2" style="width:90px">;   /* 整体后移 */\n' +
+    '            <input id="c5a3" placeholder="空3" style="width:80px">;\n    }\n' +
+    '        a[<input id="c5a4" placeholder="空4" style="width:80px">] = tmp;             /* 落位 */\n    }\n}</div>',
+    clear: ['c5a1','c5a2','c5a3','c5a4'],
+    ans: { c5a1: 'j >= 0 && a[j] > tmp', c5a2: 'a[j]', c5a3: 'j--', c5a4: 'j + 1' }, cmp: cmpC,
+    steps: '插入排序四空：空1 两个条件都要（没越界 且 比,tmp 大才后移）；空2 后移 = a[j]；空3 j-- 继续向前找；空4 落位是 j+1（最后一次多退了一格）。\n填错最多的是空4——记住 while 退出时 j 已经多减了 1。' };
+ } },
+ { kind: '顺序查找·哨兵（21号§2.1）', build(){
+   return { stem:
+    '<div class="code">int find(int a[], int n, int key) {   /* 原数组只用了 0..n-1 */\n' +
+    '    <input id="c5b1" placeholder="空1:设置哨兵" style="width:130px">;                /* 保证一定找得到 */\n' +
+    '    int i = 0;\n' +
+    '    while (a[i] != key) <input id="c5b2" placeholder="空2" style="width:80px">;\n' +
+    '    if (<input id="c5b3" placeholder="空3:真找到才成功" style="width:110px">) return i;\n' +
+    '    return -1;\n}</div>',
+    clear: ['c5b1','c5b2','c5b3'],
+    ans: { c5b1: 'a[n] = key', c5b2: 'i++', c5b3: 'i < n' }, cmp: cmpC,
+    steps: '哨兵技巧：空1 把 key 放到 a[n]（数组要多开一个位置），循环不必判 i<n 是否越界——一定会在哨兵处停下。\n空3 真找到时 i < n；i == n 说明只在哨兵处命中 = 失败。\n省一次边界判断，这是教材讲哨兵的唯一目的。' };
+ } },
+ { kind: '数字三角形（21号§5.1）', build(){
+   return { stem:
+    '<div class="code">int maxPath(int d[][100], int n) {   /* 从顶走到底，只能向下/右下 */\n' +
+    '    int f[100][100];\n' +
+    '    for (int j = 0; j &lt; n; j++)\n' +
+    '        f[n-1][j] = <input id="c5c1" placeholder="空1:底行初始化" style="width:130px">;\n' +
+    '    for (int i = n - 2; i &gt;= 0; i--)\n' +
+    '        for (int j = 0; j &lt;= i; j++)\n' +
+    '            f[i][j] = d[i][j] + <input id="c5c2" placeholder="空2:转移方程" style="width:230px">;\n' +
+    '    return <input id="c5c3" placeholder="空3:最终答案" style="width:110px">;\n}</div>',
+    clear: ['c5c1','c5c2','c5c3'],
+    ans: { c5c1: 'd[n-1][j]', c5c2: 'max(f[i+1][j], f[i+1][j+1])', c5c3: 'f[0][0]' }, cmp: cmpC,
+    steps: '自底向上：空1 底行就是自己的值；空2 转移 = 本格 + 正下方与右下方的较大者（C 里常写成条件表达式取 max）；空3 顶点 f[0][0] 即答案。\n注意第二重循环 j <= i：三角形每行只有 i+1 个有效格。\n空2 本页统一填 max() 形式；21号 C 版用三目表达式，等价。' };
+ } },
+ { kind: 'LCS 最长公共子序列（21号§5.3）', build(){
+   return { stem:
+    '<div class="code">int LCS(char A[], char B[], int m, int n) {\n' +
+    '    int dp[100][100] = {0};\n' +
+    '    for (int i = 1; i &lt;= m; i++)\n' +
+    '        for (int j = 1; j &lt;= n; j++) {\n' +
+    '            if (<input id="c5d1" placeholder="空1:末尾字符相等" style="width:150px">)\n' +
+    '                dp[i][j] = dp[i-1][j-1] + <input id="c5d2" placeholder="空2" style="width:70px">;\n' +
+    '            else\n' +
+    '                dp[i][j] = <input id="c5d3" placeholder="空3:取上/左较大" style="width:210px">;\n    }\n' +
+    '    return <input id="c5d4" placeholder="空4:答案位置" style="width:110px">;\n}</div>',
+    clear: ['c5d1','c5d2','c5d3','c5d4'],
+    ans: { c5d1: 'A[i-1] == B[j-1]', c5d2: '1', c5d3: 'max(dp[i-1][j], dp[i][j-1])', c5d4: 'dp[m][n]' }, cmp: cmpC,
+    steps: 'LCS 四空：空1 比较"末尾字符"（下标差 1，因为 dp 多了一圈 0 行 0 列）；空2 相等时 +1 并取左上；空3 不等时取上、左较大；空4 答案在右下角 dp[m][n]。\n唯一的 +1 只出现在相等分支——这是最常挖的点。\n空3 本页统一填 max(a, b) 形式；21号 C 版用三目表达式，等价。' };
+ } },
+ { kind: '活动选择·贪心（21号§4.1）', build(){
+   return { stem:
+    '<div class="code">/* s[] 开始时间，f[] 结束时间（已按 f 从小到大排序） */\n' +
+    'int select(int s[], int f[], int n) {\n' +
+    '    int count = 1, last = 0;\n' +
+    '    for (int i = 1; i &lt; n; i++)\n' +
+    '        if (<input id="c5e1" placeholder="空1:兼容判定" style="width:130px">) {\n' +
+    '            count++;\n' +
+    '            <input id="c5e2" placeholder="空2:记住最后选的活动" style="width:100px">;\n    }\n' +
+    '    return count;\n}\n' +
+    '/* 贪心依据：活动必须先按什么排序？ */\n' +
+    '/* 贪心依据：按 <input id="c5e3" placeholder="空3:排序关键字"> 排序 */</div>',
+    clear: ['c5e1','c5e2','c5e3'],
+    ans: { c5e1: 's[i] >= f[last]', c5e2: 'last = i', c5e3: '结束时间' }, cmp: cmpC,
+    steps: '活动选择贪心：先按结束时间从小到大排序（空3），然后逐个看——开始时间不早于上一个已选活动的结束时间（空1 s[i] >= f[last]）就选（空2 last = i）。\n为什么按结束时间：越早结束给后面留的空间越多。' };
+ } }
+];
+let c5idx = -1, c5q = null;
+window.c5New = function(){
+  let k;
+  do { k = Math.floor(Math.random() * C5.length); } while (k === c5idx);
+  c5idx = k; c5q = C5[k].build();
+  document.getElementById('c5Kind').textContent = '共 5 个程序轮换';
+  document.getElementById('c5Q').innerHTML = c5q.stem;
+  c5q.clear.forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+  document.getElementById('c5Fb').innerHTML = '';
+  document.getElementById('c5Steps').style.display = 'none';
+};
+window.c5Check = function(){
+  if(!c5q) return;
+  let all = true, html = '';
+  Object.keys(c5q.ans).forEach(k => {
+    const inp = document.getElementById(k); if(!inp) return;
+    const good = c5q.cmp(k, inp.value, c5q.ans[k]);
+    all = all && good;
+    html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (good ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+  });
+  document.getElementById('c5Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+};
+window.c5Show = function(){
+  if(!c5q) return;
+  Object.keys(c5q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = c5q.ans[k]; });
+  const s = document.getElementById('c5Steps'); if(s){ s.style.display = 'block'; s.textContent = '本程序：' + C5[c5idx].kind + '\n' + c5q.steps; }
+  document.getElementById('c5Kind').textContent = '本程序：' + C5[c5idx].kind;
+};
+
+/* ================= 知识图谱 ================= */
+const KG_DATA = {
+CL: { hot: ['⭐⭐⭐ 必考', '#dc2626'], mid: ['⭐⭐ 高频', '#d97706'], low: ['⭐ 了解', '#64748b'], strat: ['四大策略', '#7c3aed'] },
+NODES: [
+ {id:'bag',n:'0-1 背包',c:'hot',one:'二维/一维 DP，逆序容量',pts:['f[i][j]=max(不放,放)','一维版 j 逆序防重复'],qs:'21号§5.2 · 16卷④',h:1},
+ {id:'lcs',n:'LCS',c:'hot',one:'相等取左上+1，否则取上左大',pts:['dp 多一圈 0 行列'],qs:'21号§5.3 · 本页填空',h:1},
+ {id:'lis',n:'LIS',c:'hot',one:'dp[i]=以 i 结尾的最长递增',pts:['内层 j<i 全扫取 max'],qs:'21号§5.4',h:1},
+ {id:'edit',n:'编辑距离',c:'hot',one:'相等取左上，否则 min(上,左,左上)+1',pts:['边界=空串长度'],qs:'21号§5.5',h:1},
+ {id:'qsort',n:'快速排序',c:'hot',one:'partition 分治递归',pts:['双指针分区/基准落位'],qs:'21号§1.5',h:1},
+ {id:'merge',n:'归并排序',c:'hot',one:'双指针合并两个有序段',pts:['O(n) 辅助数组'],qs:'21号§1.6',h:1},
+ {id:'bin',n:'二分查找',c:'hot',one:'lo<=hi + mid±1',pts:['变体：找第一次出现'],qs:'21号§2.2 · 31号挖空',h:1},
+ {id:'dfs',n:'DFS 深度优先',c:'hot',one:'递归/栈，一条路走到黑',pts:['vis 标记必挖'],qs:'21号§6.2',h:1},
+ {id:'bfs',n:'BFS 广度优先',c:'hot',one:'队列层次推进',pts:['无权图最短路'],qs:'21号§6.2',h:1},
+ {id:'dij',n:'Dijkstra',c:'hot',one:'贪心+松弛求单源最短路',pts:['边权非负'],qs:'21号§6.4',h:1},
+ {id:'topo',n:'拓扑排序',c:'mid',one:'入度归零反复拿，仅 DAG',pts:['队列实现'],qs:'21号§6.3'},
+ {id:'prim',n:'Prim',c:'mid',one:'点扩张求 MST，适合稠密',pts:['O(n²)'],qs:'21号§6.5'},
+ {id:'kruskal',n:'Kruskal',c:'mid',one:'边排序+并查集求 MST',pts:['适合稀疏'],qs:'21号§6.5'},
+ {id:'kmp',n:'KMP',c:'mid',one:'next 数组避免主串回退',pts:['最长相等真前后缀'],qs:'21号§7.2'},
+ {id:'act',n:'活动选择',c:'mid',one:'按结束时间贪心选兼容活动',pts:['本页C填空'],qs:'21号§4.1 · 本页填空'},
+ {id:'tri',n:'数字三角形',c:'mid',one:'自底向上取较大者',pts:['本页C填空'],qs:'21号§5.1 · 本页填空'},
+ {id:'hashf',n:'哈希查找',c:'mid',one:'ASL 与装填因子有关、与表长无关',pts:['线性探测/链地址'],qs:'21号§2.3'},
+ {id:'hanoi',n:'汉诺塔',c:'low',one:'递归经典：n-1 移辅助，底盘到目标，n-1 移回来',pts:['2^n-1 步'],qs:'21号§3'},
+ {id:'nqueen',n:'N 皇后',c:'low',one:'回溯经典：逐行放置+剪枝',pts:['冲突判定数组'],qs:'21号§八'},
+ {id:'mss',n:'最大子段和',c:'low',one:'f[i]=max(a[i], f[i-1]+a[i])',pts:['一维 DP'],qs:'21号§5.6'},
+ {id:'cp',n:'关键路径',c:'low',one:'AOE 最长路=总工期',pts:['最早=最迟的活动是关键'],qs:'21号§6.6'},
+ {id:'radix',n:'基数排序',c:'low',one:'按位分配收集不比较',pts:['d 轮×r 桶'],qs:'21号§1.8'},
+ {id:'div',n:'分治',c:'strat',one:'子问题相互独立',pts:['归并/快排/二分/汉诺塔'],qs:'21号§三'},
+ {id:'greed',n:'贪心',c:'strat',one:'局部最优不回头',pts:['活动选择/部分背包'],qs:'21号§四'},
+ {id:'dp',n:'动态规划',c:'strat',one:'子问题重叠+最优子结构',pts:['打表避免重复计算'],qs:'21号§五',h:1},
+ {id:'back',n:'回溯',c:'strat',one:'试探+回退+剪枝',pts:['N 皇后/迷宫'],qs:'21号§八'},
+ {id:'np',n:'P/NP/NPC',c:'strat',one:'P 可解，NP 可验证，NPC 最难',pts:['近似算法应对 NPC'],qs:'21号§九'}
+],
+EDGES: [
+ ['div','merge','use','分治代表'],['div','qsort','use','分治代表'],['div','bin','use','规模减半'],['div','hanoi','use','递归分治'],
+ ['greed','act','use','经典贪心'],['greed','dij','use','贪心选最近'],['dp','bag','dep','背包是 DP'],['dp','lcs','dep','LCS 是 DP'],
+ ['dp','lis','dep','LIS 是 DP'],['dp','edit','dep','编辑距离是 DP'],['dp','tri','dep','入门题'],['dp','mss','dep','一维 DP'],
+ ['back','nqueen','use','回溯经典'],['dp','greed','cmp','重叠子问题 vs 不回头'],['dfs','bfs','cmp','栈 vs 队列'],
+ ['dfs','topo','use','可由 DFS 实现'],['dfs','dij','cmp','遍历 vs 最短路'],['bin','qsort','cmp','都靠基准分区思想'],
+ ['merge','div','dep','归并即分治']
+]
+};
+/* ================= 图谱机器 ================= */
+(function(){
+const CL = KG_DATA.CL, NODES = KG_DATA.NODES, EDGES = KG_DATA.EDGES;
+const COLW = 232, NODEW = 200, NH = 58, VGAP = 30;
+const cats = Object.keys(CL);
+const byCat = {};
+NODES.forEach(n => (byCat[n.c] = byCat[n.c] || []).push(n));
+let maxN = 0;
+cats.forEach(c => {
+  const arr = byCat[c] || []; maxN = Math.max(maxN, arr.length);
+  arr.forEach((n, i) => { n.x = 34 + cats.indexOf(c) * COLW; n.y = 76 + i * (NH + VGAP); n.w = NODEW; });
+});
+const W = 64 + cats.length * COLW, H = 90 + maxN * (NH + VGAP);
+const svg = document.getElementById('kgsvg');
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+let vb = { x: 0, y: 0, w: W, h: H };
+let sel = null, dim = null;
+const EC = { dep: '#2563eb', part: '#16a34a', cmp: '#d97706', use: '#8b5cf6' };
+function nodeById(id){ return NODES.find(n => n.id === id); }
+function trim(x1, y1, rect, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  if(!dx && !dy) return { x: x2, y: y2 };
+  const hw = rect.w / 2 + 4, hh = 33;
+  const sc = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9);
+  return { x: x2 - dx * sc, y: y2 - dy * sc };
+}
+function kgBuild(){
+  const parts = ['<defs><marker id="kga" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>'];
+  cats.forEach(c => {
+    parts.push('<text x="' + (34 + cats.indexOf(c) * COLW) + '" y="26" font-size="16" font-weight="bold" fill="' + CL[c][1] + '">' + CL[c][0] + '</text>');
+  });
+  EDGES.forEach(e => {
+    const a = nodeById(e[0]), b = nodeById(e[1]);
+    if(!a || !b) return;
+    const p1 = trim(a.x, a.y, a, b.x, b.y), p2 = trim(b.x, b.y, b, a.x, a.y);
+    const dimE = dim && a.c !== dim && b.c !== dim;
+    const faint = sel && sel !== e[0] && sel !== e[1];
+    parts.push('<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="' + (dimE || faint ? '#e2e8f0' : (EC[e[2]] || '#94a3b8')) + '" stroke-width="' + (dimE || faint ? 1 : 1.7) + '" opacity="' + (dimE ? 0.45 : (faint ? 0.35 : 0.9)) + '" marker-end="url(#kga)"/>');
+    if(sel && (sel === e[0] || sel === e[1])){
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      parts.push('<text x="' + mx + '" y="' + (my - 5) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</text>');
+    }
+  });
+  NODES.forEach(n => {
+    const d = dim && n.c !== dim, faded = sel && sel !== n.id;
+    const col = CL[n.c][1];
+    parts.push('<g onclick="kgPick(\'' + n.id + '\')" style="cursor:pointer" opacity="' + (d ? 0.22 : (faded ? 0.35 : 1)) + '">'
+      + '<rect x="' + n.x + '" y="' + (n.y - 29) + '" width="' + n.w + '" height="' + NH + '" rx="11" fill="' + (sel === n.id ? col : '#fff') + '" stroke="' + (n.h ? '#dc2626' : col) + '" stroke-width="' + (n.h ? 2.5 : 1.6) + '"/>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 2) + '" font-size="15" font-weight="bold" fill="' + (sel === n.id ? '#fff' : '#0f172a') + '">' + (n.h ? '⭐ ' : '') + n.n + '</text>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 21) + '" font-size="12.5" fill="' + (sel === n.id ? 'rgba(255,255,255,.85)' : '#64748b') + '">' + (n.qs || '') + '</text>'
+      + '</g>');
+  });
+  svg.innerHTML = parts.join('');
+}
+window.kgPick = function(id){
+  sel = (sel === id) ? null : id;
+  const panel = document.getElementById('kgpanel');
+  if(!sel){ panel.innerHTML = '<div style="color:var(--mut)">已取消选中。</div>'; kgBuild(); return; }
+  const n = nodeById(id);
+  if(!n) return;
+  const nb = EDGES.filter(e => e[0] === id || e[1] === id).map(e => {
+    const other = nodeById(e[0] === id ? e[1] : e[0]);
+    return '<li><b style="color:' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</b> → ' + other.n + '</li>';
+  }).join('');
+  panel.innerHTML = '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + (n.h ? '⭐ ' : '') + n.n + '</div>'
+    + '<div style="border-left:3px solid ' + CL[n.c][1] + ';padding-left:8px;margin-bottom:8px;color:#334155">' + n.one + '</div>'
+    + '<ul style="padding-left:18px;margin:0 0 8px">' + (n.pts || []).map(p => '<li>' + p + '</li>').join('') + '</ul>'
+    + (n.qs ? '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px">对应练习：<b>' + n.qs + '</b></div>' : '')
+    + (nb ? '<div style="margin-top:8px"><b style="font-size:12px;color:var(--mut)">关联：</b><ul style="padding-left:18px;font-size:12.5px;margin:4px 0 0">' + nb + '</ul></div>' : '');
+  kgBuild();
+};
+window.kgReset = function(){
+  sel = null; dim = null; vb = { x: 0, y: 0, w: W, h: H };
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+  kgBuild();
+  document.getElementById('kgpanel').innerHTML = '<div style="color:var(--mut)">点击任意节点查看要点与 21 号对应节。</div>';
+};
+window.kgDim = function(c){ dim = (dim === c) ? null : c; sel = null; kgBuild(); };
+(function(){
+  const box = document.getElementById('kgchips');
+  if(box){
+    Object.keys(CL).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.cssText = 'border-color:' + CL[c][1] + ';padding:3px 10px;font-size:12px;border-radius:12px';
+      b.textContent = CL[c][0];
+      b.onclick = () => kgDim(c);
+      box.appendChild(b);
+    });
+  }
+  const st = document.getElementById('kgstats');
+  if(st) st.textContent = NODES.length + ' 个算法 · ' + EDGES.length + ' 条关联 · 滚轮缩放 / 拖拽平移';
+})();
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = vb.x + (e.clientX - r.left) / r.width * vb.w;
+  const my = vb.y + (e.clientY - r.top) / r.height * vb.h;
+  const s = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+  vb.w *= s; vb.h *= s;
+  vb.x = mx - (mx - vb.x) * s; vb.y = my - (my - vb.y) * s;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+let pan = null;
+svg.addEventListener('mousedown', e => { pan = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y }; });
+window.addEventListener('mousemove', e => {
+  if(!pan) return;
+  const r = svg.getBoundingClientRect();
+  vb.x = pan.vx - (e.clientX - pan.x) * vb.w / r.width;
+  vb.y = pan.vy - (e.clientY - pan.y) * vb.h / r.height;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+window.addEventListener('mouseup', () => { pan = null; });
+kgBuild();
+})();
+/* ================= 载入 ================= */
+cdNew(); agNew(); c5New();
+</script>
+</body>
+</html>
