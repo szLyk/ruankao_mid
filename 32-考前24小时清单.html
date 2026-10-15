@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>考前 24 小时清单 · 软件设计师</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.65;color:#0f172a;background:#f8fafc;padding:18px}
+@media print{body{background:#fff;padding:0}.noprint{display:none}}
+header{max-width:1000px;margin:0 auto 14px;background:#7f1d1d;color:#fff;border-radius:14px;padding:16px 20px}
+header h1{font-size:20px}header p{font-size:13px;opacity:.85;margin-top:4px}
+main{max-width:1000px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.card h2{font-size:15.5px;margin-bottom:8px;color:#7f1d1d}
+table{width:100%;border-collapse:collapse;font-size:12.8px;margin-top:6px}
+th,td{border:1px solid #e2e8f0;padding:4px 7px;text-align:left}
+th{background:#fef2f2}
+.f{font-size:13.5px;margin:3px 0}
+.f b{color:#7f1d1d}
+.mono{font-family:Consolas,monospace}
+.warn{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:8px 12px;font-size:13px;margin-top:8px;color:#7f1d1d}
+.big{font-size:15px;font-weight:700}
+ul{padding-left:20px;font-size:13.5px}li{margin:2px 0}
+</style>
+</head>
+<body>
+<header>
+ <h1>🚨 考前 24 小时清单（10/23 晚 + 10/24 早，只看这一页）</h1>
+ <p>机考 · 两科连考 240 分钟（基础知识最长 120 分钟）· 45 分双科过线 · 考场见到的每类题这里都有对应的一句</p>
+</header>
+<main>
+ <div class="grid">
+
+ <div class="card">
+  <h2>⏰ 时间分配（考场铁律）</h2>
+  <div class="f">基础知识 75 题：目标 <b>100 分钟内</b>做完（每题 ≤80 秒），留 15 分钟回看标记题</div>
+  <div class="f">卡壳题：<b>标记跳过</b>，绝不超 2 分钟；排除法剩两项时选更"像教材原文"的</div>
+  <div class="f">应用技术：顺序 <b>②数据库 → ⑤设计模式 → ①DFD → ③UML → ④算法</b>，④只给 15 分钟、填满不空着</div>
+  <div class="f">机考操作：先在答题区打草稿结论再誊写；<b>每 20 分钟看一次倒计时</b>；交卷前确认所有题有作答</div>
+ </div>
+
+ <div class="card">
+  <h2>🧮 公式十条（每条一个反例就丢分）</h2>
+  <div class="f"><b>流水线</b>：周期=最长段；T=(k+n−1)Δt；TPmax=1/Δt；加速比=非流水/T</div>
+  <div class="f"><b>Cache</b>：t=h×tc+(1−h)×tm；直接映像 行号=块号 mod 行数</div>
+  <div class="f"><b>可靠性</b>：串联 R=∏Ri、λ相加；并联 1−∏(1−R)；三模 3R²(1−R)+R³；MTBF=1/λ</div>
+  <div class="f"><b>海明</b>：2^r ≥ n+r+1（8 数据位→r=4）；CRC=信息左移 r 位模2除，余数拼尾</div>
+  <div class="f"><b>子网</b>：块长=256−掩码尾段；主机数=2^主机位−2；第N个子网起点=(N−1)×块长</div>
+  <div class="f"><b>汇聚</b>：连续 n 条 /24 → 掩码 = 24−log₂n，起点须整除块</div>
+  <div class="f"><b>信道</b>：奈氏 2W·log₂N（无噪）；香农 W·log₂(1+S/N)（dB=10lg S/N，30dB=1000）</div>
+  <div class="f"><b>死锁</b>：不死锁至少 n(m−1)+1；银行家找安全序列（尚需≤可用）</div>
+  <div class="f"><b>页式</b>：页号=÷页大小取商，偏移=余；物理=页框×页大小+偏移</div>
+  <div class="f"><b>拥塞</b>：慢开始翻倍→门限后+1；<b>超时门限减半、cwnd=1</b>；3重复ACK→都减半不归1</div>
+ </div>
+
+ <div class="card">
+  <h2>🔢 数字卡（纯背，扫一眼就够）</h2>
+  <div class="f"><b>产权</b>：发明20｜实用新型10｜外观15｜商标10可续｜公民著作权终生+50｜法人发表后50｜署名权永久｜商业秘密无限</div>
+  <div class="f"><b>端口</b>：<span class="mono">FTP20/21 SSH22 Telnet23 SMTP25 DNS53 HTTP80 POP3 110 HTTPS443</span></div>
+  <div class="f"><b>位数</b>：IPv6 128｜MAC 48｜UDP头8B｜TCP头20~60｜IPv6头40｜MD5 128｜SHA-1 160｜最小帧长64B</div>
+  <div class="f"><b>私网三段</b>：10.x｜172.<b>16~31</b>.x｜192.168.x（172.15/172.32 是公网）；127 回环、169.254 链路本地</div>
+  <div class="f"><b>补码范围</b>：−2ⁿ⁻¹~2ⁿ⁻¹−1（8位 −128~127）；移码=补码符号位取反（阶码用）</div>
+  <div class="f"><b>E1</b>=2.048Mbps(30话路)｜<b>T1</b>=1.544Mbps｜PAL 25帧/NTSC 30｜采样 fs≥2fmax</div>
+  <div class="f"><b>对称密钥</b>n(n−1)/2｜<b>非对称</b>2n｜完全图 n(n−1)/2｜二分 ⌈log₂(n+1)⌉｜循环队列 (rear−front+m)%m</div>
+ </div>
+
+ <div class="card">
+  <h2>🔤 对号速答（看到词就出答案）</h2>
+  <div class="f"><b>设备</b>：集线器物理、交换机链路、路由器网络、网关高层</div>
+  <div class="f"><b>PDU</b>：物理比特、链路帧、网络分组、传输报文段</div>
+  <div class="f"><b>协议</b>：ARP=IP→MAC；DHCP=DORA自动发IP；ICMP=ping差错；DNS=递归/迭代；SMTP发25收POP3 110</div>
+  <div class="f"><b>路由</b>：RIP距离矢量15跳｜OSPF链路状态分区域｜BGP自治域之间</div>
+  <div class="f"><b>加密</b>：签名=发方私钥；验签/信封=公钥；MD5摘要；证书=CA背书</div>
+  <div class="f"><b>攻击</b>：蠕虫自我复制｜木马后门｜DDoS洪灌｜SQL注入拼接｜XSS跨站</div>
+  <div class="f"><b>模式信号</b>：getInstance单例｜clone原型｜Context换算法策略｜notify观察者｜children组合｜同接口包裹装饰</div>
+  <div class="f"><b>测试</b>：白盒强度 语句&lt;判定&lt;条件&lt;判定/条件&lt;条件组合&lt;路径；V模型：编码↔单元、详细设计↔集成、概要↔系统、需求↔验收</div>
+  <div class="f"><b>维护</b>：完善性占比最大；<b>耦合</b>数据最低内容最高；<b>内聚</b>功能最高偶然最低</div>
+  <div class="f"><b>范式</b>：找码→消部分依赖2NF→消传递3NF→决定因素含码BCNF；m:n联系独立成表</div>
+ </div>
+
+ <div class="card">
+  <h2>⚠️ 高频陷阱 15 条（都是真题坑）</h2>
+  <ul>
+   <li>补码比原/反码<b>多表示一个 −128</b>；正数三码合一</li>
+   <li>超时后 <b>cwnd 归 1</b>（不是 12）；减半的是门限</li>
+   <li>P→Q <b>前真后假才为假</b>；逆否 ¬Q→¬P 才等价（¬P→¬Q 不等价）</li>
+   <li>循环队列牺牲一格：最多存 m−1 个</li>
+   <li>交换机=链路层、<b>每口1冲突域整机1广播域</b>；路由器每口1广播域</li>
+   <li>IP 分片在<b>目的主机</b>重组；TTL 每过一路由器 −1</li>
+   <li>已提交→REDO，未提交→UNDO；检查点之前的不用重做</li>
+   <li>外键取值=被参照主键值<b>或 NULL</b>；m:n 的属性放联系表</li>
+   <li>视图=外模式；物理独立性=改存储不改逻辑</li>
+   <li>完善性维护占比最大；数据耦合最低、内容耦合最高</li>
+   <li>软件著作权自<b>开发完成</b>之日起产生；委托无约定归<b>受托方</b></li>
+   <li>GB/T=推荐性国标；Q/=企业标准</li>
+   <li>DMA=设备与内存直达，仅传送前后打扰 CPU</li>
+   <li>RISC：指令少定长、Load/Store访存、硬布线、寄存器多</li>
+   <li>词法=非法字符、语法=缺分号括号、语义=类型不匹配</li>
+  </ul>
+ </div>
+
+ <div class="card">
+  <h2>📝 应用技术 5 大题检查点</h2>
+  <table>
+   <tr><th>题</th><th>交卷前必查</th></tr>
+   <tr><td>① DFD</td><td>父子图平衡？每个加工有进有出（不黑洞不奇迹）？外部实体间不直连？</td></tr>
+   <tr><td>② 数据库</td><td>m:n 独立成表了吗？外键 REFERENCES 拼对？HAVING 配 GROUP BY？</td></tr>
+   <tr><td>③ UML</td><td>include 箭头<b>出基</b>、extend 箭头<b>进基</b>；多重度"可参与"=0..*</td></tr>
+   <tr><td>④ 算法</td><td>链表 p=p-&gt;next；二分 lo=mid+1；递归先写出口——空也要填变量名</td></tr>
+   <tr><td>⑤ 模式</td><td>先判三大类（创建/结构/行为），再按信号词对号；类名照类图抄</td></tr>
+  </table>
+ </div>
+
+ <div class="card">
+  <h2>✅ 出门前自检</h2>
+  <ul>
+   <li>准考证 <b>打印 2 份</b> + 身份证原件</li>
+   <li>考场路线 + 提前 <b>60 分钟</b>到场（机考要签到、拍照）</li>
+   <li>允许：笔试草稿笔（看准考证说明）；手机关机放指定位置</li>
+   <li>闹钟 ×2；中午吃熟悉的食物；不学新东西、不刷偏题</li>
+   <li>记住目标：<b>基础 52+、应用 48+</b>——稳住基础盘就是胜利</li>
+  </ul>
+  <div class="warn big">最后一句：遇到没见过的题，出题人也知道你没见过——用排除法和教材口径选最"正统"的那个，然后忘掉它继续往前走。</div>
+ </div>
+
+ </div>
+</main>
+<div class="noprint" style="max-width:1000px;margin:10px auto;font-size:12px;color:#64748b">打印：Ctrl+P（自动隐藏本行）。内容速查详见 24/29/30 号课件与 06 清单。</div>
+</body>
+</html>
