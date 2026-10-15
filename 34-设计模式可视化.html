@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>设计模式可视化 · 软件设计师</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.7;color:#0f172a;background:#f8fafc}
+:root{--acc:#e11d48;--bg:#fff1f2;--bd:#fecdd3;--mut:#64748b}
+header{position:sticky;top:0;z-index:9;background:#881337;color:#fff;padding:12px 16px}
+h1{font-size:16px;font-weight:600}h1 small{font-size:12px;opacity:.75;display:block}
+nav{margin-top:8px}nav button{border:none;border-radius:16px;padding:5px 12px;margin-right:6px;margin-bottom:6px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:12.5px}
+nav button.on{background:#fff;color:#881337;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+.tip{background:var(--bg);border:1px solid var(--bd);color:#9f1239;padding:8px 12px;border-radius:10px;font-size:13px;margin-bottom:14px}
+h2{font-size:16px;margin-bottom:10px}h4{font-size:13.5px;color:#334155;margin:10px 0 6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select{border:1px solid #cbd5e1;border-radius:8px;padding:7px 9px;font-size:13px;font-family:Consolas,monospace}
+input:focus,select:focus{outline:2px solid var(--bd)}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.btn.pri:hover{opacity:.88;color:#fff}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rcell{background:#f8fafc;border-radius:10px;padding:8px 10px}
+.rcell b{display:block;font-size:11.5px;color:var(--mut)}
+.rcell span{font-size:14.5px;font-weight:700;font-family:Consolas,monospace}
+.steps{background:#0f172a;color:#fecdd3;font-family:Consolas,monospace;font-size:13px;padding:12px 14px;border-radius:10px;white-space:pre-wrap;line-height:1.9;margin-top:10px;display:none}
+.ok{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{border:1px solid #e2e8f0;padding:5px 8px;text-align:left}
+th{background:var(--bg)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:8px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
+.fcard b{color:var(--acc)}
+.mono{font-family:Consolas,monospace}
+footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
+svg text{font-family:"Microsoft YaHei",sans-serif}
+.pcard{cursor:pointer}
+.pcard:hover rect{stroke-width:2.6}
+.code{background:#0f172a;color:#fecdd3;font-family:Consolas,monospace;font-size:12.5px;padding:10px 12px;border-radius:8px;white-space:pre-wrap;word-break:break-word;line-height:1.8;margin-top:8px}
+.code input{width:120px;padding:2px 6px;font-size:12.5px}
+.sym{display:inline-block;border:1px solid var(--bd);border-radius:8px;padding:4px 10px;margin:2px;font-size:12.5px;background:#fff;cursor:pointer}
+.sym.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+</style>
+</head>
+<body>
+<header>
+ <h1>🧩 设计模式可视化 <small>软件设计师 · 创建型(5)/结构型(7)/行为型(11) 全 23 模式 + 六大原则 · 配套《20-设计模式详解》《10-讲义题库·软件工程》《16-自编卷⑤》· 题号已标注</small></h1>
+ <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- ============ Tab1 总览 ============ -->
+<section id="s-all" class="on">
+ <div class="tip">三大类 23 模式一屏总览：<b>创建型管"怎么 new"、结构型管"怎么组装"、行为型管"怎么交互"</b>。点卡片看意图/角色/信号词；⭐ = 大题⑤真题考过。</div>
+ <div class="card">
+  <h2>📇 23 模式卡片墙（点卡看详情）</h2>
+  <div id="pall"></div>
+  <div id="pdetail" style="margin-top:10px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px;min-height:40px"><span style="color:var(--mut)">点任意模式卡：意图 · 参与者角色 · 信号词 · 真题题号。</span></div>
+ </div>
+ <div class="card">
+  <h2>🎲 场景 → 模式识别随机出题（24 场景轮换 · 覆盖 18 模式）</h2>
+  <div class="row"><button class="btn pri" onclick="scNew()">🎲 出一道</button><span id="scQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="scA" placeholder="模式名" style="width:170px">
+   <button class="btn" onclick="scCheck()">检查</button>
+   <button class="btn" onclick="scShow()">显示解答</button>
+  </div>
+  <div id="scFb" style="font-size:13.5px"></div>
+  <div class="steps" id="scSteps" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab2 大题⑤演练 ============ -->
+<section id="s-fill">
+ <div class="tip">大题⑤命题规律：5 空几乎固定 = <b>2 个接口/抽象类名 + 1 个 new 具体类 + 1 个多态调用 + 1 个该模式特有动作</b>。答案一定能在题面已给代码里找到对称写法——先找同类行照抄。</div>
+ <div class="card">
+  <h2>☕ Java 填空演练（六大高频 · 每次随机一型）</h2>
+  <div class="row"><button class="btn pri" onclick="f5New()">🎲 出一道</button><span id="f5Kind" style="font-size:13.5px;color:var(--mut)"></span></div>
+  <div id="f5Q" style="margin-top:6px"></div>
+  <div class="row">
+   <button class="btn" onclick="f5Check()">检查</button>
+   <button class="btn" onclick="f5Show()">显示解答</button>
+  </div>
+  <div id="f5Fb" style="font-size:13.5px"></div>
+  <div class="steps" id="f5Steps" style="display:none"></div>
+ </div>
+ <div class="card">
+  <h2>📋 五空分布速查</h2>
+  <table>
+   <tr><th>空位</th><th>答案特征</th><th>示例</th></tr>
+   <tr><td>接口/抽象类名</td><td>类图上的接口名，照抄</td><td class="mono">Discount / Observer</td></tr>
+   <tr><td>继承/实现关键字</td><td>接口=implements、抽象类=extends</td><td class="mono">implements / extends</td></tr>
+   <tr><td>成员声明类型</td><td>一定是<b>接口/抽象类型</b>，不是具体类</td><td class="mono">private Discount d;</td></tr>
+   <tr><td>多态调用</td><td>接口方法名，运行时才定实现</td><td class="mono">d.calc(p) / o.update()</td></tr>
+   <tr><td>new 具体类</td><td>客户代码里 new 实现类并注入</td><td class="mono">new VipDiscount()</td></tr>
+  </table>
+ </div>
+</section>
+
+<!-- ============ Tab3 易混对比 ============ -->
+<section id="s-vs">
+ <div class="tip">易混六对判定问句法：①创建的事→创建型 ②接口的事→结构型 ③行为的事→行为型 ④再用下面的对子分辨。完整论述见《20-设计模式详解》§七。</div>
+ <div class="card">
+  <h2>⚖️ 易混六对（点对看判定问句）</h2>
+  <div id="vscards"></div>
+  <div id="vsdetail" style="margin-top:8px;font-size:13px;min-height:40px"></div>
+ </div>
+ <div class="card">
+  <h2>🎲 辨析随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="vsNew()">🎲 出一道</button><span id="vsQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="vsA" placeholder="模式/答案" style="width:170px">
+   <button class="btn" onclick="vsCheck()">检查</button>
+   <button class="btn" onclick="vsShow()">显示解答</button>
+  </div>
+  <div id="vsFb" style="font-size:13.5px"></div>
+  <div class="steps" id="vsSteps" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab4 六大原则 ============ -->
+<section id="s-prn">
+ <div class="tip">开闭是总纲（所有模式都在为实现它服务）；考试给"违反场景"让你选违反了哪条原则（10号题42、49-53）。</div>
+ <div class="card">
+  <h2>📜 六大原则卡</h2>
+  <div class="grid2" id="prcards"></div>
+ </div>
+ <div class="card">
+  <h2>🎲 违反场景随机出题</h2>
+  <div class="row"><button class="btn pri" onclick="pqNew()">🎲 出一道</button><span id="pqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="pqA" placeholder="原则名" style="width:170px">
+   <button class="btn" onclick="pqCheck()">检查</button>
+   <button class="btn" onclick="pqShow()">显示解答</button>
+  </div>
+  <div id="pqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="pqSteps" style="display:none"></div>
+ </div>
+</section>
+
+<!-- ============ Tab5 知识图谱 ============ -->
+<section id="s-kgmap">
+ <div class="card">
+  <h2>🕸 设计模式知识图谱 <span style="font-size:12px;color:var(--mut);font-weight:400">点节点看角色与信号词 · 滚轮缩放 / 拖拽平移 · 点图例聚焦</span></h2>
+  <div class="row"><span id="kgchips" style="display:contents"></span><button class="btn" onclick="kgReset()">⤢ 重置视图</button><span style="font-size:12px;color:var(--mut)" id="kgstats"></span></div>
+  <div>
+   <div style="border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:#fff"><svg id="kgsvg" viewBox="0 0 1200 800" style="width:100%;height:640px;display:block;cursor:grab" preserveAspectRatio="xMidYMin meet"></svg></div>
+   <aside id="kgpanel" style="margin-top:12px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;max-height:300px;overflow-y:auto;font-size:13.5px"><div style="color:var(--mut)">点击任意节点查看详情。</div></aside>
+  </div>
+ </div>
+</section>
+
+</main>
+<footer>学习主线：20-设计模式详解（13 高频模式 Java 逐个敲）→ 本页（总览/填空/辨析/图谱）→ 31 号⑤页签 → 16 卷⑤ → 17 系统软件工程题 73-82。</footer>
+<script>
+/* ================= 数据：23 模式 + 原则 ================= */
+const P = [
+ // 创建型
+ {id:'fm', k:'c', n:'工厂方法', one:'定义创建对象的接口，让子类决定实例化哪个类', roles:'Product 产品接口 / Creator 工厂接口(含 create)/ ConcreteCreator 子类工厂', sig:'延迟到子类、由子类决定实例化', qs:'20号3.4 · 大题⑤', h:1,
+  code:'interface Product { void use(); }\nabstract class Creator { public abstract Product create(); }\nclass ConcreteCreator extends Creator {\n    public Product create() { return new ConcreteProduct(); }   // 子类决定\n}'},
+ {id:'af', k:'c', n:'抽象工厂', one:'创建一族风格配套的相关产品，无需指定具体类', roles:'AbstractFactory(多个createXxx) / AbstractProduct 族 / ConcreteFactory 每族一个', sig:'一族/一系列/风格配套（Win族 Mac族）', qs:'题71 · 20号3.3', h:1,
+  code:'interface UIFactory {\n    Button createButton();      // 同一族多个产品\n    TextBox createTextBox();\n}\nclass WinFactory implements UIFactory { /* 三个 Win 风格产品 */ }'},
+ {id:'single', k:'c', n:'单例', one:'保证一个类仅有一个实例，并提供全局访问点', roles:'私有构造 + 静态实例 + getInstance()', sig:'仅一个实例、全局访问点、打印池、配置中心', qs:'题65 · 20号3.5', h:1,
+  code:'class Config {\n    private static Config inst;\n    private Config() {}                       // 私有构造\n    public static Config getInstance() {      // 全局访问点\n        if (inst == null) inst = new Config();\n        return inst;\n    }\n}'},
+ {id:'builder', k:'c', n:'建造者(生成器)', one:'分步骤组装复杂对象，同一构建过程可出不同表示', roles:'Builder( buildXxx 逐步 ) / Director 指挥者按序调用', sig:'分步骤组装、同一过程不同表示', qs:'20号3.6',
+  code:'class MealBuilder {\n    private Meal m = new Meal();\n    public MealBuilder addBurger() { m.add("汉堡"); return this; }   // 逐步骤\n    public Meal build() { return m; }                              // 收尾产出\n}'},
+ {id:'proto', k:'c', n:'原型', one:'用 clone 复制已有对象来创建新对象', roles:'Prototype( clone() ) / ConcretePrototype', sig:'克隆/复制已有对象、避免重复初始化', qs:'20号速览',
+  code:'class Doc implements Cloneable {\n    public Doc clone() { try { return (Doc) super.clone(); } catch (Exception e) { return null; } }\n}'},
+ // 结构型
+ {id:'ad', k:'s', n:'适配器', one:'转换接口，让接口不兼容的类一起工作', roles:'Target 目标接口 / Adaptee 被适配旧类 / Adapter 实现 Target 并包装 Adaptee', sig:'接口不兼容、复用旧组件但接口不符', qs:'题68、78 · 20号3.7', h:1,
+  code:'class Adapter implements Target {          // 实现"新"接口\n    private Adaptee old = new Adaptee();    // 持有"旧"对象\n    public void request() { old.specificRequest(); }   // 转发并翻译\n}'},
+ {id:'bridge', k:'s', n:'桥接', one:'抽象与实现分离在两个维度，各自独立变化', roles:'Abstraction 持 Implementor 引用 / RefinedAbstraction / ConcreteImplementor', sig:'两个维度独立变化、避免类爆炸(m×n→m+n)', qs:'题81 · 20号3.9', h:1,
+  code:'class Shape { protected Color color;        // 抽象维持实现维\n    public void draw() { color.fill(this); } }\nclass RedColor implements Color { /* 一个维度 */ }'},
+ {id:'comp', k:'s', n:'组合', one:'树形部分-整体层次，叶子与容器统一处理', roles:'Component 统一接口 / Leaf 叶子 / Composite(children 递归)', sig:'部分-整体、树形层次、目录树', qs:'题80 · 20号3.10', h:1,
+  code:'abstract class Node { abstract long size(); }\nclass File extends Node { long size() { return len; } }\nclass Folder extends Node {\n    List<Node> children;\n    long size() { long s = 0; for (Node n : children) s += n.size(); return s; }  // 递归\n}'},
+ {id:'dec', k:'s', n:'装饰器', one:'不改接口动态叠加职责，层层包装', roles:'Component / Decorator(持 Component 且实现 Component) / ConcreteDecorator', sig:'不改接口动态加职责、层层包装（咖啡加料）', qs:'题69、78辨析 · 20号3.8', h:1,
+  code:'abstract class Decorator implements Coffee {   // 同接口\n    protected Coffee inner;                    // 被包装者\n    public Decorator(Coffee c) { inner = c; }\n    public double cost() { return inner.cost(); }   // 转发后再叠加\n}'},
+ {id:'facade', k:'s', n:'外观', one:'给复杂子系统提供一个统一的高层简化入口', roles:'Facade 门面 / 子系统类群（不知道门面）', sig:'统一入口、简化子系统调用', qs:'题70 · 20号速览' },
+ {id:'fly', k:'s', n:'享元', one:'共享细粒度对象以节省内存', roles:'Flyweight 内部状态共享 / 外部状态客户传入', sig:'共享、节省内存、围棋棋子', qs:'题79' },
+ {id:'proxy', k:'s', n:'代理', one:'为对象提供代理以控制对其访问', roles:'Subject 同接口 / Proxy 持 RealSubject 并控制访问', sig:'控制访问、懒加载、远程、权限', qs:'20号速览' },
+ // 行为型
+ {id:'strat', k:'b', n:'策略', one:'封装一族可互相替换的算法，算法变化不影响客户', roles:'Strategy 接口 / ConcreteStrategy 一族 / Context 持引用并可 set', sig:'算法可替换、动态切换计算方式', qs:'题66 · 20号3.1', h:1,
+  code:'class Context {\n    private Strategy s;                     // 持策略接口\n    public void setStrategy(Strategy s) { this.s = s; }\n    public double run(double p) { return s.calc(p); }   // 多态调用\n}'},
+ {id:'obs', k:'b', n:'观察者', one:'一对多依赖，状态变化自动通知所有观察者', roles:'Subject(attach/detach/notify) / Observer(update)', sig:'自动通知所有订阅者、公众号推送', qs:'题67 · 20号3.2', h:1,
+  code:'class Stock {\n    List<Observer> obs = new ArrayList<>();\n    public void attach(Observer o) { obs.add(o); }      // 订阅\n    public void change() { for (Observer o : obs) o.update(this); }   // 通知\n}'},
+ {id:'cmd', k:'b', n:'命令', one:'把请求封装成对象，支持撤销、排队、日志', roles:'Command(execute/undo) / Invoker 触发 / Receiver 执行', sig:'请求封装成对象、撤销重做、排队', qs:'题82 · 20号3.11' },
+ {id:'state', k:'b', n:'状态', one:'对象内部状态改变时行为跟着改变', roles:'Context 持 State / ConcreteState 各状态一个类', sig:'行为随内部状态改变、状态迁移', qs:'题77 · 20号3.12', h:1,
+  code:'class Order {\n    private State state;                     // 当前状态对象\n    public void cancel() { state.cancel(this); }   // 行为随状态变\n}'},
+ {id:'tmpl', k:'b', n:'模板方法', one:'父类定算法骨架，某些步骤延迟到子类', roles:'AbstractClass(模板方法 final + 钩子步骤) / ConcreteClass 覆写步骤', sig:'固定骨架、步骤延迟到子类', qs:'题72 · 20号3.13', h:1,
+  code:'abstract class Parser {\n    public final void parse() {          // 模板方法：流程固定\n        read(); parseBody(); write();\n    }\n    protected abstract void parseBody();  // 步骤延迟到子类\n}'},
+ {id:'chain', k:'b', n:'职责链', one:'请求沿处理者链传递，谁能处理谁处理', roles:'Handler(持 next) / ConcreteHandler 判定或传递', sig:'请求沿链传递、审批流、拦截器', qs:'题74 · 20号Mini' },
+ {id:'medi', k:'b', n:'中介者', one:'用中介对象封装对象间网状交互', roles:'Mediator 转发 / Colleague 同事只认识中介', sig:'对象间复杂交互、网状改星型、协调中心', qs:'题75 · 20号Mini' },
+ {id:'iter', k:'b', n:'迭代器', one:'顺序访问聚合对象又不暴露内部表示', roles:'Iterator(hasNext/next) / Aggregate(createIterator)', sig:'顺序遍历、hasNext/next', qs:'题73 · 20号Mini' },
+ {id:'memento', k:'b', n:'备忘录', one:'不破坏封装地保存并恢复对象状态', roles:'Originator(save/restore) / Memento 快照 / Caretaker 保管', sig:'保存恢复状态、撤销回滚、快照', qs:'题76 · 20号Mini' },
+ {id:'vis', k:'b', n:'访问者', one:'不改元素类的前提下给结构加新操作', roles:'Visitor(visit 重载) / Element(accept 双分派)', sig:'不改元素类加新操作、accept(Visitor)' },
+ {id:'inter', k:'b', n:'解释器', one:'给定语言定义文法表示与解释器', roles:'AbstractExpression / Terminal / Nonterminal(interpret)', sig:'自定义语言、按文法解释表达式' },
+];
+const PR = [
+ {n:'开闭原则', one:'对扩展开放、对修改关闭——所有模式的共同目标', bad:'加一种折扣就要改 Calculator 源码' },
+ {n:'单一职责原则', one:'一个类只负责一件事', bad:'God Class 同时管登录+日志+邮件' },
+ {n:'里氏替换原则', one:'子类必须能安全替换父类（is-a）', bad:'子类覆写方法抛出父类没有的异常导致崩溃' },
+ {n:'依赖倒置原则', one:'依赖抽象接口，不依赖具体实现', bad:'业务类里直接 new 数据库操作类，换存储就要改业务' },
+ {n:'接口隔离原则', one:'多个专用接口优于一个胖接口', bad:'被迫实现一堆用不到的空方法' },
+ {n:'迪米特法则', one:'只与直接朋友通信，减少耦合', bad:'a.getB().getC().doSomething() 链式深入陌生人' },
+];
+const SCN = [
+ ['视频播放器需要支持多种字幕来源（内嵌/SRT/在线），运行时根据用户设置切换解析方式。', '策略'],
+ ['文档编辑器每次修改前保存内容快照，支持 Ctrl+Z 恢复到历史状态。', '备忘录'],
+ ['报销单按金额逐级审批，超出本级权限就交给上一级，直到有人处理。', '职责链'],
+ ['新采购的统计组件接口与平台标准接口不一致，写一个中间类完成转接且不改组件源码。', '适配器'],
+ ['目录树中的节点可能是文件也可能是文件夹，删除和统计操作对二者统一进行。', '组合'],
+ ['报表模块支持导出 Excel、CSV、PDF 三种格式，新增格式不影响既有导出逻辑。', '策略'],
+ ['应用的全局配置对象在首次访问时创建，之后所有调用者拿到同一个实例。', '单例'],
+ ['向导式安装把"选目录→复制文件→写注册表→建快捷方式"按固定顺序逐步骤执行，步骤实现因平台而异，最终一次性产出安装结果对象。', '建造者'],
+ ['图像处理需要"格式×滤镜"两个维度各自扩展，避免为每种组合都建一个类。', '桥接'],
+ ['在线客服系统里，各个业务组件互相调用关系复杂，引入一个中心对象统一协调转发。', '中介者'],
+ ['角色死亡时保存生命值/位置/装备的快照，复活时完整恢复到那一刻。', '备忘录'],
+ ['集合框架对外统一提供 hasNext()/next() 遍历元素，使用者不需要知道底层结构。', '迭代器'],
+ ['某管理类在整个系统中只允许存在一个实例，构造方法对外私有。', '单例'],
+ ['新日志组件的接口与老版本不兼容，写一个包装类让老组件适配新接口继续使用。', '适配器'],
+ ['为咖啡对象动态添加牛奶、糖等配料并逐层累计价格，且配料顺序可变。', '装饰器'],
+ ['多个子系统的十几个类被一个"总控类"统一调用，客户只与总控类交互。', '外观'],
+ ['需要生产"Win 风格按钮 + Win 风格文本框"或"Mac 风格按钮 + Mac 风格文本框"这样的配套产品族。', '抽象工厂'],
+ ['解析器对"配置文件→词法→语法"的总体流程固定，但不同文件格式的具体解析步骤由子类实现。', '模板方法'],
+ ['报表库的接口与系统调用格式不兼容，插入一个中间层完成转换且不改库源码。', '适配器'],
+ ['公众号发布新文章时，自动把内容推送给所有已订阅的用户，用户可随时关注或取关。', '观察者'],
+ ['收银台需要在普通结算、会员折扣、满减活动之间动态切换计价算法。', '策略'],
+ ['遥控器把每个按键动作封装成对象，从而支持撤销与宏排队执行。', '命令'],
+ ['订单在待支付/已支付/已发货之间流转，取消订单的行为随所处阶段不同而不同。', '状态'],
+ ['围棋软件把黑白棋子对象共享复用，只把位置作为参数传入以节省内存。', '享元'],
+]
+const VSP = [
+ ['工厂方法 vs 抽象工厂：产品是"一种"还是"一族"？', '抽象工厂', '一族（多等级配套）→抽象工厂；单一产品等级、由子类决定实例化→工厂方法。'],
+ ['同接口包裹：是为了"加职责"还是"控制访问"？', '代理', '加职责（层层包装同接口）→装饰器；控制访问（懒加载/权限/远程）→代理。'],
+ ['递归套娃：是"树形部分整体"还是"同类型叠职责链"？', '组合', '树、容器装多个孩子→组合；同类型包一个、逐层加职责→装饰。'],
+ ['结构相同（Context 持接口对象）：客户换的是"算法"还是"行为随状态自动变"？', '状态', '客户 set 算法平等替换→策略；状态流转自动切行为→状态。'],
+ ['包装旧组件：目的是"转接口"还是"加职责"？', '适配器', '接口不兼容做转换→适配器；接口不变只加职责→装饰。'],
+ ['"统一入口"是给"子系统"还是给"互相协作的同事"？', '外观', '单向简化调用子系统→外观；同事间网状协作互相不认识→中介者。'],
+]
+const PQS = [
+ ['加一种折扣方式就要修改结算类的源码并在 switch 里加分支。', '开闭原则'],
+ ['一个类同时负责网络请求、数据解析和界面刷新。', '单一职责原则'],
+ ['子类的某方法要求参数必须是父类方法参数的子类之外的类型，导致父类引用崩溃。', '里氏替换原则'],
+ ['业务逻辑类中直接 new 了 MySQL 数据库操作类，无法切换为文件存储。', '依赖倒置原则'],
+ ['实现一个接口时被迫写 5 个空方法，因为接口里塞了不相关的操作。', '接口隔离原则'],
+ ['类 A 通过 a.getB().getC().getD() 层层深入调用陌生对象的方法。', '迪米特法则'],
+]
+
+/* ================= 页面骨架 ================= */
+const SECTIONS = [['all','📇 23模式总览'],['fill','☕ 大题⑤填空'],['vs','⚖️ 易混对比'],['prn','📜 六大原则'],['kgmap','🕸 知识图谱']];
+function showTab(id){
+  SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+}
+(function(){
+  const nav = document.getElementById('nav');
+  SECTIONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s[1]; b.dataset.t = s[0];
+    if(s[0] === 'all') b.classList.add('on');
+    b.onclick = () => showTab(s[0]);
+    nav.appendChild(b);
+  });
+})();
+
+/* ================= 总览卡墙 + 详情 ================= */
+const CAT = { c: '🟣 创建型(5)', s: '🔵 结构型(7)', b: '🟠 行为型(11)' };
+function pallDraw(){
+  const parts = [];
+  ['c','s','b'].forEach(k => {
+    parts.push('<h4>' + CAT[k] + '</h4><div class="grid3">');
+    P.filter(p => p.k === k && !p.hide).forEach(p => {
+      parts.push('<div class="fcard pcard" onclick="pPick(\'' + p.id + '\')"><b>' + (p.h ? '⭐ ' : '') + p.n + '</b><br><span style="color:#475569">' + p.one + '</span></div>');
+    });
+    parts.push('</div>');
+  });
+  document.getElementById('pall').innerHTML = parts.join('');
+}
+window.pPick = function(id){
+  const p = P.find(x => x.id === id);
+  document.getElementById('pdetail').innerHTML =
+    '<b style="color:var(--acc)">' + (p.h ? '⭐ ' : '') + p.n + '</b>　' + p.one +
+    '<br><b>参与者：</b>' + (p.roles || '—') +
+    '<br><b>信号词：</b>' + (p.sig || '—') +
+    (p.code ? '<div class="code">' + p.code.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>' : '') +
+    '<div style="margin-top:6px"><b>真题：</b>' + (p.qs || '—') + '</div>';
+};
+/* ================= 出题工具 ================= */
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+const normTxt = s => String(s).replace(/\s+/g, '').replace(/，/g, ',').replace(/（/g, '(').replace(/）/g, ')').toUpperCase();
+function mkQuiz(pfx, gen){
+  let q = null;
+  window[pfx + 'New'] = function(){
+    q = gen();
+    document.getElementById(pfx + 'Q').innerHTML = q.stem;
+    (q.clear || []).forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+    document.getElementById(pfx + 'Fb').innerHTML = '';
+    const s = document.getElementById(pfx + 'Steps'); if(s) s.style.display = 'none';
+  };
+  window[pfx + 'Check'] = function(){
+    if(!q) return;
+    let all = true, html = '';
+    Object.keys(q.ans).forEach(k => {
+      const inp = document.getElementById(k); if(!inp) return;
+      const ok = q.cmp ? q.cmp(k, inp.value, q.ans[k]) : normTxt(inp.value) === normTxt(String(q.ans[k]));
+      all = all && ok;
+      html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+    });
+    document.getElementById(pfx + 'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
+  };
+  window[pfx + 'Show'] = function(){
+    if(!q) return;
+    Object.keys(q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
+    const s = document.getElementById(pfx + 'Steps'); if(s){ s.style.display = 'block'; s.textContent = q.steps; }
+  };
+  window[pfx + 'New']();
+}
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+/* 场景识别 */
+const used = new Set();
+window.scNew = function(){
+  if(used.size >= SCN.length) used.clear();
+  let idx;
+  do { idx = Math.floor(Math.random() * SCN.length); } while (used.has(idx));
+  used.add(idx);
+  const q = document.getElementById('scQ');
+  q.innerHTML = '「<b>' + SCN[idx][0] + '</b>」——这采用的设计模式是（　）';
+  document.getElementById('scA').value = '';
+  document.getElementById('scFb').innerHTML = '';
+  document.getElementById('scSteps').style.display = 'none';
+  window.scAns = SCN[idx][1];
+};
+window.scCheck = function(){
+  const f = document.getElementById('scFb');
+  const v = document.getElementById('scA').value;
+  if(!v.trim()){ f.innerHTML = '<span class="bad">先填模式名</span>'; return; }
+  f.innerHTML = normTxt(v) === normTxt(window.scAns) ? '<span class="ok">✔ 正确！' + window.scAns + '</span>' : '<span class="bad">✘ 再想想（或看解析）</span>';
+};
+window.scShow = function(){
+  document.getElementById('scA').value = window.scAns;
+  const f = document.getElementById('scFb');
+  f.innerHTML = '<span class="ok">' + window.scAns + '</span>';
+  const p = P.find(x => x.n === window.scAns);
+  const st = document.getElementById('scSteps');
+  st.style.display = 'block';
+  st.textContent = p ? ('' + p.one + '\n参与者：' + (p.roles || '—') + '\n信号词：' + (p.sig || '')) : '';
+};
+/* 易混 */
+(function(){
+  document.getElementById('vscards').innerHTML = VSP.map((v, i) =>
+    '<div class="sym" onclick="vsPick(' + i + ')">' + v[0].split('：')[0] + '</div>').join('');
+})();
+window.vsPick = function(i){
+  document.querySelectorAll('#vscards .sym').forEach((e, j) => e.className = 'sym' + (j === i ? ' on' : ''));
+  document.getElementById('vsdetail').innerHTML = '<b style="color:var(--acc)">' + VSP[i][0].split('：')[0] + '</b>　判定问句：' + VSP[i][0].split('：')[1] + '　→ <b>' + VSP[i][1] + '</b>';
+};
+/* 原则 */
+(function(){
+  document.getElementById('prcards').innerHTML = PR.map(p =>
+    '<div class="fcard"><b>' + p.n + '</b>　' + p.one + '<br><span style="color:#94a3b8">违反示例：' + p.bad + '</span></div>').join('');
+})();
+/* ================= Java 填空（大题⑤） ================= */
+const F5 = [
+ { kind: '策略模式', build(){
+   return { stem:
+    '<div class="code">interface <input id="fa" placeholder="策略接口" style="width:110px"> {\n' +
+    '    double calc(double price);\n}\n' +
+    'class VipDiscount <input id="fb" placeholder="关键字" style="width:110px"> Discount {\n' +
+    '    public double calc(double price) { return price * 0.8; }\n}\n' +
+    'class Cashier {\n    private <input id="fc" placeholder="成员类型" style="width:110px"> discount;\n' +
+    '    public void setDiscount(Discount d) { this.discount = d; }\n' +
+    '    public double checkout(double p) { return discount.<input id="fd" placeholder="多态调用" style="width:110px">(p); }\n}\n' +
+    '... c.setDiscount(<input id="fe" placeholder="new 具体类" style="width:150px">()); ...</div>',
+    clear: ['fa','fb','fc','fd','fe'], ans: { fa: 'Discount', fb: 'implements', fc: 'Discount', fd: 'calc', fe: 'new VipDiscount' },
+    steps: '策略五空：①策略接口名（类图照抄）②实现用 implements ③上下文成员声明为接口类型 ④多态调用 discount.calc(p) ⑤客户 new 具体策略注入。口诀：接口→实现→接口字段→多态调用→new 注入。' };
+ } },
+ { kind: '观察者模式', build(){
+   return { stem:
+    '<div class="code">class Stock {\n    private List&lt;Observer&gt; obs = new ArrayList&lt;&gt;();\n' +
+    '    public void attach(Observer o) { obs.<input id="fa" placeholder="加入列表" style="width:90px">(o); }\n' +
+    '    public void change() {\n        for (Observer o : obs) o.<input id="fb" placeholder="通知调用" style="width:90px">(this);\n    }\n}\n' +
+    'class Investor <input id="fc" placeholder="关键字" style="width:110px"> Observer {\n' +
+    '    public void update(Stock s) { ... }\n}\n... stock.<input id="fd" placeholder="订阅动作" style="width:110px">(inv); ...</div>',
+    clear: ['fa','fb','fc','fd'], ans: { fa: 'add', fb: 'update', fc: 'implements', fd: 'attach' },
+    steps: '观察者四空：①attach 把观察者加入列表 ②通知循环里调 o.update(this) ③实现类 implements Observer ④客户先 attach 订阅才会收到通知。' };
+ } },
+ { kind: '单例模式', build(){
+   return { stem:
+    '<div class="code">class Config {\n    private <input id="fa" placeholder="static 字段" style="width:120px"> inst;\n' +
+    '    <input id="fb" placeholder="构造修饰" style="width:110px"> Config() {}           // 防止外部 new\n' +
+    '    public <input id="fc" placeholder="static 方法" style="width:120px"> getInstance() {\n' +
+    '        if (inst == null) inst = <input id="fd" placeholder="创建语句" style="width:130px">;\n        return inst;\n    }\n}</div>',
+    clear: ['fa','fb','fc','fd'], ans: { fa: 'static Config', fb: 'private', fc: 'static Config', fd: 'new Config()' },
+    steps: '单例四件套：私有静态字段 + 私有构造 + 静态 getInstance + 懒加载 new。三处 static 缺一不可（字段/方法），构造必须 private。' };
+ } },
+ { kind: '工厂方法模式', build(){
+   return { stem:
+    '<div class="code">interface Product { void use(); }\n' +
+    'abstract class Creator {\n    public abstract <input id="fa" placeholder="产品类型" style="width:110px"> <input id="fb" placeholder="工厂方法名" style="width:110px">();\n}\n' +
+    'class MyCreator extends Creator {\n    public Product <input id="fc" placeholder="工厂方法名" style="width:110px">() { return <input id="fd" placeholder="new 产品" style="width:150px">; }\n}</div>',
+    clear: ['fa','fb','fc','fd'], ans: { fa: 'Product', fb: 'createProduct', fc: 'createProduct', fd: 'new MyProduct()' },
+    steps: '工厂方法：抽象工厂只声明"返回产品接口"的工厂方法；子类覆写并 new 具体产品。注意两处方法名必须一致（覆写）。' };
+ } },
+ { kind: '装饰器模式', build(){
+   return { stem:
+    '<div class="code">abstract class Decorator implements Coffee {   // 与组件<b>同接口</b>\n' +
+    '    protected <input id="fa" placeholder="被包装类型" style="width:110px"> inner;      // 持有一个组件\n' +
+    '    public Decorator(Coffee c) { inner = c; }\n' +
+    '    public double cost() { return <input id="fb" placeholder="转发调用" style="width:120px"> + 2; }   // 叠加职责\n}\n' +
+    '... new Milk(new Sugar(new PlainCoffee())) ...   // <input id="fc" placeholder="包装效果" style="width:130px"></div>',
+    clear: ['fa','fb','fc'], ans: { fa: 'Coffee', fb: 'inner.cost()', fc: '层层装饰' },
+    steps: '装饰器三要点：①Decorator 与组件同接口（implements）②持有被包装组件 ③cost() 先转发 inner.cost() 再叠加。最外层的 new 决定最外层职责。' };
+ } },
+ { kind: '适配器模式', build(){
+   return { stem:
+    '<div class="code">class Adapter <input id="fa" placeholder="实现目标接口" style="width:110px"> Target {\n' +
+    '    private <input id="fb" placeholder="被适配旧类" style="width:110px"> adaptee = new Adaptee();\n' +
+    '    public void request() {                       // 目标接口方法\n' +
+    '        adaptee.<input id="fc" placeholder="旧接口方法" style="width:130px">();   // 转发翻译\n    }\n}</div>',
+    clear: ['fa','fb','fc'], ans: { fa: 'implements', fb: 'Adaptee', fc: 'specificRequest' },
+    steps: '适配器三要素：①实现 Target 新接口 ②持有 Adaptee 旧对象 ③request() 里转发调用旧方法完成"翻译"。目的=接口转换，与装饰（加职责）区分。' };
+ } }
+];
+let f5idx = -1, f5q = null;
+window.f5New = function(){
+  let k;
+  do { k = Math.floor(Math.random() * F5.length); } while (k === f5idx && F5.length > 1);
+  f5idx = k;
+  f5q = F5[k].build();
+  document.getElementById('f5Kind').textContent = '本空模式已隐藏——做完再看标题（题型共 6 类轮换）';
+  document.getElementById('f5Q').innerHTML = f5q.stem;
+  f5q.clear.forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
+  document.getElementById('f5Fb').innerHTML = '';
+  document.getElementById('f5Steps').style.display = 'none';
+};
+window.f5Check = function(){
+  if(!f5q) return;
+  let all = true, html = '';
+  Object.keys(f5q.ans).forEach(k => {
+    const inp = document.getElementById(k); if(!inp) return;
+    const good = normTxt(inp.value) === normTxt(f5q.ans[k]);
+    all = all && good;
+    html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (good ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
+  });
+  document.getElementById('f5Fb').innerHTML = html + (all ? '<b class="ok">全对！这就是大题⑤的满分节奏</b>' : '　不会就点「显示解答」');
+};
+window.f5Show = function(){
+  if(!f5q) return;
+  Object.keys(f5q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = f5q.ans[k]; });
+  const s = document.getElementById('f5Steps'); if(s){ s.style.display = 'block'; s.textContent = '本题型：' + F5[f5idx].kind + '\n' + f5q.steps; }
+  document.getElementById('f5Kind').textContent = '本题型：' + F5[f5idx].kind;
+};
+/* 易混/原则 出题 */
+window.vsNew = function(){
+  const e = pick(VSP);
+  window._vs = e;
+  document.getElementById('vsQ').innerHTML = '「<b>' + e[0] + '</b>」——应该选哪个？（填该对中的模式名）';
+  document.getElementById('vsA').value = '';
+  document.getElementById('vsFb').innerHTML = '';
+  document.getElementById('vsSteps').style.display = 'none';
+};
+window.vsCheck = function(){
+  const f = document.getElementById('vsFb');
+  const v = document.getElementById('vsA').value;
+  if(!v.trim()){ f.innerHTML = '<span class="bad">先填模式名</span>'; return; }
+  f.innerHTML = normTxt(v) === normTxt(window._vs[1]) ? '<span class="ok">✔ 正确！' + window._vs[1] + '</span>' : '<span class="bad">✘ 另一个才对（看解析）</span>';
+};
+window.vsShow = function(){
+  document.getElementById('vsA').value = window._vs[1];
+  const f = document.getElementById('vsFb');
+  f.innerHTML = '<span class="ok">' + window._vs[1] + '</span>';
+  const st = document.getElementById('vsSteps'); st.style.display = 'block'; st.textContent = window._vs[2];
+};
+window.pqNew = function(){
+  const e = pick(PQS);
+  window._pq = e;
+  document.getElementById('pqQ').innerHTML = '「<b>' + e[0] + '</b>」——这违反了哪条设计原则？';
+  document.getElementById('pqA').value = '';
+  document.getElementById('pqFb').innerHTML = '';
+  document.getElementById('pqSteps').style.display = 'none';
+};
+window.pqCheck = function(){
+  const f = document.getElementById('pqFb');
+  const v = document.getElementById('pqA').value;
+  if(!v.trim()){ f.innerHTML = '<span class="bad">先填原则名</span>'; return; }
+  f.innerHTML = normTxt(v).indexOf(normTxt(window._pq[1]).replace('原则','')) >= 0 ? '<span class="ok">✔ 正确！' + window._pq[1] + '</span>' : '<span class="bad">✘ 看解析</span>';
+};
+window.pqShow = function(){
+  document.getElementById('pqA').value = window._pq[1];
+  const f = document.getElementById('pqFb');
+  f.innerHTML = '<span class="ok">' + window._pq[1] + '</span>';
+  const st = document.getElementById('pqSteps'); st.style.display = 'block';
+  st.textContent = '违反的是：' + window._pq[1] + '——' + PR.find(p => p.n === window._pq[1]).one;
+};
+/* 知识图谱 */
+const KG_DATA = {
+CL: { c: ['创建型(5)', '#7c3aed'], s: ['结构型(7)', '#2563eb'], b: ['行为型(11)', '#d97706'], pr: ['六大原则', '#059669'] },
+NODES: [
+ {id:'fm',n:'工厂方法',c:'c',one:'子类决定实例化哪个产品类',pts:['Creator 抽象 create()','与模板方法同构'],qs:'20号3.4',h:1},
+ {id:'af',n:'抽象工厂',c:'c',one:'创建一族风格配套的产品',pts:['多个 createXxx'],qs:'题71 · 20号3.3',h:1},
+ {id:'single',n:'单例',c:'c',one:'仅一个实例+全局访问点',pts:['私有构造/static/getInstance'],qs:'题65 · 20号3.5',h:1},
+ {id:'builder',n:'建造者',c:'c',one:'分步骤组装复杂对象',pts:['Builder 逐步 + build 收尾'],qs:'20号3.6'},
+ {id:'proto',n:'原型',c:'c',one:'clone 复制已有对象',pts:['Cloneable/重写 clone'],qs:'20号速览'},
+ {id:'ad',n:'适配器',c:'s',one:'转换接口使不兼容类协作',pts:['实现 Target+持 Adaptee'],qs:'题68、78',h:1},
+ {id:'bridge',n:'桥接',c:'s',one:'抽象与实现两个维度独立变化',pts:['Abstraction 持 Implementor'],qs:'题81',h:1},
+ {id:'comp',n:'组合',c:'s',one:'树形部分-整体统一处理',pts:['children 递归'],qs:'题80',h:1},
+ {id:'dec',n:'装饰器',c:'s',one:'同接口动态叠加职责',pts:['同接口+持被包装者'],qs:'题69',h:1},
+ {id:'facade',n:'外观',c:'s',one:'子系统统一简化入口',pts:['门面类'],qs:'题70'},
+ {id:'fly',n:'享元',c:'s',one:'共享细粒度对象省内存',pts:['内部状态共享/外部传入'],qs:'题79'},
+ {id:'proxy',n:'代理',c:'s',one:'控制对目标对象的访问',pts:['同接口+控制转发'],qs:'20号速览'},
+ {id:'strat',n:'策略',c:'b',one:'封装可替换算法族',pts:['Context 持 Strategy/setStrategy'],qs:'题66',h:1},
+ {id:'obs',n:'观察者',c:'b',one:'一对多依赖自动通知',pts:['attach/detach/notify'],qs:'题67',h:1},
+ {id:'cmd',n:'命令',c:'b',one:'请求封装成对象支持撤销排队',pts:['execute/undo'],qs:'题82'},
+ {id:'state',n:'状态',c:'b',one:'状态改变时行为跟着变',pts:['Context 持 State'],qs:'题77',h:1},
+ {id:'tmpl',n:'模板方法',c:'b',one:'父类定骨架子类填步骤',pts:['final 模板方法+抽象步骤'],qs:'题72',h:1},
+ {id:'chain',n:'职责链',c:'b',one:'请求沿链传递谁处理谁响应',pts:['持 next 后继'],qs:'题74'},
+ {id:'medi',n:'中介者',c:'b',one:'网状交互封装为星型',pts:['同事只认识中介'],qs:'题75'},
+ {id:'iter',n:'迭代器',c:'b',one:'顺序遍历不暴露内部',pts:['hasNext/next'],qs:'题73'},
+ {id:'memento',n:'备忘录',c:'b',one:'保存并恢复状态快照',pts:['save/restore'],qs:'题76'},
+ {id:'vis',n:'访问者',c:'b',one:'不改元素类加新操作',pts:['accept 双分派'],qs:'20号速览'},
+ {id:'inter',n:'解释器',c:'b',one:'按文法解释表达式',pts:['interpret'],qs:'20号速览'},
+ {id:'ocp',n:'开闭原则',c:'pr',one:'对扩展开放对修改关闭',pts:['所有模式的总纲'],qs:'10号题42',h:1},
+ {id:'srp',n:'单一职责',c:'pr',one:'一个类只负责一件事',pts:['God Class 反例'],qs:'10号题49'},
+ {id:'lsp',n:'里氏替换',c:'pr',one:'子类可安全替换父类',pts:['is-a'],qs:'10号题50'},
+ {id:'dip',n:'依赖倒置',c:'pr',one:'依赖抽象不依赖具体',pts:['面向接口'],qs:'10号题51'},
+ {id:'isp',n:'接口隔离',c:'pr',one:'专用小接口优于胖接口',pts:['少写空实现'],qs:'10号题52'},
+ {id:'lod',n:'迪米特法则',c:'pr',one:'只与直接朋友通信',pts:['减少耦合'],qs:'10号题53'}
+],
+EDGES: [
+ ['fm','af','cmp','单一产品 vs 产品族'],['fm','tmpl','cmp','工厂方法可用模板实现'],['strat','state','cmp','结构同语义异'],
+ ['dec','ad','cmp','同接口 vs 转接口'],['dec','proxy','cmp','加职责 vs 控访问'],['comp','dec','cmp','树 vs 链'],
+ ['facade','medi','cmp','单向入口 vs 双向协调'],['bridge','dec','cmp','两种治继承爆炸'],['obs','medi','cmp','广播 vs 协调'],
+ ['cmd','memento','use','撤销配合'],['single','ocp','cmp','static 换扩展'],['ocp','dec','use','装饰实现开闭'],
+ ['ocp','strat','use','策略实现开闭'],['dip','fm','use','依赖抽象工厂接口'],['dip','bridge','use','依赖实现接口'],
+ ['srp','facade','use','门面不减职责'],['lsp','tmpl','use','子类守约填步骤'],['isp','obs','use','观察者小接口'],['lod','medi','use','中介隔离同事']
+]
+};
+/* ================= 知识图谱机器（同 25-31） ================= */
+(function(){
+const CL = KG_DATA.CL, NODES = KG_DATA.NODES, EDGES = KG_DATA.EDGES;
+const COLW = 232, NODEW = 200, NH = 58, VGAP = 30;
+const cats = Object.keys(CL);
+const byCat = {};
+NODES.forEach(n => (byCat[n.c] = byCat[n.c] || []).push(n));
+let maxN = 0;
+cats.forEach(c => {
+  const arr = byCat[c] || []; maxN = Math.max(maxN, arr.length);
+  arr.forEach((n, i) => { n.x = 34 + cats.indexOf(c) * COLW; n.y = 76 + i * (NH + VGAP); n.w = NODEW; });
+});
+const W = 64 + cats.length * COLW, H = 90 + maxN * (NH + VGAP);
+const svg = document.getElementById('kgsvg');
+svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+let vb = { x: 0, y: 0, w: W, h: H };
+let sel = null, dim = null;
+const EC = { dep: '#2563eb', part: '#16a34a', cmp: '#d97706', use: '#8b5cf6' };
+function nodeById(id){ return NODES.find(n => n.id === id); }
+function trim(x1, y1, rect, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  if(!dx && !dy) return { x: x2, y: y2 };
+  const hw = rect.w / 2 + 4, hh = 33;
+  const sc = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9);
+  return { x: x2 - dx * sc, y: y2 - dy * sc };
+}
+function kgBuild(){
+  const parts = ['<defs><marker id="kga" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>'];
+  cats.forEach(c => {
+    parts.push('<text x="' + (34 + cats.indexOf(c) * COLW) + '" y="26" font-size="16" font-weight="bold" fill="' + CL[c][1] + '">' + CL[c][0] + '</text>');
+  });
+  EDGES.forEach(e => {
+    const a = nodeById(e[0]), b = nodeById(e[1]);
+    if(!a || !b) return;
+    const p1 = trim(a.x, a.y, a, b.x, b.y), p2 = trim(b.x, b.y, b, a.x, a.y);
+    const dimE = dim && a.c !== dim && b.c !== dim;
+    const faint = sel && sel !== e[0] && sel !== e[1];
+    parts.push('<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="' + (dimE || faint ? '#e2e8f0' : (EC[e[2]] || '#94a3b8')) + '" stroke-width="' + (dimE || faint ? 1 : 1.7) + '" opacity="' + (dimE ? 0.45 : (faint ? 0.35 : 0.9)) + '" marker-end="url(#kga)"/>');
+    if(sel && (sel === e[0] || sel === e[1])){
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      parts.push('<text x="' + mx + '" y="' + (my - 5) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</text>');
+    }
+  });
+  NODES.forEach(n => {
+    if(n.hide) return;
+    const d = dim && n.c !== dim, faded = sel && sel !== n.id;
+    const col = CL[n.c][1];
+    parts.push('<g onclick="kgPick(\'' + n.id + '\')" style="cursor:pointer" opacity="' + (d ? 0.22 : (faded ? 0.35 : 1)) + '">'
+      + '<rect x="' + n.x + '" y="' + (n.y - 29) + '" width="' + n.w + '" height="' + NH + '" rx="11" fill="' + (sel === n.id ? col : '#fff') + '" stroke="' + (n.h ? '#dc2626' : col) + '" stroke-width="' + (n.h ? 2.5 : 1.6) + '"/>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 2) + '" font-size="15" font-weight="bold" fill="' + (sel === n.id ? '#fff' : '#0f172a') + '">' + (n.h ? '⭐ ' : '') + n.n + '</text>'
+      + '<text x="' + (n.x + 12) + '" y="' + (n.y + 21) + '" font-size="12.5" fill="' + (sel === n.id ? 'rgba(255,255,255,.85)' : '#64748b') + '">' + (n.qs || '') + '</text>'
+      + '</g>');
+  });
+  svg.innerHTML = parts.join('');
+}
+window.kgPick = function(id){
+  sel = (sel === id) ? null : id;
+  const panel = document.getElementById('kgpanel');
+  if(!sel){ panel.innerHTML = '<div style="color:var(--mut)">已取消选中。</div>'; kgBuild(); return; }
+  const n = nodeById(id);
+  if(!n) return;
+  const nb = EDGES.filter(e => e[0] === id || e[1] === id).map(e => {
+    const other = nodeById(e[0] === id ? e[1] : e[0]);
+    return '<li><b style="color:' + (EC[e[2]] || '#64748b') + '">' + (e[3] || e[2]) + '</b> → ' + other.n + '</li>';
+  }).join('');
+  panel.innerHTML = '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + (n.h ? '⭐ ' : '') + n.n + '</div>'
+    + '<div style="border-left:3px solid ' + CL[n.c][1] + ';padding-left:8px;margin-bottom:8px;color:#334155">' + n.one + '</div>'
+    + '<ul style="padding-left:18px;margin:0 0 8px">' + (n.pts || []).map(p => '<li>' + p + '</li>').join('') + '</ul>'
+    + (n.qs ? '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px">对应练习：<b>' + n.qs + '</b></div>' : '')
+    + (nb ? '<div style="margin-top:8px"><b style="font-size:12px;color:var(--mut)">关联：</b><ul style="padding-left:18px;font-size:12.5px;margin:4px 0 0">' + nb + '</ul></div>' : '');
+  kgBuild();
+};
+window.kgReset = function(){
+  sel = null; dim = null; vb = { x: 0, y: 0, w: W, h: H };
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+  kgBuild();
+  document.getElementById('kgpanel').innerHTML = '<div style="color:var(--mut)">点击任意节点查看详情。</div>';
+};
+window.kgDim = function(c){ dim = (dim === c) ? null : c; sel = null; kgBuild(); };
+(function(){
+  const box = document.getElementById('kgchips');
+  if(box){
+    Object.keys(CL).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.cssText = 'border-color:' + CL[c][1] + ';padding:3px 10px;font-size:12px;border-radius:12px';
+      b.textContent = CL[c][0];
+      b.onclick = () => kgDim(c);
+      box.appendChild(b);
+    });
+  }
+  const st = document.getElementById('kgstats');
+  if(st) st.textContent = NODES.length + ' 个节点 · ' + EDGES.length + ' 条关联 · 滚轮缩放 / 拖拽平移';
+})();
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = vb.x + (e.clientX - r.left) / r.width * vb.w;
+  const my = vb.y + (e.clientY - r.top) / r.height * vb.h;
+  const s = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+  vb.w *= s; vb.h *= s;
+  vb.x = mx - (mx - vb.x) * s; vb.y = my - (my - vb.y) * s;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+let pan = null;
+svg.addEventListener('mousedown', e => { pan = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y }; });
+window.addEventListener('mousemove', e => {
+  if(!pan) return;
+  const r = svg.getBoundingClientRect();
+  vb.x = pan.vx - (e.clientX - pan.x) * vb.w / r.width;
+  vb.y = pan.vy - (e.clientY - pan.y) * vb.h / r.height;
+  svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+});
+window.addEventListener('mouseup', () => { pan = null; });
+kgBuild();
+})();
+/* ================= 载入即渲染 ================= */
+pallDraw(); pPick('strat');
+scNew();
+vsPick(0);
+f5New();
+pqNew();
+</script>
+</body>
+</html>
