@@ -37,6 +37,7 @@ th{background:var(--bg)}
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:8px}
 .fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
 .fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 .mono{font-family:Consolas,monospace}
 footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
 svg text{font-family:"Microsoft YaHei",sans-serif}
@@ -794,7 +795,7 @@ function chDraw(){
 }
 function chPick(i){
   document.querySelectorAll('#chTab tr').forEach((tr, j) => { if(j > 0) tr.style.background = j - 1 === i ? 'var(--bg)' : ''; });
-  document.getElementById('chDetail').innerHTML = '<b style="color:#db2777">' + CH_ROWS[i][0] + '</b>　限制越少能力越强：0 型 ⊃ 1 型 ⊃ 2 型 ⊃ 3 型（逐级加限制）。' + CH_ROWS[i][3];
+  document.getElementById('chDetail').innerHTML = '<b style="color:#db2777">' + CH_ROWS[i][0] + '</b>　限制越少能力越强：0 型 ⊃ 1 型 ⊃ 2 型 ⊃ 3 型（逐级加限制）。' + CH_ROWS[i][4];
 }
 function knCalc(){
   const n = +document.getElementById('knN').value;

@@ -37,6 +37,7 @@ th{background:var(--bg)}
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:8px}
 .fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
 .fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 .mono{font-family:Consolas,monospace}
 footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
 svg text{font-family:"Microsoft YaHei",sans-serif}
@@ -186,21 +187,6 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
  </div>
 
  <div class="card">
-  <h2>💻 完整代码挖空出题（真题核心片段 · 5 程序轮换）</h2>
-  <div class="row"><button class="btn pri" onclick="c4New()">🎲 出一道</button><span id="c4Kind" style="font-size:13.5px;color:var(--mut)"></span></div>
-  <div id="c4Q" style="margin-top:6px"></div>
-  <div class="row">
-   <button class="btn" onclick="c4Check()">检查</button>
-   <button class="btn" onclick="c4Show()">显示解答</button>
-  </div>
-  <div id="c4Fb" style="font-size:13.5px"></div>
-  <div class="steps" id="c4Steps" style="display:none"></div>
- </div>
-
- <div class="card">
-  <h2>🎯 填空位模式随机出题</h2>
-
-<div class="card">
   <h2>🎯 填空位模式随机出题</h2>
   <div class="row"><button class="btn pri" onclick="alqNew()">🎲 出一道</button><span id="alqQ" style="font-size:13.5px"></span></div>
   <div class="row">
@@ -612,108 +598,6 @@ mkQuiz('erq', erqGen);
 mkQuiz('uq', uqGen);
 mkQuiz('alq', alqGen);
 mkQuiz('dpm', dpmGen);
-/* ================= 完整代码挖空（真题形态 · 大题④） ================= */
-const cmpC = (k, v, a) => String(v).replace(/\s+/g, '') === String(a).replace(/\s+/g, '');
-const C4 = [
- { kind: '链表反转（三指针法）', build(){
-   return { stem:
-    '<div class="code">struct Node { int val; struct Node *next; };\n\n' +
-    'struct Node* reverse(struct Node* head) {\n' +
-    '    struct Node *prev = NULL, *cur = head;\n' +
-    '    while (cur != NULL) {\n' +
-    '        struct Node* nxt = <input id="c4a1" placeholder="空1:保存后继" style="width:150px">;\n' +
-    '        cur-&gt;<input id="c4a2" placeholder="空2:反转指向" style="width:150px"> = prev;    /* 反转当前指针 */\n' +
-    '        prev = cur;                                  /* prev 前移 */\n' +
-    '        cur = <input id="c4a3" placeholder="空3" style="width:80px">;                /* cur 前移 */\n' +
-    '    }\n' +
-    '    return <input id="c4a4" placeholder="空4:新表头" style="width:90px">;\n}</div>',
-    clear: ['c4a1','c4a2','c4a3','c4a4'],
-    ans: { c4a1: 'cur->next', c4a2: 'cur->next', c4a3: 'nxt', c4a4: 'prev' }, cmp: cmpC,
-    steps: '三指针法口诀：先存后继、再改指向、双双前移。\n空1 先把 cur->next 存进 nxt（否则改完指向就丢失后半段）\n空2 把 cur->next 改指 prev（这一步完成"反转"）\n空3 cur = nxt 前移\n循环结束时 cur 走到 NULL，prev 停在原末尾 = 新表头。\n套路对应：链表类（p=p->next 家族），五类套路卡第 1 张。' };
- } },
- { kind: '二分查找变体（找第一次出现）', build(){
-   return { stem:
-    '<div class="code">int firstPos(int a[], int n, int key) {\n' +
-    '    int lo = 0, hi = n - 1, res = -1;\n' +
-    '    while (<input id="c4b1" placeholder="空1:循环条件" style="width:110px">) {\n' +
-    '        int mid = (lo + hi) / 2;\n' +
-    '        if (a[mid] == key) { <input id="c4b2" placeholder="空2:记录答案并继续向左" style="width:190px"> }\n' +
-    '        else if (a[mid] &lt; key) <input id="c4b3" placeholder="空3:去右半区" style="width:130px">;\n' +
-    '        else hi = mid - 1;\n    }\n    return res;\n}</div>',
-    clear: ['c4b1','c4b2','c4b3'],
-    ans: { c4b1: 'lo <= hi', c4b2: 'res = mid; hi = mid - 1;', c4b3: 'lo = mid + 1' }, cmp: cmpC,
-    steps: '与普通二分的唯一差别：命中后不返回，先 res = mid 记录，再 hi = mid - 1 继续**向左找更早的出现**。\n空1 循环继续条件 lo <= hi（取等号才能查单元素区间）\n空3 右半区：lo = mid + 1\n模板：数组 1,2,2,2,3 找 2 → 返回下标 1（第一次出现）。套路对应：二分类。' };
- } },
- { kind: '冒泡排序（带提前终止）', build(){
-   return { stem:
-    '<div class="code">void bubble(int a[], int n) {\n' +
-    '    for (int i = 0; <input id="c4c1" placeholder="空1:趟数控制" style="width:130px">; i++) {\n' +
-    '        int swapped = 0;\n' +
-    '        for (int j = 0; <input id="c4c2" placeholder="空2:内层边界" style="width:130px">; j++)\n' +
-    '            if (a[j] &gt; a[j+1]) {\n' +
-    '                int t = a[j];\n' +
-    '                <input id="c4c3" placeholder="空3:补完三行交换" style="width:230px">;\n' +
-    '                swapped = 1;\n            }\n' +
-    '        if (<input id="c4c4" placeholder="空4:本趟无交换则…" style="width:110px">) break;   /* 已有序提前结束 */\n    }\n}</div>',
-    clear: ['c4c1','c4c2','c4c3','c4c4'],
-    ans: { c4c1: 'i < n - 1', c4c2: 'j < n - 1 - i', c4c3: 'a[j] = a[j+1]; a[j+1] = t', c4c4: '!swapped' }, cmp: cmpC,
-    steps: '四空全在必背点：\n空1 共 n-1 趟\n空2 内层边界 j < n-1-i：每趟沉底一个最大值，有序区不重比\n空3 三行交换 temp 已给，补 a[j]=a[j+1]; a[j+1]=t\n空4 swapped==0 说明本趟无交换 → 已有序，break 提前终止（最好情况 O(n)）。\n套路对应：排序类。' };
- } },
- { kind: '字符串压缩（连续段计数）', build(){
-   return { stem:
-    '<div class="code">void compress(char s[]) {          /* "aaabbc" -> 输出 a3b2c1 */\n' +
-    '    int i = 0;\n' +
-    '    while (<input id="c4d1" placeholder="空1:串未结束" style="width:130px">) {\n' +
-    '        int cnt = 1;\n' +
-    '        while (s[i+1] != \'\\0\' &amp;&amp; <input id="c4d2" placeholder="空2:连续判定" style="width:150px">) { i++; cnt++; }\n' +
-    '        printf("%c%d", s[i], cnt);\n' +
-    '        <input id="c4d3" placeholder="空3:移到新字符" style="width:80px">;\n    }\n}</div>',
-    clear: ['c4d1','c4d2','c4d3'],
-    ans: { c4d1: "s[i] != '\\0'", c4d2: 's[i+1] == s[i]', c4d3: 'i++' }, cmp: cmpC,
-    steps: '单下标扫描（i 定段首），内层 while 数这一段有多长（空2 判定下一个字符是否相同），输出 字符+个数 后 i++ 跳到下一段首。\n空1 C 字符串以 \'\\0\' 结尾，这就是外层循环条件。\n注意 \'\\0\' 的写法（反斜杠别丢）。套路对应：字符串类。' };
- } },
- { kind: '递归 + 记忆化（斐波那契）', build(){
-   return { stem:
-    '<div class="code">int memo[64];                      /* 全局数组，初始全 0 */\n\n' +
-    'int fib(int n) {\n' +
-    '    if (<input id="c4e1" placeholder="空1:递归出口" style="width:110px">) return n;\n' +
-    '    if (memo[n] != 0) <input id="c4e3" placeholder="空3:返回缓存" style="width:150px">;   /* 算过直接取：记忆化 */\n' +
-    '    return <input id="c4e2" placeholder="空2:递推并存表" style="width:250px">;\n}</div>',
-    clear: ['c4e1','c4e2','c4e3'],
-    ans: { c4e1: 'n <= 1', c4e2: 'memo[n] = fib(n-1) + fib(n-2)', c4e3: 'return memo[n]' }, cmp: cmpC,
-    steps: '递归类两件套：\n空1 出口（最小规模 n<=1 直接返回）\n空2 递推式 fib(n-1)+fib(n-2) 并存入 memo[n]——下次再问直接返回，O(2^n) 降为 O(n)。\n空2 的赋值顺序：先算右边、把结果存 memo[n]、同时作为返回值（= 表达式的值）。套路对应：递归类/DP。' };
- } }
-];
-let c4idx = -1, c4q = null;
-window.c4New = function(){
-  let k;
-  do { k = Math.floor(Math.random() * C4.length); } while (k === c4idx);
-  c4idx = k; c4q = C4[k].build();
-  document.getElementById('c4Kind').textContent = '共 5 个程序轮换（做完点显示解答看套路）';
-  document.getElementById('c4Q').innerHTML = c4q.stem;
-  c4q.clear.forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
-  document.getElementById('c4Fb').innerHTML = '';
-  document.getElementById('c4Steps').style.display = 'none';
-};
-window.c4Check = function(){
-  if(!c4q) return;
-  let all = true, html = '';
-  Object.keys(c4q.ans).forEach(k => {
-    const inp = document.getElementById(k); if(!inp) return;
-    const good = c4q.cmp(k, inp.value, c4q.ans[k]);
-    all = all && good;
-    html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (good ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
-  });
-  document.getElementById('c4Fb').innerHTML = html + (all ? '<b class="ok">全对！这就是大题④的满空节奏</b>' : '　不会就点「显示解答」');
-};
-window.c4Show = function(){
-  if(!c4q) return;
-  Object.keys(c4q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = c4q.ans[k]; });
-  const s = document.getElementById('c4Steps'); if(s){ s.style.display = 'block'; s.textContent = '本程序：' + C4[c4idx].kind + '\n' + c4q.steps; }
-  document.getElementById('c4Kind').textContent = '本程序：' + C4[c4idx].kind;
-};
-window.c4New();
-
 
 /* ================= 载入即算 ================= */
 dfDraw(0);
