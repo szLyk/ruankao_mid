@@ -33,6 +33,7 @@ th{background:var(--bg)}
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:8px}
 .fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
 .fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 .mono{font-family:Consolas,monospace}
 footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
 svg text{font-family:"Microsoft YaHei",sans-serif}
@@ -118,7 +119,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   <h2>📋 策略判定卡（21号§三~§九）</h2>
   <div class="grid2">
    <div class="fcard"><b>分治</b>子问题<b>相互独立</b>：归并、快排、二分、汉诺塔。分解→求解→合并三步。</div>
-   <div class="fcard"><b>贪心</b>每步局部最优、<b>不回头</b>：活动选择（按结束时间排序）、部分背包（可分割）。反例：0-1 背包贪心不保证最优。</div>
+   <div class="fcard"><b>贪心</b>每步局部最优、<b>不回头</b>：活动选择（按结束时间排序）、部分背包（可分割）、哈夫曼构造（每次合并权值最小的两棵树，n 个叶子 → 共 2n−1 个结点）。反例：0-1 背包贪心不保证最优。</div>
    <div class="fcard"><b>动态规划</b>子问题<b>重叠</b>+最优子结构：背包/LCS/LIS/编辑距离/最大子段和/数字三角形。自底向上打表。</div>
    <div class="fcard"><b>回溯</b>试探+回退（深度优先+剪枝）：N 皇后、迷宫、子集枚举。</div>
    <div class="fcard"><b>P / NP / NPC（选择题）</b>P=多项式时间<b>可解</b>；NP=多项式时间<b>可验证</b>；NPC=NP 中最难的一类；P=NP 尚未证明。</div>
@@ -400,7 +401,7 @@ NODES: [
  {id:'topo',n:'拓扑排序',c:'mid',one:'入度归零反复拿，仅 DAG',pts:['队列实现'],qs:'21号§6.3'},
  {id:'prim',n:'Prim',c:'mid',one:'点扩张求 MST，适合稠密',pts:['O(n²)'],qs:'21号§6.5'},
  {id:'kruskal',n:'Kruskal',c:'mid',one:'边排序+并查集求 MST',pts:['适合稀疏'],qs:'21号§6.5'},
- {id:'kmp',n:'KMP',c:'mid',one:'next 数组避免主串回退',pts:['最长相等真前后缀'],qs:'21号§7.2'},
+ {id:'kmp',n:'KMP',c:'mid',one:'next 数组避免主串回退',pts:['最长相等真前后缀','对照朴素 BF：逐位对齐 O(n×m)'],qs:'21号§7.1/7.2'},
  {id:'act',n:'活动选择',c:'mid',one:'按结束时间贪心选兼容活动',pts:['本页C填空'],qs:'21号§4.1 · 本页填空'},
  {id:'tri',n:'数字三角形',c:'mid',one:'自底向上取较大者',pts:['本页C填空'],qs:'21号§5.1 · 本页填空'},
  {id:'hashf',n:'哈希查找',c:'mid',one:'ASL 与装填因子有关、与表长无关',pts:['线性探测/链地址'],qs:'21号§2.3'},

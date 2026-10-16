@@ -12,8 +12,9 @@ function extractMock() {
   let Q;
   try { Q = eval('[' + m[1] + ']'); } catch (e) { throw new Error('09 HTML eval fail: ' + e.message); }
   if (Q.length !== 75) throw new Error('09 HTML: expect 75 questions, got ' + Q.length);
+  const strip = s => String(s).replace(/\*\*/g, '').replace(/`/g, '');
   return Q.map((it, i) => ({
-    id: i + 1, mod: it.m, q: it.q, o: it.o, ans: 'ABCD'[it.a], exp: it.e
+    id: i + 1, mod: it.m, q: strip(it.q), o: it.o.map(strip), ans: 'ABCD'[it.a], exp: it.e
   }));
 }
 
@@ -80,7 +81,10 @@ function parseBank(file, modId, modName) {
   if (bad.length) throw new Error(`${file}: ${bad.length} 题解析异常: ` + bad.map(b => b.id + `(选项${b.o.length},答${b.ans||'无'})`).join(','));
   const ids = qs.map(x => x.id);
   for (let i = 0; i < ids.length; i++) if (ids[i] !== i + 1) throw new Error(`${file}: 题号不连续 at ${ids[i]}`);
-  return qs.map(x => ({ id: x.id, mod: modName, q: x.q, o: x.o, ans: x.ans, exp: x.exp.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>') }));
+  // 17号渲染 q/o 时按纯文本 esc，** 与反引号会原样显示 → 构建期剥掉；exp 支持 <b> 加粗，只剥反引号
+  const strip = s => s.replace(/\*\*/g, '').replace(/`/g, '');
+  return qs.map(x => ({ id: x.id, mod: modName, q: strip(x.q), o: x.o.map(strip), ans: x.ans,
+    exp: x.exp.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/`/g, '') }));
 }
 
 // ---------- 2b. 应用技术大题（16 md）----------
@@ -143,7 +147,7 @@ function parseEng(){
       }
     }
   }
-  if(qs.length!==20) throw new Error('19: expect 20 题, got '+qs.length);
+  if(qs.length!==35) throw new Error('19: expect 35 题, got '+qs.length);
   return qs;
 }
 

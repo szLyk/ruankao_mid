@@ -40,7 +40,7 @@ const modCount = {};
 SETS[0].forEach(q => modCount[q.mod] = (modCount[q.mod] || 0) + 1);
 
 const tpl = fs.readFileSync('.mock_tpl.html', 'utf8');
-const out = tpl.replace('/*__DATA__*/ []', JSON.stringify(SETS));
+const out = tpl.replace('/*__DATA__*/ []', () => JSON.stringify(SETS));
 if(out === tpl) throw new Error('模板占位符未命中');
 fs.writeFileSync('33-全真模拟卷.html', out, 'utf8');
 console.log('生成 33-全真模拟卷.html：3 套 × 75 题；套一模块分布 =', JSON.stringify(modCount));

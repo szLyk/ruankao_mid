@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>全真模拟卷 · 软件设计师（基础知识 75 题）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",-apple-system,sans-serif;line-height:1.65;color:#0f172a;background:#f1f5f9;padding-bottom:60px}
+header{position:sticky;top:0;z-index:9;background:#1e3a5f;color:#fff;padding:12px 16px}
+header h1{font-size:16px}header .sub{font-size:12px;opacity:.8}
+.hbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.hbar button{border:none;border-radius:14px;padding:5px 12px;cursor:pointer;font-size:12.5px;background:rgba(255,255,255,.16);color:#fff}
+.hbar button.on{background:#fff;color:#1e3a5f;font-weight:700}
+#clock{margin-left:auto;font-family:Consolas,monospace;font-size:17px;font-weight:700;background:rgba(255,255,255,.14);padding:3px 12px;border-radius:8px}
+#clock.low{background:#dc2626}
+main{max-width:980px;margin:0 auto;padding:14px}
+.tip{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:12px}
+#sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:5px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px;margin-bottom:14px}
+#sheet button{border:1px solid #cbd5e1;border-radius:7px;padding:5px 0;cursor:pointer;font-size:12.5px;background:#fff}
+#sheet button.done{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+#sheet button.mk{border-color:#dc2626;color:#dc2626;font-weight:700}
+#sheet button.done.mk{background:#dc2626;color:#fff}
+.qcard{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.qhead b{font-size:14px}.mtag{font-size:11.5px;color:#64748b;background:#f1f5f9;border-radius:10px;padding:2px 9px}
+.mkbtn{border:none;background:none;cursor:pointer;font-size:14px;color:#94a3b8}
+.mkbtn.on{color:#dc2626}
+.qt{font-size:14px;margin-bottom:8px;white-space:pre-wrap}
+.opt{border:1px solid #e2e8f0;border-radius:9px;padding:7px 11px;margin:5px 0;font-size:13.5px;cursor:pointer}
+.opt:hover{border-color:#1d4ed8}
+.opt.sel{background:#dbeafe;border-color:#1d4ed8;font-weight:600}
+.submitbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:9px 16px;display:flex;gap:10px;justify-content:center;z-index:8}
+.btn{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:8px 18px;cursor:pointer;font-size:13.5px}
+.btn.pri{background:#1d4ed8;border-color:#1d4ed8;color:#fff;font-weight:700}
+#result .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px}
+#result h2{font-size:16px;margin-bottom:8px}
+.score{font-size:34px;font-weight:800;color:#1d4ed8}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th,td{border:1px solid #e2e8f0;padding:5px 8px;text-align:left}
+th{background:#eff6ff}
+.wq{border-left:3px solid #dc2626;padding-left:10px;margin:9px 0;font-size:13.5px}
+.wq .m{color:#dc2626;font-weight:700}.wq .r{color:#059669;font-weight:700}
+.exp{color:#475569;font-size:12.8px;margin-top:3px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header>
+ <h1>📄 全真模拟卷 · 基础知识 75 题（按考纲分值组卷）</h1>
+ <div class="sub">模拟机考：建议一次做完 75 题 ≤120 分钟；点题号跳题、点 ⚑ 标记回看；交卷后出分模块报告与错题解析</div>
+ <div class="hbar">
+  <button id="s0" class="on" onclick="pickSet(0)">套一</button>
+  <button id="s1" onclick="pickSet(1)">套二</button>
+  <button id="s2" onclick="pickSet(2)">套三</button>
+  <button onclick="submit()">📄 交卷判分</button>
+  <span id="clock">120:00</span>
+ </div>
+</header>
+<main>
+ <div class="tip">作答方式：点选项即选中（再点其他项切换）；⚑ 标记不确定的题。右上角倒计时走完自动锁卷。交卷后：总分 + 分模块正确率 + 错题逐题解析。</div>
+ <div id="exam">
+  <div id="sheet"></div>
+  <div id="qlist"></div>
+ </div>
+ <div id="result" class="hide"></div>
+</main>
+<div class="submitbar noprint">
+ <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 回顶部/答题卡</button>
+ <button class="btn pri" onclick="submit()">📄 交卷判分</button>
+</div>
+<script>
+const SETS = /*__DATA__*/ [];
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+const restoreB = s => s.replace(/&lt;b&gt;/g,"<b>").replace(/&lt;\/b&gt;/g,"</b>");
+const MOD = {sw:'软件工程', ds:'数据结构与算法', db:'数据库', os:'操作系统', comp:'组成原理', net:'计算机网络', pl:'程序语言与背诵', eng:'专业英语'};
+const $ = id => document.getElementById(id);
+let cur = 0, answers = {}, marked = new Set(), timer = null, left = 120*60, submitted = false;
+function pickSet(i){
+  cur = i; answers = {}; marked = new Set(); submitted = false; left = 120*60;
+  document.getElementById('result').classList.add('hide');
+  document.getElementById('exam').classList.remove('hide');
+  ['s0','s1','s2'].forEach((id, k) => document.getElementById(id).className = k === i ? 'on' : '');
+  clearInterval(timer); timer = setInterval(tick, 1000); tick();
+  render(); updateSheet();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function render(){
+  const qs = SETS[cur];
+  document.getElementById('qlist').innerHTML = qs.map((q, i) =>
+    '<div class="qcard" id="qc' + i + '"><div class="qhead"><b>第 ' + (i+1) + ' 题</b>'
+    + '<span><span class="mtag">' + MOD[q.mod] + '</span> '
+    + '<button class="mkbtn" id="mk' + i + '" onclick="mark(' + i + ')">⚑</button></span></div>'
+    + '<div class="qt">' + esc(q.q) + '</div>'
+    + q.o.map((o, j) => '<div class="opt" id="o' + i + '_' + j + '" onclick="choose(' + i + ',' + j + ')"><b>' + 'ABCD'[j] + '.</b> ' + esc(o) + '</div>').join('')
+    + '</div>').join('');
+}
+window.choose = function(i, j){
+  if(submitted) return;
+  answers[i] = (answers[i] === j) ? undefined : j;
+  if(answers[i] === undefined) delete answers[i];
+  for(let k = 0; k < 4; k++){
+    const e = document.getElementById('o' + i + '_' + k);
+    if(e) e.className = 'opt' + (answers[i] === j && k === j ? ' sel' : '');
+  }
+  updateSheet();
+};
+window.mark = function(i){ marked.has(i) ? marked.delete(i) : marked.add(i);
+  document.getElementById('mk' + i).className = 'mkbtn' + (marked.has(i) ? ' on' : ''); updateSheet(); };
+window.goto = function(i){ document.getElementById('qc' + i).scrollIntoView({behavior: 'smooth', block: 'start'}); };
+function updateSheet(){
+  const qs = SETS[cur];
+  document.getElementById('sheet').innerHTML = qs.map((q, i) => {
+    const cls = (answers[i] !== undefined ? 'done' : '') + (marked.has(i) ? ' mk' : '');
+    return '<button class="' + cls + '" onclick="goto(' + i + ')">' + (i+1) + '</button>';
+  }).join('');
+}
+function tick(){
+  const m = String(Math.floor(left / 60)).padStart(2, '0'), s = String(left % 60).padStart(2, '0');
+  const c = document.getElementById('clock');
+  c.textContent = m + ':' + s;
+  c.className = left <= 600 ? 'low' : '';
+  if(left <= 0){ clearInterval(timer); if(!submitted) submit(); }
+  left--;
+}
+window.submit = function(){
+  if(submitted) return;
+  submitted = true; clearInterval(timer);
+  const qs = SETS[cur];
+  let right = 0; const mod = {}, wrong = [], un = [];
+  qs.forEach((q, i) => {
+    mod[q.mod] = mod[q.mod] || {n: 0, r: 0}; mod[q.mod].n++;
+    const a = answers[i];
+    if(a !== undefined && 'ABCD'[a] === q.ans){ right++; mod[q.mod].r++; }
+    else (a === undefined ? un : wrong).push({i, q, a});
+  });
+  const pct = Math.round(right / qs.length * 100);
+  const pass = pct >= 52 ? '🏆 过线水准（目标 52+）' : (pct >= 45 ? '⚠ 距过线还有 ' + (52 - pct) + ' 分，优先清错题' : '🔴 需系统回课件补模块');
+  document.getElementById('exam').classList.add('hide');
+  const r = document.getElementById('result');
+  r.classList.remove('hide');
+  let h = '<div class="card"><h2>📊 成绩（' + ['套一','套二','套三'][cur] + '）</h2>'
+    + '<span class="score">' + right + ' / ' + qs.length + '</span>　<span style="font-size:15px">折合 ' + pct + ' 分</span>　' + pass
+    + '<table><tr><th>模块</th><th>正确 / 题数</th><th>正确率</th></tr>'
+    + Object.keys(mod).map(k => '<tr><td>' + MOD[k] + '</td><td>' + mod[k].r + ' / ' + mod[k].n + '</td><td>' + Math.round(mod[k].r / mod[k].n * 100) + '%</td></tr>').join('')
+    + '</table><div style="font-size:12.5px;color:#64748b;margin-top:6px">最弱模块直接回对应课件页签：软件工程25 / 数据结构28 / 数据库27 / 操作系统26 / 组成29 / 网络24+22 / 程序语言30</div></div>';
+  if(un.length) h += '<div class="card"><h2>⬜ 未作答 ' + un.length + ' 题</h2>' + un.map(w => '<div class="wq">第 ' + (w.i+1) + ' 题（' + MOD[w.q.mod] + '）——机考没有空白分，哪怕蒙也要选</div>').join('') + '</div>';
+  h += '<div class="card"><h2>✘ 错题解析 ' + wrong.length + ' 道</h2>'
+    + wrong.map(w => '<div class="wq"><b>第 ' + (w.i+1) + ' 题（' + MOD[w.q.mod] + '）</b> ' + w.q.q
+      + '<br>我答 <span class="m">' + (w.a === undefined ? '未作答' : 'ABCD'[w.a]) + '</span> ｜ 正确 <span class="r">' + w.q.ans + '</span>'
+      + '<div class="exp">' + restoreB(esc(w.q.exp || '')) + '</div></div>').join('')
+    + '</div>';
+  h += '<div class="card"><button class="btn pri" onclick="pickSet(' + cur + ')">↺ 重做本套</button> <button class="btn" onclick="pickSet(' + ((cur+1)%3) + ')">换一套 →</button></div>';
+  r.innerHTML = h;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+};
+pickSet(0);
+</script>
+</body>
+</html>

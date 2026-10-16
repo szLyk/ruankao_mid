@@ -37,6 +37,7 @@ th{background:var(--bg)}
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:8px}
 .fcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px}
 .fcard b{color:var(--acc)}
+.fcard>b:first-child{display:block;margin-bottom:4px;font-size:13px}
 .mono{font-family:Consolas,monospace}
 footer{max-width:1000px;margin:0 auto;padding:0 16px 24px;font-size:12.5px;color:var(--mut)}
 svg text{font-family:"Microsoft YaHei",sans-serif}
@@ -64,7 +65,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   <div id="pdetail" style="margin-top:10px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px;min-height:40px"><span style="color:var(--mut)">点任意模式卡：意图 · 参与者角色 · 信号词 · 真题题号。</span></div>
  </div>
  <div class="card">
-  <h2>🎲 场景 → 模式识别随机出题（24 场景轮换 · 覆盖 18 模式）</h2>
+  <h2>🎲 场景 → 模式识别随机出题（25 场景轮换 · 覆盖 19 模式）</h2>
   <div class="row"><button class="btn pri" onclick="scNew()">🎲 出一道</button><span id="scQ" style="font-size:13.5px"></span></div>
   <div class="row">
    <input id="scA" placeholder="模式名" style="width:170px">
@@ -234,14 +235,15 @@ const SCN = [
  ['遥控器把每个按键动作封装成对象，从而支持撤销与宏排队执行。', '命令'],
  ['订单在待支付/已支付/已发货之间流转，取消订单的行为随所处阶段不同而不同。', '状态'],
  ['围棋软件把黑白棋子对象共享复用，只把位置作为参数传入以节省内存。', '享元'],
+ ['图片懒加载：大图对象创建开销大，先返回占位对象，滚动到可视区域才真正加载显示。', '代理'],
 ]
 const VSP = [
- ['工厂方法 vs 抽象工厂：产品是"一种"还是"一族"？', '抽象工厂', '一族（多等级配套）→抽象工厂；单一产品等级、由子类决定实例化→工厂方法。'],
- ['同接口包裹：是为了"加职责"还是"控制访问"？', '代理', '加职责（层层包装同接口）→装饰器；控制访问（懒加载/权限/远程）→代理。'],
- ['递归套娃：是"树形部分整体"还是"同类型叠职责链"？', '组合', '树、容器装多个孩子→组合；同类型包一个、逐层加职责→装饰。'],
- ['结构相同（Context 持接口对象）：客户换的是"算法"还是"行为随状态自动变"？', '状态', '客户 set 算法平等替换→策略；状态流转自动切行为→状态。'],
- ['包装旧组件：目的是"转接口"还是"加职责"？', '适配器', '接口不兼容做转换→适配器；接口不变只加职责→装饰。'],
- ['"统一入口"是给"子系统"还是给"互相协作的同事"？', '外观', '单向简化调用子系统→外观；同事间网状协作互相不认识→中介者。'],
+ ['工厂方法 vs 抽象工厂：要生产"Win 按钮 + Win 文本框"这类成套风格的产品族，该用哪个？', '抽象工厂', '一族（多等级配套）→抽象工厂；单一产品等级、由子类决定实例化→工厂方法。'],
+ ['装饰器 vs 代理：图片懒加载（滚动到可视区才真正创建大图对象），该用哪个？', '代理', '加职责（层层包装同接口）→装饰器；控制访问（懒加载/权限/远程）→代理。'],
+ ['组合 vs 装饰器：文件夹里既能放文件又能放文件夹，删除统计对二者统一处理，该用哪个？', '组合', '树形部分-整体（容器装多个孩子）→组合；同类型包一个、逐层加职责→装饰器。'],
+ ['策略 vs 状态：收银员在收银台手动把计价在普通/会员/满减之间切换，该用哪个？', '策略', '客户主动 set、算法平等替换→策略；状态流转时行为自动跟着变（订单状态）→状态。'],
+ ['适配器 vs 装饰器：新旧日志组件接口不兼容，写一个包装类做转接，该用哪个？', '适配器', '接口不兼容做转换→适配器；接口不变只加职责→装饰器。'],
+ ['外观 vs 中介者：手机里相机/相册/分享十几个子系统类，只想提供一个"一键拍照分享"入口，该用哪个？', '外观', '单向简化调用子系统→外观；同事间网状协作互不认识→中介者。'],
 ]
 const PQS = [
  ['加一种折扣方式就要修改结算类的源码并在 switch 里加分支。', '开闭原则'],
@@ -294,34 +296,6 @@ window.pPick = function(id){
 /* ================= 出题工具 ================= */
 function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
 const normTxt = s => String(s).replace(/\s+/g, '').replace(/，/g, ',').replace(/（/g, '(').replace(/）/g, ')').toUpperCase();
-function mkQuiz(pfx, gen){
-  let q = null;
-  window[pfx + 'New'] = function(){
-    q = gen();
-    document.getElementById(pfx + 'Q').innerHTML = q.stem;
-    (q.clear || []).forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
-    document.getElementById(pfx + 'Fb').innerHTML = '';
-    const s = document.getElementById(pfx + 'Steps'); if(s) s.style.display = 'none';
-  };
-  window[pfx + 'Check'] = function(){
-    if(!q) return;
-    let all = true, html = '';
-    Object.keys(q.ans).forEach(k => {
-      const inp = document.getElementById(k); if(!inp) return;
-      const ok = q.cmp ? q.cmp(k, inp.value, q.ans[k]) : normTxt(inp.value) === normTxt(String(q.ans[k]));
-      all = all && ok;
-      html += '<span style="margin-right:12px">' + (inp.placeholder || k) + ' ' + (ok ? '<span class="ok">✔</span>' : '<span class="bad">✘</span>') + '</span>';
-    });
-    document.getElementById(pfx + 'Fb').innerHTML = html + (all ? '<b class="ok">全对！</b>' : '　不会就点「显示解答」');
-  };
-  window[pfx + 'Show'] = function(){
-    if(!q) return;
-    Object.keys(q.ans).forEach(k => { const inp = document.getElementById(k); if(inp) inp.value = q.ans[k]; });
-    const s = document.getElementById(pfx + 'Steps'); if(s){ s.style.display = 'block'; s.textContent = q.steps; }
-  };
-  window[pfx + 'New']();
-}
-const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 /* 场景识别 */
 const used = new Set();
 window.scNew = function(){
@@ -346,7 +320,7 @@ window.scShow = function(){
   document.getElementById('scA').value = window.scAns;
   const f = document.getElementById('scFb');
   f.innerHTML = '<span class="ok">' + window.scAns + '</span>';
-  const p = P.find(x => x.n === window.scAns);
+  const p = P.find(x => x.n === window.scAns || x.n.split('(')[0] === window.scAns);
   const st = document.getElementById('scSteps');
   st.style.display = 'block';
   st.textContent = p ? ('' + p.one + '\n参与者：' + (p.roles || '—') + '\n信号词：' + (p.sig || '')) : '';
@@ -413,9 +387,9 @@ const F5 = [
     '    protected <input id="fa" placeholder="被包装类型" style="width:110px"> inner;      // 持有一个组件\n' +
     '    public Decorator(Coffee c) { inner = c; }\n' +
     '    public double cost() { return <input id="fb" placeholder="转发调用" style="width:120px"> + 2; }   // 叠加职责\n}\n' +
-    '... new Milk(new Sugar(new PlainCoffee())) ...   // <input id="fc" placeholder="包装效果" style="width:130px"></div>',
-    clear: ['fa','fb','fc'], ans: { fa: 'Coffee', fb: 'inner.cost()', fc: '层层装饰' },
-    steps: '装饰器三要点：①Decorator 与组件同接口（implements）②持有被包装组件 ③cost() 先转发 inner.cost() 再叠加。最外层的 new 决定最外层职责。' };
+    '... new Milk(new Sugar(new PlainCoffee()));   // 三层包装，职责从最外层开始生效</div>',
+    clear: ['fa','fb'], ans: { fa: 'Coffee', fb: 'inner.cost()' },
+    steps: '装饰器三要点：①Decorator 与组件同接口（implements）②持有被包装组件 ③cost() 先转发 inner.cost() 再叠加。装饰链 new Milk(new Sugar(...)) 从最外层开始生效。' };
  } },
  { kind: '适配器模式', build(){
    return { stem:
