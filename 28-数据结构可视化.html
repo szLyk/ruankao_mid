@@ -467,7 +467,7 @@ v4 v5 2</textarea>
  </div>
 
  <div class="card">
-  <h2>🧮 二维数组地址计算（题37、53）</h2>
+  <h2>🧮 二维数组地址计算（题53、66）</h2>
   <div class="row">
    <span>首地址</span><input id="aaBase" value="1000" style="width:80px">
    <span>a[i][j]</span><input id="aaI" value="2" style="width:48px"><input id="aaJ" value="3" style="width:48px">
@@ -479,6 +479,14 @@ v4 v5 2</textarea>
   </div>
   <div class="res" id="aaRes"></div>
   <div class="steps" id="aaSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="aaqNew()">🎲 出一道</button><span id="aaqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="aaqA" placeholder="地址" style="width:110px">
+   <button class="btn" onclick="aaqCheck()">检查</button>
+   <button class="btn" onclick="aaqShow()">显示解答</button>
+  </div>
+  <div id="aaqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="aaqSteps"></div>
  </div>
 
  <div class="card">
@@ -515,7 +523,7 @@ NODES: [
  { id: 'list', n: '顺序表与链表', c: 'l', one: '链表插入先接后断；顺序表随机访问 O(1)', pts: ['s→next=p→next; p→next=s', '删除后继：p→next=q→next', '链表查找只能顺序'], qs: '本页线性表页签 · 题36' },
  { id: 'stack', n: '栈', c: 'l', one: 'FILO；表达式求值、括号匹配、递归全靠它', pts: ['出栈序列判定：边进边比', '卡特兰数种数', 'DFS 用栈'], qs: '本页线性表页签 · 题3、51', h: 1 },
  { id: 'queue', n: '队列与循环队列', c: 'l', one: 'FIFO；个数 =(rear−front+m)%m，牺牲一格判满', pts: ['队满 =(rear+1)%m==front', '队空 rear==front', '最多存 m−1 个'], qs: '本页线性表页签 · 题1-2', h: 1 },
- { id: 'arr', n: '数组与压缩', c: 'l', one: '行优先地址 = 首址 + (i×列数+j)×L', pts: ['列优先把 i、j 对调', '对称矩阵下三角 n(n+1)/2', '三对角/稀疏三角'], qs: '本页策略页签 · 题37、53' },
+ { id: 'arr', n: '数组与压缩', c: 'l', one: '行优先地址 = 首址 + (i×列数+j)×L', pts: ['列优先把 i、j 对调', '对称矩阵下三角 n(n+1)/2', '三对角/稀疏三角'], qs: '本页策略页签 · 题37、53、66' },
  { id: 'kmp', n: '串与 KMP', c: 'l', one: 'next[i] = 最长相等真前后缀；非空子串 n(n+1)/2 个', pts: ['"ababa"→0,0,1,2,3', '失配滑到 next 位不回溯主串'], qs: '讲义§8 · 题39、55' },
  { id: 'treep', n: '树性质', c: 't', one: 'n₀ = n₂ + 1 永远成立；完全二叉树高 ⌊log₂n⌋+1', pts: ['哈夫曼 n 叶共 2n−1 结点', '二叉链表空指针 n+1 个', '总结点=度数和+1'], qs: '本页树页签 · 题4-5、8', h: 1 },
  { id: 'trav', n: '遍历与复原', c: 't', one: '先/后序定根，中序分左右——两个序列才能唯一还原', pts: ['先序首=根、后序尾=根', '中序分家递归重建', '先根遍历树=先序二叉树'], qs: '本页树页签 · 题6、57', h: 1 },
@@ -666,7 +674,7 @@ kgBuild();
 </script>
 
 </main>
-<footer>学习主线：11-讲义题库-数据结构与算法（59 题）→ 本页 → 17 系统「数据结构与算法」→ 错题重练。计算拿不准时回本页重算一遍。</footer>
+<footer>学习主线：11-讲义题库-数据结构与算法（66 题）→ 本页 → 17 系统「数据结构与算法」→ 错题重练。计算拿不准时回本页重算一遍。</footer>
 <script>
 /* ================= 纯函数（独立可测） ================= */
 const DSTOOL = {};
@@ -717,6 +725,18 @@ DSTOOL.sjGen = function(){
   return { stem: '入栈次序固定为 <b>' + ps + '</b>（栈空开始，进栈途中随时可出栈）。出栈序列 <b>' + seq + '</b> 是否可能？（填：合法 / 不可能）',
     clear: ['sjqA'], ans: { sjqA: ok ? '合法' : '不可能' },
     steps: '模拟判定（边进边比，栈顶一出现要出的元素就连续出栈）：\n' + j.steps + '\n结论：' + (ok ? '全部元素都能按序出完 ⇒ 合法' : '栈里剩着更晚的元素、栈顶等不到下一个该出的 ⇒ 不可能') };
+};
+DSTOOL.aaGen = function(){
+  const rows = 4 + Math.floor(Math.random() * 3), cols = 4 + Math.floor(Math.random() * 3);
+  let i = Math.floor(Math.random() * rows), j = Math.floor(Math.random() * cols);
+  if(!i && !j) j = 1;                                      // 避开 a[0][0]（地址=首址，太送分）
+  const L = pick([1, 2, 4, 8]), base = 1000 * (1 + Math.floor(Math.random() * 3));
+  const order = Math.random() < 0.5 ? 'row' : 'col';
+  const r = DSTOOL.arrAddr(base, i, j, cols, rows, L, order);
+  const r2 = DSTOOL.arrAddr(base, i, j, cols, rows, L, order === 'row' ? 'col' : 'row');
+  return { stem: '数组 a[' + rows + '][' + cols + '] 按<b>' + (order === 'row' ? '行' : '列') + '优先</b>存储，每个元素占 ' + L + ' 字节，a[0][0] 的地址为 ' + base + '，则 a[' + i + '][' + j + '] 的地址是（填十进制数）',
+    clear: ['aaqA'], ans: { aaqA: r.addr }, cmp: cmpNum,
+    steps: r.steps + '\n对偶陷阱：若按' + (order === 'row' ? '列' : '行') + '优先存储，答案是 ' + r2.addr + (r2.addr === r.addr ? '（本题两种序恰好同址）' : '——审题先圈住「行优先/列优先」，行优先 (i×列数+j)×L，列优先 (j×行数+i)×L') };
 };
 DSTOOL.huffman = function(ws){
   if(!Array.isArray(ws) || ws.length < 2 || ws.some(w => !(w > 0))) return null;
@@ -1358,6 +1378,7 @@ mkQuiz('hsq', DSTOOL.hsqGen);
 mkQuiz('sq', DSTOOL.sqGen);
 mkQuiz('ag', DSTOOL.agGen);
 mkQuiz('sjq', DSTOOL.sjGen);
+mkQuiz('aaq', DSTOOL.aaGen);
 
 /* ================= 载入即算 ================= */
 cqCalc();
