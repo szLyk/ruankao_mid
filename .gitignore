@@ -1,2 +1,3 @@
 *.bak
 .chrome_rec.json
+__pycache__/
