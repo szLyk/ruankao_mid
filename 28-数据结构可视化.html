@@ -502,6 +502,23 @@ v4 v5 2</textarea>
    <div class="fcard"><b>④大题地基</b>分治/贪心/DP/回溯就是应用技术④题考点，代码见《21-算法大全》；C 语法见《03-C语言速成》</div>
   </div>
  </div>
+
+ <div class="card">
+  <h2>🔤 KMP 失效函数逐位演示（题39）</h2>
+  <div class="row">
+   <span>模式串</span><input id="kmpS" value="ababa" style="width:140px">
+   <button class="btn pri" onclick="kmpCalc()">逐位算 next</button>
+  </div>
+  <div class="steps" id="kmpSteps"></div>
+  <div class="row" style="margin-top:8px"><button class="btn pri" onclick="kmqNew()">🎲 出一道</button><span id="kmqQ" style="font-size:13.5px"></span></div>
+  <div class="row">
+   <input id="kmqA" placeholder="如 0,0,1,2,3" style="width:150px">
+   <button class="btn" onclick="kmqCheck()">检查</button>
+   <button class="btn" onclick="kmqShow()">显示解答</button>
+  </div>
+  <div id="kmqFb" style="font-size:13.5px"></div>
+  <div class="steps" id="kmqSteps"></div>
+ </div>
 </section>
 
 <!-- ============ 🕸 知识图谱 ============ -->
@@ -737,6 +754,40 @@ DSTOOL.aaGen = function(){
   return { stem: '数组 a[' + rows + '][' + cols + '] 按<b>' + (order === 'row' ? '行' : '列') + '优先</b>存储，每个元素占 ' + L + ' 字节，a[0][0] 的地址为 ' + base + '，则 a[' + i + '][' + j + '] 的地址是（填十进制数）',
     clear: ['aaqA'], ans: { aaqA: r.addr }, cmp: cmpNum,
     steps: r.steps + '\n对偶陷阱：若按' + (order === 'row' ? '列' : '行') + '优先存储，答案是 ' + r2.addr + (r2.addr === r.addr ? '（本题两种序恰好同址）' : '——审题先圈住「行优先/列优先」，行优先 (i×列数+j)×L，列优先 (j×行数+i)×L') };
+};
+DSTOOL.kmpNext = function(s){
+  if(!s || !/^[a-zA-Z]{1,12}$/.test(s)) return null;
+  const p = s.split(''), log = [], arr = [0];
+  log.push('位置0：只有 1 个字符，不存在"真"前后缀（不能取整段）→ next[0]=0');
+  for(let i = 1; i < p.length; i++){
+    const sub = p.slice(0, i + 1).join('');       // 盖住 i 之后，只看前 i+1 个字符
+    let k = i, hit = 0;
+    const tries = [];
+    while(k >= 1){                                 // k 从「短串长-1=i」往小试（k=i 不是整段）：头 k 个 vs 尾 k 个
+      const head = sub.slice(0, k), tail = sub.slice(sub.length - k), eq = head === tail;
+      tries.push('k=' + k + '：头"' + head + '" ' + (eq ? '＝' : '≠') + ' 尾"' + tail + '"' + (eq ? ' ✓ 停' : ''));
+      if(eq){ hit = k; break; }
+      k--;
+    }
+    if(!tries.length) tries.push('没有可试的 k（真前后缀不存在）');
+    arr[i] = hit;
+    log.push('位置' + i + '，看"' + sub + '"：' + tries.join('；') + ' → next[' + i + ']=' + hit);
+  }
+  return { arr, steps: log.join('\n') };
+};
+DSTOOL.kmqGen = function(){
+  const base = pick(['abab', 'aaba', 'abcab', 'ababa', 'aabbab', 'ababab', 'abaab', 'aabaa', 'abcabc']);
+  const pool = 'abcd'.split(''), used = [], map = {};
+  'abc'.split('').forEach(ch => {
+    let c; do { c = pool[Math.floor(Math.random() * pool.length)]; } while(used.includes(c));
+    map[ch] = c; used.push(c);
+  });
+  const s = base.split('').map(ch => map[ch]).join('');
+  const r = DSTOOL.kmpNext(s);
+  return { stem: '模式串 <b>' + s + '</b> 的失效函数 next 数组是（填逗号分隔数字，如 0,0,1,2,3）',
+    clear: ['kmqA'], ans: { kmqA: r.arr.join(',') },
+    cmp: (k, v, a) => normTxt(String(v).replace(/，/g, ',')) === normTxt(String(a)),
+    steps: r.steps + '\n结果：next = [' + r.arr.join(', ') + ']' };
 };
 DSTOOL.huffman = function(ws){
   if(!Array.isArray(ws) || ws.length < 2 || ws.some(w => !(w > 0))) return null;
@@ -1329,6 +1380,13 @@ function spRun(){
   if(!r){ st.style.display = 'block'; st.textContent = '输入无效：至少 2 个数字'; return; }
   st.style.display = 'block'; st.textContent = r.steps;
 }
+function kmpCalc(){
+  const r = DSTOOL.kmpNext(document.getElementById('kmpS').value.trim());
+  const st = document.getElementById('kmpSteps');
+  if(!r){ st.style.display = 'block'; st.textContent = '输入无效：请输入纯字母串（1~12 位）'; return; }
+  st.style.display = 'block';
+  st.textContent = r.steps + '\n结果：next = [' + r.arr.join(', ') + ']';
+}
 function aaCalc(){
   const r = DSTOOL.arrAddr(+document.getElementById('aaBase').value, +document.getElementById('aaI').value, +document.getElementById('aaJ').value,
     +document.getElementById('aaCols').value, +document.getElementById('aaRows').value, +document.getElementById('aaL').value,
@@ -1379,6 +1437,7 @@ mkQuiz('sq', DSTOOL.sqGen);
 mkQuiz('ag', DSTOOL.agGen);
 mkQuiz('sjq', DSTOOL.sjGen);
 mkQuiz('aaq', DSTOOL.aaGen);
+mkQuiz('kmq', DSTOOL.kmqGen);
 
 /* ================= 载入即算 ================= */
 cqCalc();
