@@ -124,31 +124,42 @@ function setBar(cls,msg){ const b=document.getElementById('filebar'); b.classNam
 document.getElementById('filebtn').onclick = async ()=>{
   try{
     if(!fileHandle){
-      fileHandle = await window.showSaveFilePicker({suggestedName:'软考-练习记录.json',
+      /* 用「打开」式对话框附着到现有文件——绝不用「另存为」式（同名确认会替换/清空原文件） */
+      if(!window.showOpenFilePicker) throw {name:'NoAPI'};
+      const hs = await window.showOpenFilePicker({multiple:false,
         types:[{description:'JSON 记录',accept:{'application/json':['.json']}}]});
+      fileHandle = hs[0];
       const db=await openDB(); db.transaction('handles','readwrite').objectStore('handles').put(fileHandle,'record');
     }
-    const p=await fileHandle.queryPermission({mode:'readwrite'});
+    let p=await fileHandle.queryPermission({mode:'readwrite'});
     if(p!=='granted'){
-      let r='denied';
-      try{ r=await fileHandle.requestPermission({mode:'readwrite'}); }catch(_e){}
-      if(r!=='granted'){
-        /* 重新授权的气泡显示在地址栏旁、一闪即逝——失败就清掉旧句柄，改弹真正的文件选择框 */
+      setBar('warn','📌 浏览器会在<b>地址栏旁</b>弹「修改文件」授权——请点<b>允许</b>（小气泡一闪即逝，注意看）');
+      try{ p=await fileHandle.requestPermission({mode:'readwrite'}); }catch(_e){ p='denied'; }
+    }
+    if(p!=='granted'){
+      if(!window._bindRetried){
+        /* 气泡被错过：清句柄重来一次 */
+        window._bindRetried = true;
         try{ const db=await openDB(); db.transaction('handles','readwrite').objectStore('handles').delete('record'); }catch(_e){}
         fileHandle=null;
         return document.getElementById('filebtn').onclick();
       }
+      /* 重试仍拒绝：降级为只读连接——把文件历史读进浏览器，但新作答暂时无法写文件 */
+      const mergedRO = await mergeFromFile();
+      setBar('warn','⚠️ 已读入文件历史（'+(mergedRO?'有合并':'文件为空')+'），但<b>未获写入授权</b>——新作答暂存浏览器。点「🔄 换文件」重选一次，弹窗出现时点「允许」。');
+      return;
     }
+    window._bindRetried = false;
     fileOK=true;
     const merged = await mergeFromFile();
     setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'；选错了点「🔄 换文件」重选）'); flushFile();
   }catch(e){
     const nm=(e&&e.name)||'', msg=(e&&e.message||'').slice(0,80);
-    const why = !window.showSaveFilePicker ? '此浏览器不支持文件访问'
+    const why = !window.showOpenFilePicker ? '此浏览器不支持文件访问'
       : nm==='AbortError' ? '取消了选择'
       : nm==='SecurityError' ? '安全限制（无痕窗口或页面环境不允许）'
       : (nm ? nm + ' ' + msg : '已取消');
-    setBar('warn','⚠️ 未完成绑定：' + why + '。' + (window.showSaveFilePicker ? '可重试；不行就用「复制记录」发给 AI。' : '请换 Chrome/Edge 打开，或用「复制记录」发给 AI。'));
+    setBar('warn','⚠️ 未完成绑定：' + why + '。' + (window.showOpenFilePicker ? '可重试；不行就用「复制记录」发给 AI。' : '请换 Chrome/Edge 打开，或用「复制记录」发给 AI。'));
   }
 };
 /* 换记录文件：清掉旧句柄（含 IndexedDB 里的持久化），重新走一次绑定选择 */
