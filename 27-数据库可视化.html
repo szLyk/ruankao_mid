@@ -220,6 +220,7 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
    <tr><th>题目要求</th><th>句式关键</th></tr>
    <tr><td>每门课平均分≥85（题18）</td><td class="mono">GROUP BY 课程 HAVING AVG(成绩)&gt;=85</td></tr>
    <tr><td>姓张且恰好3个字（题29）</td><td class="mono">WHERE 姓名 LIKE '张__'</td></tr>
+   <tr><td>存在选修记录的学生（题40 族）</td><td class="mono">WHERE EXISTS (SELECT 1 FROM 选课 WHERE …)——只判子查询非空，常用于相关子查询</td></tr>
    <tr><td>&gt;ALL(子查询)（题30）</td><td>大于子查询的<b>最大值</b>（&gt;ANY=大于最小值）</td></tr>
    <tr><td>授权查询（题31）</td><td class="mono">GRANT SELECT ON 学生 TO U1</td></tr>
    <tr><td>改数据（题39）</td><td class="mono">UPDATE 课程 SET 课程名='数据库' WHERE 课程号='C1'</td></tr>

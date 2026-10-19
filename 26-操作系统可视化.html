@@ -447,6 +447,7 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
    <tr><td><b>LRU</b>（Least Recently Used 最近最久未使用）</td><td>淘汰<b>最久未使用</b></td><td>过去≠将来，硬件开销大</td></tr>
    <tr><td><b>OPT</b>（Optimal 最优置换）</td><td>淘汰<b>将来最久不用</b></td><td>理论最优、无法实现（作基准）</td></tr>
    <tr><td><b>LFU</b>（Least Frequently Used 最少使用）</td><td>淘汰访问次数最少</td><td>考试偶见</td></tr>
+   <tr><td><b>Clock 时钟</b>（NRU 近似）</td><td>循环扫描，引用位 1→0，扫到 0 才淘汰</td><td>LRU 的低成本近似（实际系统常用）</td></tr>
   </table>
  </div>
  <div class="card">
