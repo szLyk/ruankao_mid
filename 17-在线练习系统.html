@@ -129,7 +129,16 @@ document.getElementById('filebtn').onclick = async ()=>{
       const db=await openDB(); db.transaction('handles','readwrite').objectStore('handles').put(fileHandle,'record');
     }
     const p=await fileHandle.queryPermission({mode:'readwrite'});
-    if(p!=='granted' && await fileHandle.requestPermission({mode:'readwrite'})!=='granted') throw 0;
+    if(p!=='granted'){
+      let r='denied';
+      try{ r=await fileHandle.requestPermission({mode:'readwrite'}); }catch(_e){}
+      if(r!=='granted'){
+        /* 重新授权的气泡显示在地址栏旁、一闪即逝——失败就清掉旧句柄，改弹真正的文件选择框 */
+        try{ const db=await openDB(); db.transaction('handles','readwrite').objectStore('handles').delete('record'); }catch(_e){}
+        fileHandle=null;
+        return document.getElementById('filebtn').onclick();
+      }
+    }
     fileOK=true;
     const merged = await mergeFromFile();
     setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'；选错了点「🔄 换文件」重选）'); flushFile();
