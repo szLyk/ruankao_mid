@@ -133,7 +133,14 @@ document.getElementById('filebtn').onclick = async ()=>{
     fileOK=true;
     const merged = await mergeFromFile();
     setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'；选错了点「🔄 换文件」重选）'); flushFile();
-  }catch(e){ setBar('warn','⚠️ 未完成绑定（或已取消）。也可以不绑定，用「复制记录」发给 AI。'); }
+  }catch(e){
+    const nm=(e&&e.name)||'', msg=(e&&e.message||'').slice(0,80);
+    const why = !window.showSaveFilePicker ? '此浏览器不支持文件访问'
+      : nm==='AbortError' ? '取消了选择'
+      : nm==='SecurityError' ? '安全限制（无痕窗口或页面环境不允许）'
+      : (nm ? nm + ' ' + msg : '已取消');
+    setBar('warn','⚠️ 未完成绑定：' + why + '。' + (window.showSaveFilePicker ? '可重试；不行就用「复制记录」发给 AI。' : '请换 Chrome/Edge 打开，或用「复制记录」发给 AI。'));
+  }
 };
 /* 换记录文件：清掉旧句柄（含 IndexedDB 里的持久化），重新走一次绑定选择 */
 document.getElementById('fileswap').onclick = async ()=>{
