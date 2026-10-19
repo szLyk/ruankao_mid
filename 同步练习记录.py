@@ -57,6 +57,11 @@ def git(*args):
     return subprocess.run(['git'] + list(args), capture_output=True, text=True, env=env)
 
 def main():
+    if load(LOCAL) is None:
+        if os.path.exists(LOCAL) and os.path.getsize(LOCAL) > 0:
+            print('⚠️ 本地 软考-练习记录.json 存在但解析失败（可能被截断/损坏），已拒绝同步以防覆盖。')
+            print('   处理：从 GitHub 恢复该文件（git clone 后复制），或删除坏文件后重跑。')
+            sys.exit(1)
     local = load(LOCAL) or {'app': 'rk-practice-v1', 'seeded': False, 'answers': {}, 'history': [], 'daily': {}}
 
     tmp = tempfile.mkdtemp(prefix='rk_sync_')
@@ -67,6 +72,8 @@ def main():
         remote = load(os.path.join(tmp, NAME))
 
         merged, changed_local = merge(local, remote)
+        if os.path.exists(LOCAL) and os.path.getsize(LOCAL) > 2:
+            shutil.copy(LOCAL, LOCAL + '.bak')          # 覆盖前留备份
         json.dump(merged, open(LOCAL, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
         n_ans = len(merged.get('answers', {}))
