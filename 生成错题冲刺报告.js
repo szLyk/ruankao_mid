@@ -50,7 +50,7 @@ for(const k of Object.keys(wrongs)){
   const b = k.split('-')[0];
   (byBankWrong[b] = byBankWrong[b] || []).push(k);
 }
-const order = ['nt', 'hw', 'sw', 'os', 'pl', 'db', 'mock', 'eng', 'at', 'net'];
+const order = ['nt', 'ds', 'hw', 'sw', 'os', 'pl', 'db', 'mock', 'eng', 'at', 'net'];
 const W = [];
 W.push('# 错题冲刺报告（自动生成：' + new Date().toLocaleString('zh-CN') + '）');
 W.push('');

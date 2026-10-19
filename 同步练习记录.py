@@ -74,7 +74,10 @@ def main():
         merged, changed_local = merge(local, remote)
         if os.path.exists(LOCAL) and os.path.getsize(LOCAL) > 2:
             shutil.copy(LOCAL, LOCAL + '.bak')          # 覆盖前留备份
-        json.dump(merged, open(LOCAL, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        tmp = LOCAL + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as f:   # 原子写：先写临时文件再替换，防半写截断
+            json.dump(merged, f, ensure_ascii=False, indent=1)
+        os.replace(tmp, LOCAL)
 
         n_ans = len(merged.get('answers', {}))
         days = merged.get('daily', {})

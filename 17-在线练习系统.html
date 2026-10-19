@@ -146,7 +146,7 @@ document.getElementById('filebtn').onclick = async ()=>{
     const nm=(e&&e.name)||'', msg=(e&&e.message||'').slice(0,80);
     const why = !window.showSaveFilePicker ? '此浏览器不支持文件访问'
       : nm==='AbortError' ? '取消了选择'
-      : nm==='SecurityError' ? '安全限制（无痕窗口或页面环境不允许）'
+      : nm==='SecurityError' ? '安全限制或弹窗超时（请立即重试一次）'
       : (nm ? nm + ' ' + msg : '已取消');
     setBar('warn','⚠️ 未完成绑定：' + why + '。' + (window.showSaveFilePicker ? '可重试；不行就用「复制记录」发给 AI。' : '请换 Chrome/Edge 打开，或用「复制记录」发给 AI。'));
   }
@@ -197,7 +197,7 @@ async function mergeFromFile(){
   }catch(e){ return false; }
 }
 async function flushFile(){ if(!fileOK||!fileHandle) return;
-  try{ const w=await fileHandle.createWritable(); await w.write(JSON.stringify(rec,null,1)); await w.close(); }catch(e){ fileOK=false; setBar('warn','⚠️ 记录文件写入失败，点击重新连接'); } }
+  try{ const w=await fileHandle.createWritable({keepExistingData:true}); await w.truncate(0); await w.write(JSON.stringify(rec,null,1)); await w.close(); }catch(e){ fileOK=false; setBar('warn','⚠️ 记录文件写入失败，点击重新连接'); } }
 function persist(){ rec.lastUpdated=new Date().toISOString(); saveLocal();
   clearTimeout(writeTimer); writeTimer=setTimeout(flushFile,900); }
 window.addEventListener('beforeunload', () => { if(fileOK && fileHandle) flushFile(); });
