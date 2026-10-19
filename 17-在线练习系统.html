@@ -114,7 +114,7 @@ async function loadHandle(){ try{ const db=await openDB();
   if(fileHandle){ const p=await fileHandle.queryPermission({mode:'readwrite'});
     if(p==='granted'){ fileOK=true;
       const merged = await mergeFromFile();
-      setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'，AI 助手可直接读取）'); flushFile(); }
+      setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged.state==='empty'?'，原文件为空、已用浏览器记录写回':merged.changed?'，并已合并文件中的历史':'，与文件内容一致')+'，AI 助手可直接读取）'); flushFile(); }
     else setBar('warn','📄 已绑定记录文件但需重新授权一次（浏览器安全要求）'); }
   else setBar('warn','📄 尚未绑定记录文件——绑定后 AI 助手就能直接看到你每次的作答与错题');
 }catch(e){ setBar('warn','📄 此浏览器不支持自动记录文件，请用「复制记录」按钮代替'); } }
@@ -146,13 +146,21 @@ document.getElementById('filebtn').onclick = async ()=>{
       }
       /* 重试仍拒绝：降级为只读连接——把文件历史读进浏览器，但新作答暂时无法写文件 */
       const mergedRO = await mergeFromFile();
-      setBar('warn','⚠️ 已读入文件历史（'+(mergedRO?'有合并':'文件为空')+'），但<b>未获写入授权</b>——新作答暂存浏览器。点「🔄 换文件」重选一次，弹窗出现时点「允许」。');
+      const st = mergedRO.state;
+      setBar('warn','⚠️ 已读入文件历史（' + (st==='empty' ? '⚠️ 文件是空的！请立即找 AI 恢复，别再做新题' : st==='invalid' ? '文件格式异常' : '与浏览器记录一致，无需合并') + '），但<b>未获写入授权</b>——此浏览器不允许网页写文件（内置浏览器/权限被拒），新作答暂存浏览器。'
+        + '<br>▸ 想完全绑定：请用<b>真 Chrome/Edge</b> 打开本页重试（双击文件夹里的「开始做题.bat」即可）。'
+        + '<br>▸ 继续用当前浏览器也行：做完题跟 AI 说「提取记录」即可收进文件。');
       return;
     }
     window._bindRetried = false;
     fileOK=true;
     const merged = await mergeFromFile();
-    setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged?'，并已合并文件中的历史':'')+'；选错了点「🔄 换文件」重选）'); flushFile();
+    if(merged.state === 'empty'){
+      flushFile();
+      setBar('ok','✅ 已连接。文件原来是空的，已用浏览器中的记录（'+Object.keys(rec.answers).length+' 题）自动写回——无需恢复。');
+      return;
+    }
+    setBar('ok','✅ 记录文件已连接：'+fileHandle.name+'（每次作答自动保存'+(merged.changed?'，并已合并文件中的历史':'，与文件内容一致')+'；选错了点「🔄 换文件」重选）'); flushFile();
   }catch(e){
     const nm=(e&&e.name)||'', msg=(e&&e.message||'').slice(0,80);
     const why = !window.showOpenFilePicker ? '此浏览器不支持文件访问'
@@ -174,9 +182,9 @@ async function mergeFromFile(){
   try{
     const file = await fileHandle.getFile();
     const txt = await file.text();
-    if(!txt.trim()) return false;
+    if(!txt.trim()) return { changed:false, state:'empty' };
     const data = JSON.parse(txt);
-    if(!data || data.app !== 'rk-practice-v1' || typeof data.answers !== 'object') return false;
+    if(!data || data.app !== 'rk-practice-v1' || typeof data.answers !== 'object') return { changed:false, state:'invalid' };
     let changed = false;
     for(const k in data.answers){
       const f = data.answers[k], l = rec.answers[k];
@@ -204,8 +212,8 @@ async function mergeFromFile(){
     rec.seeded = rec.seeded || !!data.seeded;
     if(data.lastUpdated && data.lastUpdated > (rec.lastUpdated||'')) rec.lastUpdated = data.lastUpdated;
     saveLocal(); updateHeader(); render();
-    return changed;
-  }catch(e){ return false; }
+    return { changed, state:'ok' };
+  }catch(e){ return { changed:false, state:'invalid' }; }
 }
 async function flushFile(){ if(!fileOK||!fileHandle) return;
   try{ const w=await fileHandle.createWritable(); await w.write(JSON.stringify(rec,null,1)); await w.close(); }catch(e){ fileOK=false; setBar('warn','⚠️ 记录文件写入失败，点击重新连接'); } }
