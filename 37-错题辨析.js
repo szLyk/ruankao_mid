@@ -102,7 +102,7 @@ window.RK_E4 = {
  'B. SIMD——单指令多数据：同一条指令对多个数据并行操作，如阵列机/向量机。',
  'C. MISD——多指令单数据，理论上存在（容错系统），实际罕见。',
  'D. MIMD（正确）——多指令多数据：多台处理机各自执行不同指令、处理不同数据。'],
- kn:'Flynn 分类法按「指令流×数据流」单/多组合出四种：<b>SISD、SIMD、MISD、MIMD</b>。多核/多处理机/集群都是 MIMD；GPU 是典型 SIMD 思想；四选一时看「指令相同吗、数据相同吗」。' },
+ kn:'Flynn 分类法按「指令流 Instruction Stream × 数据流 Data Stream」单(S=Single)/多(M=Multiple)组合出四种：<b>SISD</b>=Single Instruction, Single Data（单指令单数据）、<b>SIMD</b>=Single Instruction, Multiple Data（单指令多数据）、<b>MISD</b>=Multiple Instruction, Single Data（实际罕见）、<b>MIMD</b>=Multiple Instruction, Multiple Data（多指令多数据）。多核/多处理机/集群都是 MIMD；GPU 是典型 SIMD 思想。读法：前两位 SI/MI 说<b>指令</b>、后两位 SD/MD 说<b>数据</b>——题干「各自执行不同指令、处理不同数据」=MIMD，「一条指令打一批数据」=SIMD。' },
 
 'hw-6': { e4:[
  'A. 检 1 纠 1——需要码距 ≥3（海明码、循环码）才能定位并纠正。',

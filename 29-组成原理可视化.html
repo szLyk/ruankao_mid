@@ -301,7 +301,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
  <div class="card">
   <h2>🧠 Flynn / 控制器 / 总线仲裁速查（题59/61/62 同族）</h2>
   <div class="grid2">
-   <div class="fcard"><b>Flynn 分类法（题59）</b>按指令流×数据流：<b>SISD</b>单处理器 / <b>SIMD</b>阵列机·GPU（一条指令打一批数据）/ MISD 罕见 / <b>MIMD</b>多处理机·多核·集群</div>
+   <div class="fcard"><b>Flynn 分类法（题59）</b>按指令流×数据流：<b>SISD</b>=Single Instruction, Single Data（单指令单数据）单处理器 / <b>SIMD</b>=Single Instruction, Multiple Data（单指令多数据）阵列机·GPU（一条指令打一批数据）/ MISD=Multiple Instruction, Single Data 罕见 / <b>MIMD</b>=Multiple Instruction, Multiple Data（多指令多数据）多处理机·多核·集群</div>
    <div class="fcard"><b>微程序 vs 硬布线（题61）</b>微程序=控制信号编成<b>微指令</b>存<b>控制存储器 CM</b>，灵活易改但慢（<b>CISC</b>）；硬布线=组合逻辑直出，快但难改（<b>RISC</b>）</div>
    <div class="fcard"><b>总线仲裁（题62）</b>集中式：<b>链式查询</b>串行传、<b>离控制器越近优先级越高</b>、省线但远端饿死；计数器查询居中；<b>独立请求</b>每设备一线最快但线最多；分布式=无中央仲裁</div>
    <div class="fcard"><b>三模冗余（题54）</b>至少 2 个正常：Rsys = <b>3R²(1−R) + R³</b>；对照串联 R=∏Ri、并联 1−∏(1−Ri)</div>
