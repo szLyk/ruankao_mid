@@ -1,0 +1,2 @@
+# batch files must keep CRLF on every machine
+*.bat text eol=crlf
