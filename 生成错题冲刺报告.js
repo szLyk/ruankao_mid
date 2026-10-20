@@ -8,7 +8,7 @@ vm.createContext(sb);
 vm.runInContext(fs.readFileSync('17-练习数据.js', 'utf8'), sb);
 const D = sb.window.RK_DATA;
 
-const BANK_NAME = { sw: '软件工程', ds: '数据结构与算法', db: '数据库', os: '操作系统', hw: '组成原理与网络', pl: '程序语言与背诵类', nt: '网络真题专项', mock: '摸底卷(09)', eng: '专业英语(19)', at: '应用技术大题(16)' };
+const BANK_NAME = { sw: '软件工程', ds: '数据结构与算法', db: '数据库', os: '操作系统', hw: '组成原理与网络', pl: '程序语言与背诵类', nt: '网络真题专项', mock: '摸底卷(09)', eng: '专业英语(19)', at: '应用技术大题(16)', tb: '考前靶向(36)' };
 const GO_TO = {
   sw: '25号软件工程课件（对应页签+知识图谱定位）',
   ds: '28号数据结构课件（线性/树/图/查找/排序页签）',
@@ -19,7 +19,8 @@ const GO_TO = {
   nt: '24号网络课件速查与背诵页签 + 22号网络详解对应节',
   mock: '按模块归属看上表（摸底题覆盖全科目）',
   eng: '19号专业英语（20 篇阅读 + 3 篇五空完形）',
-  at: '04号答题模板 + 16号自编卷'
+  at: '04号答题模板 + 16号自编卷',
+  tb: '36号靶向题库解析（本库即错题变式，解析含公式行）'
 };
 const questions = {};   // key → 题目对象
 (function collect(){
@@ -50,7 +51,7 @@ for(const k of Object.keys(wrongs)){
   const b = k.split('-')[0];
   (byBankWrong[b] = byBankWrong[b] || []).push(k);
 }
-const order = ['nt', 'ds', 'hw', 'sw', 'os', 'pl', 'db', 'mock', 'eng', 'at', 'net'];
+const order = ['tb', 'nt', 'ds', 'hw', 'sw', 'os', 'pl', 'db', 'mock', 'eng', 'at', 'net'];
 const W = [];
 W.push('# 错题冲刺报告（自动生成：' + new Date().toLocaleString('zh-CN') + '）');
 W.push('');
@@ -67,6 +68,9 @@ for(const b of order){
 }
 const noAns = ['sw','ds','db','os','hw','pl'].filter(b => !stat[b] || stat[b].n === 0);
 if(noAns.length) W.push('| **' + noAns.map(b => BANK_NAME[b]).join('、') + '（' + noAns.map(b => (D.banks.find(x => x.id === b) || {qs:[]}).qs.length) + ' 题）** | 0 | — | — | ⚠ **从未作答，排进本周！** |');
+W.push('');
+if(!stat.eng || stat.eng.n === 0) W.push('> ⚠ **专业英语 35 题从未作答**——考场第 71~75 题固定 5 分完形，本周在「英语挖空」页签做完。');
+if(!stat.tb || stat.tb.n === 0) W.push('> 🎯 **36 号靶向变式库 62 题尚未开张**（10/20 错题聚类生成），优先从「🎯靶向变式」页签开始。');
 W.push('');
 const totalW = Object.keys(wrongs).length, totalN = Object.keys(rec.answers || {}).length;
 W.push('**总作答 ' + totalN + ' 题，错 ' + totalW + ' 题**。错题优先级：错题多且分值高的库先清（上面的排序已按此排）。');

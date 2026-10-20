@@ -82,6 +82,7 @@ if(!D){ document.getElementById('view').innerHTML='<div class="qcard" style="col
 
 const MODS = [
   {id:'mock', name:'摸底卷',     list:()=>D.mock, keyOf:i=>'mock-'+(i+1), extra:()=>null},
+  {id:'tb',  name:'🎯靶向变式',  list:()=>D.banks[7].qs, keyOf:i=>'tb-'+(i+1)},
   {id:'sw',  name:'软件工程',   list:()=>D.banks[0].qs, keyOf:i=>'sw-'+(i+1)},
   {id:'ds',  name:'数据结构',   list:()=>D.banks[1].qs, keyOf:i=>'ds-'+(i+1)},
   {id:'db',  name:'数据库',     list:()=>D.banks[2].qs, keyOf:i=>'db-'+(i+1)},

@@ -27,6 +27,7 @@ const BANKS = [
   { f: '14-讲义题库-组成原理与网络.md', id: 'hw', name: '组成原理与网络' },
   { f: '15-讲义题库-程序语言与背诵类.md', id: 'pl', name: '程序语言与背诵类' },
   { f: '23-网络真题风格专项卷.md', id: 'nt', name: '网络真题专项' },
+  { f: '36-考前靶向变式题库.md', id: 'tb', name: '考前靶向' },
 ];
 
 function parseBank(file, modId, modName) {
@@ -173,7 +174,7 @@ const banks = BANKS.map(b => {
   const qs = parseBank(b.f, b.id, b.name);
   return { id: b.id, name: b.name, qs };
 });
-const expect = { '软件工程': 89, '数据结构与算法': 70, '数据库': 51, '操作系统': 58, '组成原理与网络': 71, '程序语言与背诵类': 54, '网络真题专项': 100 };
+const expect = { '软件工程': 89, '数据结构与算法': 70, '数据库': 51, '操作系统': 58, '组成原理与网络': 71, '程序语言与背诵类': 54, '网络真题专项': 100, '考前靶向': 62 };
 for (const b of banks) if (expect[b.name] !== b.qs.length) throw new Error(`${b.name}: 期望${expect[b.name]}题，实得${b.qs.length}`);
 
 const at = parseBigQ(), eng = parseEng(), net = NET12;
