@@ -2,342 +2,6 @@
  "app": "rk-practice-v1",
  "seeded": true,
  "answers": {
-  "mock-2": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-3": {
-   "chosen": "B",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-4": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-5": {
-   "chosen": "B",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-6": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-7": {
-   "chosen": "B",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-10": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-11": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-12": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-13": {
-   "chosen": "B",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-14": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-15": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-16": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-17": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-18": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-19": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-20": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-22": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-23": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-24": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-25": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-26": {
-   "chosen": "B",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-27": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-28": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-29": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-30": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-31": {
-   "chosen": "B",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-32": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-33": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-34": {
-   "chosen": null,
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-35": {
-   "chosen": null,
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-37": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-38": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-41": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-43": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-46": {
-   "chosen": "D",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-49": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-53": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-54": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-55": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-57": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-58": {
-   "chosen": "C",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-59": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-64": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-65": {
-   "chosen": null,
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-66": {
-   "chosen": null,
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-67": {
-   "chosen": null,
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
-  "mock-75": {
-   "chosen": "A",
-   "correct": false,
-   "attempts": 1,
-   "firstTs": "2026-09-20",
-   "lastTs": "2026-09-20"
-  },
   "nt-1": {
    "chosen": "B",
    "correct": false,
@@ -3781,6 +3445,531 @@
    "attempts": 1,
    "firstTs": "2026-10-20T01:50:50.453Z",
    "lastTs": "2026-10-20T01:50:50.453Z"
+  },
+  "mock-1": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.372Z",
+   "lastTs": "2026-10-20T05:23:41.372Z"
+  },
+  "mock-2": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.373Z",
+   "lastTs": "2026-10-20T05:23:41.373Z"
+  },
+  "mock-3": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.373Z",
+   "lastTs": "2026-10-20T05:23:41.373Z"
+  },
+  "mock-4": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.373Z",
+   "lastTs": "2026-10-20T05:23:41.373Z"
+  },
+  "mock-5": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.374Z",
+   "lastTs": "2026-10-20T05:23:41.374Z"
+  },
+  "mock-6": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.374Z",
+   "lastTs": "2026-10-20T05:23:41.374Z"
+  },
+  "mock-8": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.375Z",
+   "lastTs": "2026-10-20T05:23:41.375Z"
+  },
+  "mock-7": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.375Z",
+   "lastTs": "2026-10-20T05:23:41.375Z"
+  },
+  "mock-9": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.376Z",
+   "lastTs": "2026-10-20T05:23:41.376Z"
+  },
+  "mock-10": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.376Z",
+   "lastTs": "2026-10-20T05:23:41.376Z"
+  },
+  "mock-11": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.377Z",
+   "lastTs": "2026-10-20T05:23:41.377Z"
+  },
+  "mock-12": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.377Z",
+   "lastTs": "2026-10-20T05:23:41.377Z"
+  },
+  "mock-13": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.377Z",
+   "lastTs": "2026-10-20T05:23:41.377Z"
+  },
+  "mock-14": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.378Z",
+   "lastTs": "2026-10-20T05:23:41.378Z"
+  },
+  "mock-15": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.378Z",
+   "lastTs": "2026-10-20T05:23:41.378Z"
+  },
+  "mock-16": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.379Z",
+   "lastTs": "2026-10-20T05:23:41.379Z"
+  },
+  "mock-17": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.379Z",
+   "lastTs": "2026-10-20T05:23:41.379Z"
+  },
+  "mock-18": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.380Z",
+   "lastTs": "2026-10-20T05:23:41.380Z"
+  },
+  "mock-20": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.380Z",
+   "lastTs": "2026-10-20T05:23:41.380Z"
+  },
+  "mock-19": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.380Z",
+   "lastTs": "2026-10-20T05:23:41.380Z"
+  },
+  "mock-21": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.381Z",
+   "lastTs": "2026-10-20T05:23:41.381Z"
+  },
+  "mock-22": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.381Z",
+   "lastTs": "2026-10-20T05:23:41.381Z"
+  },
+  "mock-23": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.382Z",
+   "lastTs": "2026-10-20T05:23:41.382Z"
+  },
+  "mock-24": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.382Z",
+   "lastTs": "2026-10-20T05:23:41.382Z"
+  },
+  "mock-25": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.383Z",
+   "lastTs": "2026-10-20T05:23:41.383Z"
+  },
+  "mock-26": {
+   "chosen": "D",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.383Z",
+   "lastTs": "2026-10-20T05:23:41.383Z"
+  },
+  "mock-27": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.383Z",
+   "lastTs": "2026-10-20T05:23:41.383Z"
+  },
+  "mock-28": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.384Z",
+   "lastTs": "2026-10-20T05:23:41.384Z"
+  },
+  "mock-29": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.384Z",
+   "lastTs": "2026-10-20T05:23:41.384Z"
+  },
+  "mock-30": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.385Z",
+   "lastTs": "2026-10-20T05:23:41.385Z"
+  },
+  "mock-31": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.385Z",
+   "lastTs": "2026-10-20T05:23:41.385Z"
+  },
+  "mock-32": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.385Z",
+   "lastTs": "2026-10-20T05:23:41.385Z"
+  },
+  "mock-33": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.386Z",
+   "lastTs": "2026-10-20T05:23:41.386Z"
+  },
+  "mock-34": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.386Z",
+   "lastTs": "2026-10-20T05:23:41.386Z"
+  },
+  "mock-35": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.386Z",
+   "lastTs": "2026-10-20T05:23:41.386Z"
+  },
+  "mock-36": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.387Z",
+   "lastTs": "2026-10-20T05:23:41.387Z"
+  },
+  "mock-37": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.388Z",
+   "lastTs": "2026-10-20T05:23:41.388Z"
+  },
+  "mock-38": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.388Z",
+   "lastTs": "2026-10-20T05:23:41.388Z"
+  },
+  "mock-39": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.389Z",
+   "lastTs": "2026-10-20T05:23:41.389Z"
+  },
+  "mock-40": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.389Z",
+   "lastTs": "2026-10-20T05:23:41.389Z"
+  },
+  "mock-41": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.390Z",
+   "lastTs": "2026-10-20T05:23:41.390Z"
+  },
+  "mock-42": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.390Z",
+   "lastTs": "2026-10-20T05:23:41.390Z"
+  },
+  "mock-43": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.390Z",
+   "lastTs": "2026-10-20T05:23:41.390Z"
+  },
+  "mock-44": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.391Z",
+   "lastTs": "2026-10-20T05:23:41.391Z"
+  },
+  "mock-45": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.391Z",
+   "lastTs": "2026-10-20T05:23:41.391Z"
+  },
+  "mock-46": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.392Z",
+   "lastTs": "2026-10-20T05:23:41.392Z"
+  },
+  "mock-47": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.392Z",
+   "lastTs": "2026-10-20T05:23:41.392Z"
+  },
+  "mock-48": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.393Z",
+   "lastTs": "2026-10-20T05:23:41.393Z"
+  },
+  "mock-49": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.393Z",
+   "lastTs": "2026-10-20T05:23:41.393Z"
+  },
+  "mock-51": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.394Z",
+   "lastTs": "2026-10-20T05:23:41.394Z"
+  },
+  "mock-52": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.394Z",
+   "lastTs": "2026-10-20T05:23:41.394Z"
+  },
+  "mock-53": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.395Z",
+   "lastTs": "2026-10-20T05:23:41.395Z"
+  },
+  "mock-50": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.395Z",
+   "lastTs": "2026-10-20T05:23:41.395Z"
+  },
+  "mock-54": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.395Z",
+   "lastTs": "2026-10-20T05:23:41.395Z"
+  },
+  "mock-55": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.396Z",
+   "lastTs": "2026-10-20T05:23:41.396Z"
+  },
+  "mock-56": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.396Z",
+   "lastTs": "2026-10-20T05:23:41.396Z"
+  },
+  "mock-57": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.397Z",
+   "lastTs": "2026-10-20T05:23:41.397Z"
+  },
+  "mock-58": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.397Z",
+   "lastTs": "2026-10-20T05:23:41.397Z"
+  },
+  "mock-59": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.398Z",
+   "lastTs": "2026-10-20T05:23:41.398Z"
+  },
+  "mock-60": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.398Z",
+   "lastTs": "2026-10-20T05:23:41.398Z"
+  },
+  "mock-61": {
+   "chosen": "D",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.398Z",
+   "lastTs": "2026-10-20T05:23:41.398Z"
+  },
+  "mock-62": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.399Z",
+   "lastTs": "2026-10-20T05:23:41.399Z"
+  },
+  "mock-63": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.399Z",
+   "lastTs": "2026-10-20T05:23:41.399Z"
+  },
+  "mock-64": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.400Z",
+   "lastTs": "2026-10-20T05:23:41.400Z"
+  },
+  "mock-65": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.400Z",
+   "lastTs": "2026-10-20T05:23:41.400Z"
+  },
+  "mock-66": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.401Z",
+   "lastTs": "2026-10-20T05:23:41.401Z"
+  },
+  "mock-67": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.401Z",
+   "lastTs": "2026-10-20T05:23:41.401Z"
+  },
+  "mock-68": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.401Z",
+   "lastTs": "2026-10-20T05:23:41.401Z"
+  },
+  "mock-69": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.402Z",
+   "lastTs": "2026-10-20T05:23:41.402Z"
+  },
+  "mock-70": {
+   "chosen": "C",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.402Z",
+   "lastTs": "2026-10-20T05:23:41.402Z"
+  },
+  "mock-71": {
+   "chosen": "A",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.403Z",
+   "lastTs": "2026-10-20T05:23:41.403Z"
+  },
+  "mock-72": {
+   "chosen": "B",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.403Z",
+   "lastTs": "2026-10-20T05:23:41.403Z"
+  },
+  "mock-73": {
+   "chosen": "C",
+   "correct": true,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.403Z",
+   "lastTs": "2026-10-20T05:23:41.403Z"
+  },
+  "mock-74": {
+   "chosen": "A",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.404Z",
+   "lastTs": "2026-10-20T05:23:41.404Z"
+  },
+  "mock-75": {
+   "chosen": "B",
+   "correct": false,
+   "attempts": 1,
+   "firstTs": "2026-10-20T05:23:41.404Z",
+   "lastTs": "2026-10-20T05:23:41.404Z"
   }
  },
  "history": [
@@ -7533,6 +7722,462 @@
    "k": "pl-54",
    "c": "C",
    "ok": false
+  },
+  {
+   "t": "2026-10-20T02:06:54.977Z",
+   "k": "mock-1",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.372Z",
+   "k": "mock-1",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.373Z",
+   "k": "mock-2",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.373Z",
+   "k": "mock-3",
+   "c": "B",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.373Z",
+   "k": "mock-4",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.374Z",
+   "k": "mock-5",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.374Z",
+   "k": "mock-6",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.375Z",
+   "k": "mock-8",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.375Z",
+   "k": "mock-7",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.376Z",
+   "k": "mock-9",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.376Z",
+   "k": "mock-10",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.377Z",
+   "k": "mock-11",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.377Z",
+   "k": "mock-12",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.377Z",
+   "k": "mock-13",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.378Z",
+   "k": "mock-14",
+   "c": "B",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.378Z",
+   "k": "mock-15",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.379Z",
+   "k": "mock-16",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.379Z",
+   "k": "mock-17",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.380Z",
+   "k": "mock-18",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.380Z",
+   "k": "mock-20",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.380Z",
+   "k": "mock-19",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.381Z",
+   "k": "mock-21",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.381Z",
+   "k": "mock-22",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.382Z",
+   "k": "mock-23",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.382Z",
+   "k": "mock-24",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.383Z",
+   "k": "mock-25",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.383Z",
+   "k": "mock-26",
+   "c": "D",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.383Z",
+   "k": "mock-27",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.384Z",
+   "k": "mock-28",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.384Z",
+   "k": "mock-29",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.385Z",
+   "k": "mock-30",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.385Z",
+   "k": "mock-31",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.385Z",
+   "k": "mock-32",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.386Z",
+   "k": "mock-33",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.386Z",
+   "k": "mock-34",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.386Z",
+   "k": "mock-35",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.387Z",
+   "k": "mock-36",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.388Z",
+   "k": "mock-37",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.388Z",
+   "k": "mock-38",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.389Z",
+   "k": "mock-39",
+   "c": "B",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.389Z",
+   "k": "mock-40",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.390Z",
+   "k": "mock-41",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.390Z",
+   "k": "mock-42",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.390Z",
+   "k": "mock-43",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.391Z",
+   "k": "mock-44",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.391Z",
+   "k": "mock-45",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.392Z",
+   "k": "mock-46",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.392Z",
+   "k": "mock-47",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.393Z",
+   "k": "mock-48",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.393Z",
+   "k": "mock-49",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.394Z",
+   "k": "mock-51",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.394Z",
+   "k": "mock-52",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.395Z",
+   "k": "mock-53",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.395Z",
+   "k": "mock-50",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.395Z",
+   "k": "mock-54",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.396Z",
+   "k": "mock-55",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.396Z",
+   "k": "mock-56",
+   "c": "B",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.397Z",
+   "k": "mock-57",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.397Z",
+   "k": "mock-58",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.398Z",
+   "k": "mock-59",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.398Z",
+   "k": "mock-60",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.398Z",
+   "k": "mock-61",
+   "c": "D",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.399Z",
+   "k": "mock-62",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.399Z",
+   "k": "mock-63",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.400Z",
+   "k": "mock-64",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.400Z",
+   "k": "mock-65",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.401Z",
+   "k": "mock-66",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.401Z",
+   "k": "mock-67",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.401Z",
+   "k": "mock-68",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.402Z",
+   "k": "mock-69",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.402Z",
+   "k": "mock-70",
+   "c": "C",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.403Z",
+   "k": "mock-71",
+   "c": "A",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.403Z",
+   "k": "mock-72",
+   "c": "B",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.403Z",
+   "k": "mock-73",
+   "c": "C",
+   "ok": true
+  },
+  {
+   "t": "2026-10-20T05:23:41.404Z",
+   "k": "mock-74",
+   "c": "A",
+   "ok": false
+  },
+  {
+   "t": "2026-10-20T05:23:41.404Z",
+   "k": "mock-75",
+   "c": "B",
+   "ok": false
   }
  ],
  "daily": {
@@ -7573,9 +8218,9 @@
    "ok": 79
   },
   "2026-10-20": {
-   "done": 3,
-   "ok": 0
+   "done": 79,
+   "ok": 55
   }
  },
- "lastUpdated": "2026-10-20T01:50:50.453Z"
+ "lastUpdated": "2026-10-20T05:23:41.404Z"
 }
