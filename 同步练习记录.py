@@ -48,6 +48,9 @@ def merge(a, b):
         m = {'done': done, 'ok': min(max(f.get('ok', 0), l.get('ok', 0)), done)}
         if m != l: a['daily'][day] = m; ch = True
     a['seeded'] = bool(a.get('seeded') or b.get('seeded'))
+    for k, v in (b.get('cleared') or {}).items():          # 已移出标记：只增不减的并集，防跨机丢
+        if not a.get('cleared', {}).get(k):
+            a.setdefault('cleared', {})[k] = v; ch = True
     la, lb = a.get('lastUpdated', ''), b.get('lastUpdated', '')
     if lb > la: a['lastUpdated'] = lb
     return a, ch
