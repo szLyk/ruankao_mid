@@ -426,16 +426,20 @@ window.clearRight=()=>{ const n=wrongPool().filter(k=>rec.answers[k]&&rec.answer
   n.forEach(k=>{ rec.cleared[k]=1; }); lastMsg='已移出 '+n.length+' 道，复习池剩 '+wrongPool().length+' 道。';
   persist(); updateHeader(); render(); };
 function renderSum(){
+  const firstOk={}; (rec.history||[]).forEach(h=>{ if(h&&h.k&&!(h.k in firstOk)) firstOk[h.k]=h.ok; }); // 每题最早一条记录=首做
   const rows=[]; MODS.forEach(m=>{
-    const qs=m.list(); let done=0,ok=0,wrongList=[];
-    qs.forEach((q,i)=>{ const a=rec.answers[m.keyOf(i)]; if(a){done++; if(a.correct===true)ok++; else if(a.correct===false)wrongList.push(i+1);} });
+    const qs=m.list(); let done=0,ok=0,wrongList=[],fdone=0,fok=0;
+    qs.forEach((q,i)=>{ const key=m.keyOf(i), a=rec.answers[key]; if(a){done++; if(a.correct===true)ok++; else if(a.correct===false)wrongList.push(i+1);}
+      const f=firstOk[key]; if(f!==undefined){ fdone++; if(f===true) fok++; } });
     const rate=done?Math.round(ok/done*100):null;
-    rows.push({name:m.name,total:qs.length,done,ok,rate,wrongList});
+    const frate=fdone?Math.round(fok/fdone*100):null;
+    rows.push({name:m.name,total:qs.length,done,ok,rate,frate,fdone,wrongList});
   });
-  let html=`<div id="summary"><div class="toolbar"><span class="prog">各模块作答统计（最新一次作答口径）</span><button onclick="copyRec()">📋 复制记录给AI</button></div><table><tr><th>模块</th><th>已做/总数</th><th>正确率</th><th>待清错题号</th></tr>`;
+  let html=`<div id="summary"><div class="toolbar"><span class="prog">各模块作答统计（当前口径=最近一次作答；首做口径=该题第一次作答，重练翻正不改）</span><button onclick="copyRec()">📋 复制记录给AI</button></div><table><tr><th>模块</th><th>已做/总数</th><th>当前正确率</th><th>首做正确率</th><th>待清错题号</th></tr>`;
   rows.forEach(r=>{ const pct=r.rate==null?'-':r.rate+'%';
-    html+=`<tr><td>${r.name}</td><td>${r.done}/${r.total}</td><td>${pct} <span class="bar"><i class="${r.rate!=null&&r.rate<60?'low':''}" style="width:${r.rate||0}%"></i></span></td><td style="font-size:12px">${r.wrongList.join(',')||'—'}</td></tr>`; });
-  html+=`</table><div class="qcard" style="margin-top:14px;font-size:13px;color:var(--muted)">每天做完题不用截图：只要绑定了记录文件，直接对 AI 说「看下练习记录」即可；或点「📋 复制记录」粘贴给 AI。<br>历史按天统计：`+Object.entries(rec.daily).slice(-14).map(([d,v])=>`${d} 做${v.done}对${v.ok}`).join('｜')+`</div></div>`;
+    const fp=r.frate==null?'-':r.frate+'%';
+    html+=`<tr><td>${r.name}</td><td>${r.done}/${r.total}</td><td>${pct} <span class="bar"><i class="${r.rate!=null&&r.rate<60?'low':''}" style="width:${r.rate||0}%"></i></span></td><td>${fp}${r.fdone&&r.fdone<r.done?'<span style="font-size:11px;color:var(--muted)">（'+r.fdone+'题有首做记录）</span>':''}</td><td style="font-size:12px">${r.wrongList.join(',')||'—'}</td></tr>`; });
+  html+=`</table><div class="qcard" style="margin-top:14px;font-size:13px;color:var(--muted)">每天做完题不用截图：只要绑定了记录文件，直接对 AI 说「看下练习记录」即可；或点「📋 复制记录」粘贴给 AI。<br>口径说明：错题重练答对会把「当前正确率」翻正（错题闭环），想看裸考水平请看「首做正确率」列。<br>历史按天统计：`+Object.entries(rec.daily).slice(-14).map(([d,v])=>`${d} 做${v.done}对${v.ok}`).join('｜')+`</div></div>`;
   viewEl.innerHTML=html;
 }
 function copyRec(){
