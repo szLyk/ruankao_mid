@@ -321,6 +321,8 @@ function qCard(key,no,q,a,retry,review){
     const dis=answered?' disabled':'', click=answered?'':' onclick="pick(\''+key+'\','+k+')"';
     h+='<button class="opt '+cls+'"'+click+dis+'><span class="L">'+LET[k]+'.</span><span>'+esc(o)+'</span></button>';
   });
+  if(review&&a&&a.correct===false&&a.chosen&&LET.indexOf(a.chosen)>=0)
+    h+=`<div class="hint" style="color:#dc2626;font-weight:600">❌ 错因对照：你选了 <b>${a.chosen}. ${esc(q.o[LET.indexOf(a.chosen)])}</b>，正确是 <b>${q.ans}. ${esc(q.o[LET.indexOf(q.ans)])}</b>——逐字对比两个选项的差异，再看下方解析为什么</div>`;
   h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${esc(q.exp).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>')}</div>`;
   if(answered&&a&&a.attempts>1) h+=`<div class="hint">已做 ${a.attempts} 次${right?'（本次已答对）':''}</div>`;
   return h+`</div>`;
