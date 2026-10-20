@@ -297,12 +297,13 @@ function renderMod(m){
     +(m.selfcheck?'':`<button onclick="submitMod()">📄 交卷</button>`)
     +`<button onclick="clearMod()">清除本模块作答</button></div>`
     +(lastMsg?`<div class="toolbar subok">${lastMsg}</div>`:'');
+  const ev=everWrongSet();   // 曾错集合：模块页签里给「曾错已答对」的题挂警示标
   qs.forEach((q,i)=>{
     const key=m.keyOf(i), a=rec.answers[key];
     if(filter==='todo'&&a) return;
     if(filter==='wrong'&&(!a||a.correct!==false)) return;
     if(m.id==='mock'&&i===70) html+=`<div class="passage">${D.passage||''}</div>`;
-    html+= m.selfcheck ? selfCheckCard(key,q,a) : qCard(key,i+1,q,a);
+    html+= m.selfcheck ? selfCheckCard(key,q,a,ev) : qCard(key,i+1,q,a,undefined,undefined,ev);
   });
   viewEl.innerHTML=html;
   // 恢复已保存的大题作答文本
@@ -310,14 +311,21 @@ function renderMod(m){
     const ta=viewEl.querySelector('textarea[data-key="'+key+'"]');
     if(ta&&a&&a.text) ta.value=a.text; });
 }
-function qCard(key,no,q,a,retry,review){
-  /* retry=true：复习池曾错题——可重做（不亮答案、不锁选项）；review=true：显示答案模式——亮答案+解析，锁定选项 */
+function qCard(key,no,q,a,retry,review,ever){
+  /* retry=true：复习池曾错题——可重做（不亮答案、不锁选项）；review=true：显示答案模式——亮答案+解析，锁定选项；
+     ever=曾错集合：模块页签里「曾错后重练答对」的题挂橙色警示标，不再纯绿 */
   const rp=!!retry && !review && !!a && a.correct===false;
   const answered=(!!a && !rp) || !!review;
   const pd=!answered && pending[key]!==undefined;
   const right=answered&&(review?true:!!a.correct);
+  const everW=!!ever&&!!ever[key];
+  const tag=review?'📖 复习模式——答案已显示'
+    :(answered?(right?(everW?'⚠ 曾错·已答对——之前错过，解析再过一遍防再错':'✔ 已答对'):'✘ 曾答错（去🔁错题重练重做）')
+    :(rp?'🔁 重练中——选好点「📄 交卷」':(pd?'⏳ 已选，待交卷':'')));
+  const tagCls=review?'done':(answered?(right?'done':'miss'):(rp?'miss':''));
+  const tagSty=(answered&&right&&everW)?' style="color:#b45309;background:#fef3c7;border-color:#fcd34d"':'';
   let h=`<div class="qcard"><div class="qhead"><span class="qno">${no}.</span><span class="mtag">${q.mod}</span>`
-    +`<span class="rtag ${review?'done':(answered?(right?'done':'miss'):(rp?'miss':''))}">${review?'📖 复习模式——答案已显示':(answered?(right?'✔ 已答对':'✘ 曾答错（去🔁错题重练重做）'):(rp?'🔁 重练中——选好点「📄 交卷」':(pd?'⏳ 已选，待交卷':'')))}</span></div>`
+    +`<span class="rtag ${tagCls}"${tagSty}>${tag}</span></div>`
     +`<div class="qtext">${esc(q.q)}</div><div class="opts">`;
   q.o.forEach((o,k)=>{
     let cls=''; if(answered){ if(k===LET.indexOf(q.ans)) cls='right'; else if(a&&a.chosen===LET[k]) cls='wrong'; }
@@ -335,11 +343,13 @@ function qCard(key,no,q,a,retry,review){
   return h+`</div>`;
 }
 /* 自判题型（应用技术大题 / 网络自测）：读题→作答→对照参考答案→自判对错 */
-function selfCheckCard(key,item,a){
+function selfCheckCard(key,item,a,ever){
   const judged=a&&a.correct!==null&&a.correct!==undefined, right=judged&&a.correct;
+  const everW=!!ever&&!!ever[key];
+  const tagSty=(judged&&right&&everW)?' style="color:#b45309;background:#fef3c7;border-color:#fcd34d"':'';
   let h='<div class="qcard"><div class="qhead"><span class="qno">'+(item.title||item.id)+'</span>'
     +'<span class="mtag">'+item.mod+'</span>'
-    +'<span class="rtag '+(judged?(right?'done':'miss'):'' )+'">'+(judged?(right?'✔ 已判对':'✘ 曾判错（可重做）'):'')+'</span></div>'
+    +'<span class="rtag '+(judged?(right?'done':'miss'):'' )+'"'+tagSty+'>'+(judged?(right?(everW?'⚠ 曾错·已判对':'✔ 已判对'):'✘ 曾判错（可重做）'):'')+'</span></div>'
     +'<div class="qtext" style="font-size:14px">'+item.q+'</div>'
     +'<textarea data-key="'+key+'" rows="4" style="width:100%;margin:6px 0;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;font-family:inherit" placeholder="把你的答案打在这里（模拟机考输入），会自动保存" oninput="saveText(\''+key+'\',this.value)"></textarea>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
