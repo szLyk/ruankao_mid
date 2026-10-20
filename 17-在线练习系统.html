@@ -391,6 +391,7 @@ function renderWrong(){
   const rightN=wrongKeys.filter(k=>rec.answers[k]&&rec.answers[k].correct===true).length;
   let html=`<div class="toolbar"><span class="prog">🔁 复习池 ${wrongKeys.length} 道（答对也保留复习${rightN?' · 其中 '+rightN+' 道已答对':''}${pendN?' · 待交卷 '+pendN:''}）</span>`
     +(rightN?`<button onclick="clearRight()">移出已答对(${rightN})</button>`:'')
+    +`<button onclick="showAnsAll()">📖 答案全览（错因对照）</button>`
     +`<button onclick="submitMod()">📄 交卷</button></div>`
     +(lastMsg?`<div class="toolbar subok">${lastMsg}</div>`:'');
   if(!wrongKeys.length) html+=`<div class="qcard" style="color:var(--green);font-weight:600">🎉 复习池是空的！错过的题都会一直留在这里，直到你点「移出」。</div>`;
@@ -407,6 +408,44 @@ function renderWrong(){
 }
 /* 手动移出：确认自己真的掌握了，才从复习池清掉 */
 window.clearOne=k=>{ rec.cleared[k]=1; lastMsg=''; persist(); updateHeader(); render(); };
+/* 答案全览：复习池全部题目亮出正确答案(绿)+你最近选错的选项(红)，逐题给完整解析与错因对照 */
+window.showAnsAll=()=>{
+  const wrongKeys=wrongPool();
+  if(!wrongKeys.length){ lastMsg='复习池是空的，没有可展示的答案。'; render(); return; }
+  let html=`<div class="toolbar"><span class="prog">📖 答案全览 ${wrongKeys.length} 道——<span style="color:#16a34a">绿=正确答案</span>，<span style="color:#dc2626">红=你最近选错的选项</span></span>`
+    +`<button onclick="render()">↩ 返回重练</button></div>`;
+  let nWrong=0;
+  wrongKeys.forEach(k=>{
+    const mi=MODS.findIndex(m=>k.startsWith(m.id+'-')); if(mi<0)return;
+    const m=MODS[mi], i=+k.split('-')[1]-1, q=m.list()[i]; if(!q)return;
+    const a=rec.answers[k], selfcheck=m.selfcheck;
+    html+='<div class="qcard"><div class="qhead"><span class="qno">'+(m.id==='mock'?'摸底':'')+(i+1)+'.</span><span class="mtag">'+(q.mod||m.name)+'</span>'
+      +(a&&a.correct===true?'<span class="rtag done">✔ 已答对</span>':(a?'<span class="rtag miss">✘ 最近答错</span>':'<span class="rtag">未作答</span>'))+'</div>'
+      +'<div class="qtext">'+esc(q.q)+'</div>';
+    if(!selfcheck){
+      html+='<div class="opts">';
+      q.o.forEach((o,kk)=>{
+        let cls=''; if(kk===LET.indexOf(q.ans)) cls='right'; else if(a&&a.chosen===LET[kk]) cls='wrong';
+        html+='<button class="opt '+cls+'" disabled><span class="L">'+LET[kk]+'.</span><span>'+esc(o)+'</span></button>';
+      });
+      html+='</div>';
+      if(a&&a.correct===false&&a.chosen&&LET.indexOf(a.chosen)>=0){
+        nWrong++;
+        html+='<div class="hint" style="color:#dc2626;font-weight:600">❌ 错因对照：你选了 <b>'+a.chosen+'. '+esc(q.o[LET.indexOf(a.chosen)])+'</b>，正确是 <b>'+q.ans+'. '+esc(q.o[LET.indexOf(q.ans)])+'</b>——逐字对比两个选项的差异，再看下方解析为什么</div>';
+      } else if(a&&a.correct===true&&a.chosen){
+        html+='<div class="hint" style="color:#16a34a">✔ 你上次选了 '+a.chosen+'，正确——解析再看一遍加深印象</div>';
+      } else {
+        html+='<div class="hint">还没作答过，直接记正确答案</div>';
+      }
+      html+='<div class="exp show"><b>答案：'+q.ans+'</b>。'+esc(q.exp).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>')+'</div>';
+    } else {
+      html+='<div class="exp show"><b>参考答案</b>：<br>'+q.ans+'</div>';
+    }
+    html+='</div>';
+  });
+  html+='<div class="toolbar"><span class="prog">共 '+wrongKeys.length+' 道，其中 '+nWrong+' 道最近答错</span><button onclick="render()">↩ 返回重练</button></div>';
+  viewEl.innerHTML=html;
+};
 window.clearRight=()=>{ const n=wrongPool().filter(k=>rec.answers[k]&&rec.answers[k].correct===true);
   if(!n.length){ lastMsg='复习池里暂时没有「已答对」的题。'; render(); return; }
   if(!confirm('移出 '+n.length+' 道「已答对」的题？（还答错的留池不动）'))return;
