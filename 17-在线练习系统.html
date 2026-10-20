@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>软考练习系统 · 软件设计师</title>
 <script src="17-练习数据.js"></script>
+<script src="37-错题辨析.js"></script>
 <style>
 :root{--blue:#2563eb;--green:#16a34a;--red:#dc2626;--bg:#f1f5f9;--card:#fff;--border:#e2e8f0;--muted:#64748b}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -50,6 +51,9 @@ main{max-width:920px;margin:0 auto;padding:16px}
 .passage{background:#fffdf5;border:1px dashed #d4b106;padding:14px 16px;font-size:14px;line-height:1.9;margin:12px 0;border-radius:8px;font-family:Georgia,serif}
 .done{color:var(--green)} .miss{color:var(--red)}
 .hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.e4blk{margin:8px 0 4px;padding:8px 10px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;font-size:13px;line-height:1.55;color:#334155}
+.e4blk>div{margin-top:4px}
+.knblk{margin:6px 0;padding:8px 10px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:13px;line-height:1.55;color:#78350f}
 #summary table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:8px;overflow:hidden}
 #summary th,#summary td{border:1px solid var(--border);padding:7px 10px;text-align:left}
 #summary th{background:#f1f5f9}
@@ -323,6 +327,9 @@ function qCard(key,no,q,a,retry,review){
   });
   if(review&&a&&a.correct===false&&a.chosen&&LET.indexOf(a.chosen)>=0)
     h+=`<div class="hint" style="color:#dc2626;font-weight:600">❌ 错因对照：你选了 <b>${a.chosen}. ${esc(q.o[LET.indexOf(a.chosen)])}</b>，正确是 <b>${q.ans}. ${esc(q.o[LET.indexOf(q.ans)])}</b>——逐字对比两个选项的差异，再看下方解析为什么</div>`;
+  const E4=window.RK_E4&&window.RK_E4[key], rich=s=>esc(s).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>');
+  if(E4&&answered&&E4.e4&&q.o) h+='<div class="e4blk"><b>🔍 四选项逐个辨析</b>'+q.o.map((o,k)=>'<div><b>'+LET[k]+'.</b> '+esc(o)+'——'+rich(E4.e4[k]||'')+'</div>').join('')+'</div>';
+  if(E4&&answered&&E4.kn) h+='<div class="knblk">📌 知识点展开：'+rich(E4.kn)+'</div>';
   h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${esc(q.exp).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>')}</div>`;
   if(answered&&a&&a.attempts>1) h+=`<div class="hint">已做 ${a.attempts} 次${right?'（本次已答对）':''}</div>`;
   return h+`</div>`;
@@ -340,6 +347,7 @@ function selfCheckCard(key,item,a){
     +'<button class="opt" style="cursor:pointer;border-color:#16a34a" onclick="selfMark(\''+key+'\',true)">✔ 基本答对</button>'
     +'<button class="opt" style="cursor:pointer;border-color:#dc2626" onclick="selfMark(\''+key+'\',false)">✘ 没答好</button></div>'
     +'<div class="exp'+(judged?' show':'')+'" id="ans-'+key+'"><b>参考答案</b>：<br>'+item.ans+'</div>'
+    +(window.RK_E4&&window.RK_E4[key]&&window.RK_E4[key].kn?'<div class="knblk">📌 知识点展开：'+window.RK_E4[key].kn+'</div>':'')
     +(judged&&a.attempts>1?'<div class="hint">已判 '+a.attempts+' 次</div>':'')
     +'</div>';
   return h;
