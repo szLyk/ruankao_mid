@@ -102,8 +102,9 @@ const SEED_WRONG={2:'D',3:'B',4:'D',5:'B',6:'D',7:'B',10:'A',11:'A',12:'D',13:'B
 
 /* ============ 记录 ============ */
 const LSKEY='rk_practice_v1';
-let rec = {app:'rk-practice-v1',seeded:false,answers:{},history:[],daily:{}};
+let rec = {app:'rk-practice-v1',seeded:false,answers:{},history:[],daily:{},cleared:{}};
 try{ const s=localStorage.getItem(LSKEY); if(s) rec=JSON.parse(s); }catch(e){}
+if(!rec.cleared) rec.cleared={};
 function saveLocal(){ try{ localStorage.setItem(LSKEY, JSON.stringify(rec)); }catch(e){} }
 
 let fileHandle=null, fileOK=false, writeTimer=null;
@@ -211,6 +212,7 @@ async function mergeFromFile(){
       if(m.done !== l.done || m.ok !== l.ok){ rec.daily[day] = m; changed = true; }
     }
     rec.seeded = rec.seeded || !!data.seeded;
+    for(const k in (data.cleared||{})){ if(!rec.cleared[k]){ rec.cleared[k]=1; changed=true; } }
     if(data.lastUpdated && data.lastUpdated > (rec.lastUpdated||'')) rec.lastUpdated = data.lastUpdated;
     saveLocal(); updateHeader(); render();
     return { changed, state:'ok' };
@@ -266,8 +268,14 @@ function updateHeader(){
   document.getElementById('hTodayOk').textContent=d.ok;
   document.getElementById('hAll').textContent=done;
   document.getElementById('hRate').textContent=done?Math.round(ok/done*100)+'%':'-';
-  document.getElementById('hWrong').textContent=keys.filter(k=>rec.answers[k].correct===false).length;
+  document.getElementById('hWrong').textContent=wrongPool().length;
 }
+/* 错题复习池：曾答错过的题一直保留（答对也不自动移出），手动「移出」才清 */
+function everWrongSet(){ const s={};
+  Object.keys(rec.answers).forEach(k=>{ if(rec.answers[k].correct===false) s[k]=1; });
+  (rec.history||[]).forEach(h=>{ if(h && h.ok===false && h.k) s[h.k]=1; });
+  return s; }
+function wrongPool(){ const s=everWrongSet(); Object.keys(rec.cleared||{}).forEach(k=>{ delete s[k]; }); return Object.keys(s).sort(); }
 function render(){
   if(!D) return;
   if(curTab==='wrong') return renderWrong();
@@ -364,7 +372,7 @@ window.submitMod=()=>{
     delete pending[key];
   });
   savePending();
-  lastMsg='📄 交卷完成：共 '+n+' 题 · 答对 '+ok+' · 答错 '+(n-ok)+(n-ok?'（错题已进🔁错题重练）':'（全对 🎉）');
+  lastMsg='📄 交卷完成：共 '+n+' 题 · 答对 '+ok+' · 答错 '+(n-ok)+(n-ok?'（错题进🔁复习池，答对也保留）':'（全对 🎉）');
   window.scrollTo(0,0);
   render();
 };
@@ -375,24 +383,35 @@ window.clearMod=()=>{ if(!confirm('清除本模块全部作答记录？（练习
   persist(); updateHeader(); render(); };
 function resetAll(){ if(!confirm('清空全部作答记录（含错题重练数据）？此操作不可恢复！'))return;
   if(!confirm('再次确认：真的全部清空？建议先用「📋 复制记录」备份。'))return;
-  rec={app:'rk-practice-v1',seeded:true,answers:{},history:[],daily:{}}; pending={}; savePending(); lastMsg=''; persist(); updateHeader(); render(); }
+  rec={app:'rk-practice-v1',seeded:true,answers:{},history:[],daily:{},cleared:{}}; pending={}; savePending(); lastMsg=''; persist(); updateHeader(); render(); }
 
 function renderWrong(){
-  const wrongKeys=Object.keys(rec.answers).filter(k=>rec.answers[k].correct===false).sort();
+  const wrongKeys=wrongPool();
   const pendN=wrongKeys.filter(k=>pending[k]!==undefined).length;
-  let html=`<div class="toolbar"><span class="prog">🔁 待清错题 ${wrongKeys.length} 道（重练答对即自动移出${pendN?' · 待交卷 '+pendN:''}）</span><button onclick="submitMod()">📄 交卷</button></div>`
+  const rightN=wrongKeys.filter(k=>rec.answers[k]&&rec.answers[k].correct===true).length;
+  let html=`<div class="toolbar"><span class="prog">🔁 复习池 ${wrongKeys.length} 道（答对也保留复习${rightN?' · 其中 '+rightN+' 道已答对':''}${pendN?' · 待交卷 '+pendN:''}）</span>`
+    +(rightN?`<button onclick="clearRight()">移出已答对(${rightN})</button>`:'')
+    +`<button onclick="submitMod()">📄 交卷</button></div>`
     +(lastMsg?`<div class="toolbar subok">${lastMsg}</div>`:'');
-  if(!wrongKeys.length) html+=`<div class="qcard" style="color:var(--green);font-weight:600">🎉 没有待清错题！去标签页继续刷新题吧。</div>`;
+  if(!wrongKeys.length) html+=`<div class="qcard" style="color:var(--green);font-weight:600">🎉 复习池是空的！错过的题都会一直留在这里，直到你点「移出」。</div>`;
   wrongKeys.forEach(k=>{
     const mi=MODS.findIndex(m=>k.startsWith(m.id+'-')); if(mi<0)return;
     const m=MODS[mi], i=+k.split('-')[1]-1, q=m.list()[i]; if(!q)return;
     html+= m.selfcheck ? selfCheckCard(k,q,rec.answers[k]) : qCard(k,(m.id==='mock'?'摸底':'')+(i+1), q, rec.answers[k], true);
+    html+=`<div style="text-align:right;margin:-6px 0 12px"><button class="fbtn" onclick="clearOne('${k}')">✔ 真会了 · 移出</button></div>`;
   });
   viewEl.innerHTML=html;
   wrongKeys.forEach(k=>{ const a=rec.answers[k];
     const ta=viewEl.querySelector('textarea[data-key="'+k+'"]');
     if(ta&&a&&a.text) ta.value=a.text; });
 }
+/* 手动移出：确认自己真的掌握了，才从复习池清掉 */
+window.clearOne=k=>{ rec.cleared[k]=1; lastMsg=''; persist(); updateHeader(); render(); };
+window.clearRight=()=>{ const n=wrongPool().filter(k=>rec.answers[k]&&rec.answers[k].correct===true);
+  if(!n.length){ lastMsg='复习池里暂时没有「已答对」的题。'; render(); return; }
+  if(!confirm('移出 '+n.length+' 道「已答对」的题？（还答错的留池不动）'))return;
+  n.forEach(k=>{ rec.cleared[k]=1; }); lastMsg='已移出 '+n.length+' 道，复习池剩 '+wrongPool().length+' 道。';
+  persist(); updateHeader(); render(); };
 function renderSum(){
   const rows=[]; MODS.forEach(m=>{
     const qs=m.list(); let done=0,ok=0,wrongList=[];
