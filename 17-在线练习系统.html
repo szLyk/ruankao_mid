@@ -385,7 +385,7 @@ function resetAll(){ if(!confirm('清空全部作答记录（含错题重练数�
   if(!confirm('再次确认：真的全部清空？建议先用「📋 复制记录」备份。'))return;
   rec={app:'rk-practice-v1',seeded:true,answers:{},history:[],daily:{},cleared:{}}; pending={}; savePending(); lastMsg=''; persist(); updateHeader(); render(); }
 
-let wrongShowAns=false;  /* 复习池显示答案模式（做题/看答案切换） */
+let wrongShowAns=true;  /* 复习池默认显示全部答案（看答案/做题随时切换） */
 window.toggleWrongAns=()=>{ wrongShowAns=!wrongShowAns; render(); };
 function renderWrong(){
   const wrongKeys=wrongPool();
