@@ -327,7 +327,7 @@ function qCard(key,no,q,a,retry,review){
   });
   if(review&&a&&a.correct===false&&a.chosen&&LET.indexOf(a.chosen)>=0)
     h+=`<div class="hint" style="color:#dc2626;font-weight:600">❌ 错因对照：你选了 <b>${a.chosen}. ${esc(q.o[LET.indexOf(a.chosen)])}</b>，正确是 <b>${q.ans}. ${esc(q.o[LET.indexOf(q.ans)])}</b>——逐字对比两个选项的差异，再看下方解析为什么</div>`;
-  const E4=window.RK_E4&&window.RK_E4[key], rich=s=>esc(s).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>');
+  const E4=window.RK_E4&&window.RK_E4[key], rich=s=>esc(s).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>').replace(/&lt;br\s*\/?&gt;/g,'<br>');
   if(E4&&answered&&E4.e4&&q.o) h+='<div class="e4blk"><b>🔍 四选项逐个辨析</b>'+q.o.map((o,k)=>'<div><b>'+LET[k]+'.</b> '+esc(o)+'——'+rich(E4.e4[k]||'')+'</div>').join('')+'</div>';
   if(E4&&answered&&E4.kn) h+='<div class="knblk">📌 知识点展开：'+rich(E4.kn)+'</div>';
   h+=`</div><div class="exp ${answered?'show':''}"><b>答案：${q.ans}</b>。${esc(q.exp).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>')}</div>`;
