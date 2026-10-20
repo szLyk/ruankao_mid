@@ -359,22 +359,24 @@ footer{max-width:1000px;margin:0 auto 26px;padding:0 16px;color:var(--mut);font-
   <div style="font-size:13.5px">周转 = 完成 − 到达；带权周转 = 周转 ÷ 运行。<b>SPF/SJF（Shortest Job First 短作业优先）是"平均周转时间最小"的标准答案</b>（就绪队列已知运行时间时）。</div>
  </div>
  <div class="card">
-  <h2>🧭 磁盘调度手算器（题 43/44 同款，三种算法对比）</h2>
+  <h2>🧭 磁盘调度手算器（题 43/44 同款，四种算法对比+路径展开）</h2>
   <div class="row">
    <span>当前磁道</span><input id="dkHead" value="50" style="width:56px">
    <span>SCAN 方向</span><select id="dkDir"><option value="up">增大</option><option value="down" selected>减小</option></select>
    <span>请求序列</span><input id="dkReq" value="45,55,12,90" style="width:160px">
-   <button class="btn pri" onclick="dkCalc()">计算三种算法</button>
+   <button class="btn pri" onclick="dkCalc()">计算四种算法</button>
   </div>
-  <div style="font-size:13px;color:#475569;margin-top:6px">SSTF=每步选最近（可能来回折返、可能饥饿）；SCAN=沿方向扫到最后一个请求才折返（电梯纪律、无饥饿）。默认例题特意选了<b>两者结果不同</b>的数据：SSTF 会在 45 后被 55 勾回去，SCAN 先扫完 45→12 再折返。</div>
+  <div style="font-size:13px;color:#475569;margin-top:6px">SSTF=每步选最近（可能来回折返、可能饥饿）；SCAN=沿方向扫到最后一个请求才折返（电梯纪律、无饥饿）；C-SCAN=单向服务、到头后<b>空跑返回另一端</b>再继续单向（返回段也计入移道）。默认例题特意选了<b>两者结果不同</b>的数据：SSTF 会在 45 后被 55 勾回去，SCAN 先扫完 45→12 再折返。改方向再算一次：SCAN 换方向结果完全不同（50→40…与 50→65…），SSTF 不看方向。</div>
   <svg id="dkSvg" viewBox="0 0 720 240" style="width:100%;max-width:720px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-top:6px"></svg>
   <div class="row" style="margin-top:6px">
    <button class="btn" onclick="dkDraw('fcfs')">看 FCFS</button>
    <button class="btn" onclick="dkDraw('sstf')">看 SSTF</button>
    <button class="btn" onclick="dkDraw('scan')">看 SCAN</button>
+   <button class="btn" onclick="dkDraw('cscan')">看 C-SCAN</button>
   </div>
   <div class="res" id="dkRes"></div>
   <div class="steps" id="dkSteps"></div>
+  <div id="dkAll" style="font-size:12.5px;line-height:1.7;color:#334155;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;padding:8px 10px;margin-top:6px"></div>
   <div class="row" style="margin-top:8px"><button class="btn pri" onclick="dkqNew()">🎲 出一道</button><span id="dkqQ" style="font-size:13.5px"></span></div>
   <div class="row">
    <input id="dkqSstf" placeholder="SSTF总移道" style="width:110px">
@@ -745,7 +747,13 @@ OSTOOL.diskSched = function(head, dir, reqs){
                        : [...ahead].sort((a,b)=>b-a).concat([...behind].sort((a,b)=>a-b));
   c = +head; let scanTotal = 0;
   scanOrder.forEach(t=>{ scanTotal += dist(c,t); c = t; });
-  return { head:+head, fcfs:{order:orig,total:fcfsTotal}, sstf:{order:sstfOrder,total:sstfTotal}, scan:{order:scanOrder,total:scanTotal} };
+  const csFirst = up ? [...ahead].sort((a,b)=>a-b) : [...ahead].sort((a,b)=>b-a);
+  const csRest  = up ? [...behind].sort((a,b)=>a-b) : [...behind].sort((a,b)=>b-a);
+  const csOrder = csFirst.concat(csRest);
+  c = +head; let csTotal = 0;
+  csOrder.forEach(t=>{ csTotal += dist(c,t); c = t; });
+  return { head:+head, fcfs:{order:orig,total:fcfsTotal}, sstf:{order:sstfOrder,total:sstfTotal}, scan:{order:scanOrder,total:scanTotal},
+           cscan:{order:csOrder,total:csTotal,jumpAt:csRest.length ? csFirst.length : -1} };
 };
 OSTOOL.turnaround = function(runtimes){
   const R = runtimes.map(Number);
@@ -1184,19 +1192,34 @@ function dkCalc(){
   dkData = OSTOOL.diskSched(document.getElementById('dkHead').value, document.getElementById('dkDir').value, reqs);
   const res = document.getElementById('dkRes');
   if(!dkData){ res.innerHTML = '<div class="rcell"><b>输入无效</b><span>磁道号须为非负整数</span></div>'; document.getElementById('dkSteps').textContent=''; return; }
-  res.innerHTML = cell('FCFS 合计', dkData.fcfs.total+' 道') + cell('SSTF 合计', dkData.sstf.total+' 道') + cell('SCAN 合计', dkData.scan.total+' 道');
+  res.innerHTML = cell('FCFS 合计', dkData.fcfs.total+' 道') + cell('SSTF 合计', dkData.sstf.total+' 道') + cell('SCAN 合计', dkData.scan.total+' 道') + cell('C-SCAN 合计', dkData.cscan.total+' 道');
+  const path = o => dkData.head+'→'+o.order.join('→')+'　合计 <b>'+o.total+'</b> 道';
+  document.getElementById('dkAll').innerHTML =
+    '<b>📋 四种算法路径展开</b><br>'
+    +'FCFS（到达序）：'+path(dkData.fcfs)+'<br>'
+    +'SSTF（每步最近）：'+path(dkData.sstf)+'<br>'
+    +'SCAN（电梯，先'+(document.getElementById('dkDir').value==='up'?'增':'减')+'后折返）：'+path(dkData.scan)+'<br>'
+    +'C-SCAN（单向服务+空跑返回）：'+path(dkData.cscan)+(dkData.cscan.jumpAt>=0?'　<span style="color:#d97706">↩ 跳回空跑段已计入合计</span>':'');
   dkDraw('sstf');
   function cell(k,v){ return '<div class="rcell"><b>'+k+'</b><span>'+v+'</span></div>'; }
 }
 function dkDraw(algo){
   if(!dkData) return;
   const d = dkData[algo];
-  const name = {fcfs:'FCFS（按到达顺序）', sstf:'SSTF（每步去最近）', scan:'SCAN（只看方向）'}[algo];
+  const name = {fcfs:'FCFS（按到达顺序）', sstf:'SSTF（每步去最近）', scan:'SCAN（只看方向）', cscan:'C-SCAN（单向+空跑返回）'}[algo];
   const pts = [dkData.head, ...d.order];
   const lo = Math.min(...pts)-5, hi = Math.max(...pts)+5;
   const X = t => 40+(t-lo)/((hi-lo)||1)*640, Y = i => 40+i*(176/Math.max(1,pts.length-1));
   let p = '<text x="14" y="22" font-size="13" font-weight="700" fill="#334155">'+name+'：共 '+d.total+' 道</text>';
-  p += '<polyline points="'+pts.map((t,i)=>X(t)+','+Y(i)).join(' ')+'" fill="none" stroke="#059669" stroke-width="2.4"/>';
+  const j = d.jumpAt != null && d.jumpAt >= 0 ? d.jumpAt : -1;
+  if(j >= 0){   // C-SCAN：跳回空跑段画虚线
+    const s1 = pts.slice(0, j+1), s2 = pts.slice(j+1);
+    p += '<polyline points="'+s1.map((t,i)=>X(t)+','+Y(i)).join(' ')+'" fill="none" stroke="#059669" stroke-width="2.4"/>';
+    if(s2.length > 1) p += '<polyline points="'+s2.map((t,i)=>X(t)+','+Y(i+j+1)).join(' ')+'" fill="none" stroke="#059669" stroke-width="2.4"/>';
+    p += '<line x1="'+X(pts[j])+'" y1="'+Y(j)+'" x2="'+X(pts[j+1])+'" y2="'+Y(j+1)+'" stroke="#d97706" stroke-width="2" stroke-dasharray="6 4"/>';
+  } else {
+    p += '<polyline points="'+pts.map((t,i)=>X(t)+','+Y(i)).join(' ')+'" fill="none" stroke="#059669" stroke-width="2.4"/>';
+  }
   pts.forEach((t,i)=>{
     p += '<circle cx="'+X(t)+'" cy="'+Y(i)+'" r="9" fill="'+(i===0?'#d97706':'#059669')+'"/>'
        + '<text x="'+X(t)+'" y="'+(Y(i)+3.5)+'" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">'+t+'</text>';
