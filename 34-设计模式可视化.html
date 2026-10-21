@@ -487,6 +487,80 @@ const F5 = [
     '        adaptee.<input id="fc" placeholder="旧接口方法" style="width:130px">();   // 转发翻译\n    }\n}</div>',
     clear: ['fa','fb','fc'], ans: { fa: 'implements', fb: 'Adaptee', fc: 'specificRequest' },
     steps: '适配器三要素：①实现 Target 新接口 ②持有 Adaptee 旧对象 ③request() 里转发调用旧方法完成"翻译"。目的=接口转换，与装饰（加职责）区分。' };
+ }
+,
+ { kind: '状态模式', build(){
+   return { stem:
+    '<div class="code">interface State { void handle(VendingMachine ctx); }
+' +
+    'class NoCoinState implements State {
+' +
+    '    public void handle(VendingMachine ctx) {
+' +
+    '        System.out.println("请投币");
+' +
+    '        ctx.setState(<input id="fa" placeholder="切换到的新状态" style="width:150px">);   // 状态迁移
+' +
+    '    }
+}
+' +
+    'class VendingMachine {                        // Context 持有当前状态
+' +
+    '    private State state = new NoCoinState();
+' +
+    '    public void setState(State s) { state = s; }
+' +
+    '    public void insertCoin() { <input id="fb" placeholder="委托给当前状态" style="width:150px">; }
+}</div>',
+    clear: ['fa','fb'], ans: { fa: 'new HasCoinState()', fb: 'state.handle(this)' },
+    steps: '状态模式三要点：①Context 持当前状态引用，动作委托给它 ②每个状态一个类 ③状态类内部调用 setState() 完成迁移（消除 if-else 状态分支）。信号词：「行为随状态改变」「状态迁移」。' };
+ } },
+ { kind: '外观模式', build(){
+   return { stem:
+    '<div class="code">class Facade {                                 // 外观：统一的高层入口
+' +
+    '    private SubA a = new SubA();
+' +
+    '    private SubB b = new SubB();
+' +
+    '    public void <input id="fa" placeholder="统一入口方法名" style="width:110px">() {
+' +
+    '        a.doA();  b.doB();                     // 内部编排子系统
+' +
+    '    }
+}
+' +
+    '// 客户端只与外观打交道，不直接碰子系统
+' +
+    'Facade f = new <input id="fb" placeholder="创建外观" style="width:110px">();
+' +
+    'f.<input id="fc" placeholder="调外观方法" style="width:110px">();</div>',
+    clear: ['fa','fb','fc'], ans: { fa: 'operation', fb: 'Facade', fc: 'operation' },
+    steps: '外观三要点：①Facade 持各子系统引用 ②对外只暴露一个简单方法，内部完成编排 ③客户端不与子系统直接交互。信号词：「统一的高层接口」「简化子系统使用」。' };
+ } },
+ { kind: '桥接模式', build(){
+   return { stem:
+    '<div class="code">interface Color { String fill(); }             // 实现维度
+' +
+    'class Red implements Color { public String fill() { return "红"; } }
+' +
+    'abstract class Shape {                         // 抽象维度：桥接点
+' +
+    '    protected <input id="fa" placeholder="聚合实现维度" style="width:120px"> color;    // 持有实现的引用
+' +
+    '    Shape(Color c) { color = c; }
+' +
+    '    abstract String draw();
+}
+' +
+    'class Circle extends Shape {
+' +
+    '    Circle(Color c) { <input id="fb" placeholder="传递给父类" style="width:90px">; }
+' +
+    '    public String draw() { return <input id="fc" placeholder="转发到实现维度" style="width:120px"> + " 的圆"; }
+}</div>',
+    clear: ['fa','fb','fc'], ans: { fa: 'Color', fb: 'super(c)', fc: 'color.fill()' },
+    steps: '桥接三要点：①抽象维度持实现维度的引用（这座"桥"）②两个维度独立扩展（形状×颜色）③draw() 把工作转发给实现。信号词：「两个独立变化的维度」「避免类数量爆炸」。' };
  } }
 ];
 let f5idx = -1, f5q = null;
