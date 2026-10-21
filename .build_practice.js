@@ -128,7 +128,7 @@ function parseBigQ(){
     (cur.inAns?cur.ans:cur.q).push(lines[i]);
   }
   if(cur) qs.push(cur);
-  if(qs.length!==20) throw new Error('16: expect 20 大题, got '+qs.length);
+  if(qs.length!==21) throw new Error('16: expect 21 大题, got '+qs.length);
   return qs.map((x,i)=>({ id:i+1, mod:x.cat, title:x.title,
     q: md2html(x.q.join('\n')), ans: md2html(x.ans.join('\n')) }));
 }
