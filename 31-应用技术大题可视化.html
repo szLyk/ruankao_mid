@@ -57,6 +57,62 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
  <div class="tip">①数据流图（目标 10 分）：先读<b>说明</b>再读图；口诀——<b>父图有子图、出入要平衡、加工不黑洞不奇迹</b>。图形规范：外部实体=<b>矩形</b>、加工=<b>圆角矩形带编号</b>（子图编号 1.1/1.2）、数据存储=<b>右端开口矩形</b>、数据流=<b>带名箭头</b>（名字用说明原词）。模板详见《04-应用技术答题模板》。</div>
 
  <div class="card">
+  <h2>🔣 图形图例（四种元素，先认符号再看图）</h2>
+  <svg viewBox="0 0 860 300" width="100%" style="max-width:860px" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="lga" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 Z" fill="#0f172a"/></marker></defs>
+    <!-- 外部实体 -->
+    <rect x="30" y="30" width="130" height="46" fill="#fde68a" stroke="#0f172a" stroke-width="1.5"/>
+    <text x="95" y="59" text-anchor="middle" font-size="14" fill="#0f172a">外部实体</text>
+    <g font-size="12" fill="#475569">
+      <text x="95" y="98" text-anchor="middle" font-weight="bold" fill="#0f172a">外部实体 = 矩形</text>
+      <text x="95" y="116" text-anchor="middle">系统之外的人/组织</text>
+      <text x="95" y="133" text-anchor="middle">数据的源头或终点</text>
+      <text x="95" y="150" text-anchor="middle">例：患者、顾客、经理</text>
+    </g>
+    <!-- 加工 -->
+    <rect x="270" y="20" width="150" height="66" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <line x1="270" y1="42" x2="420" y2="42" stroke="#2563eb"/>
+    <text x="281" y="36" font-size="12" fill="#1e40af">1</text>
+    <text x="345" y="63" text-anchor="middle" font-size="13.5" fill="#0f172a">预约处理</text>
+    <g font-size="12" fill="#475569">
+      <text x="345" y="108" text-anchor="middle" font-weight="bold" fill="#0f172a">加工 = 圆角矩形 + 编号横线</text>
+      <text x="345" y="126" text-anchor="middle">横线上方写编号，下方写加工名</text>
+      <text x="345" y="143" text-anchor="middle">编号分层：0层图 1、2、3</text>
+      <text x="345" y="160" text-anchor="middle">子图分解为 1.1、1.2、1.3</text>
+    </g>
+    <!-- 数据存储 -->
+    <path d="M 760,30 L 510,30 L 510,76 L 760,76" fill="#dcfce7" stroke="#0f172a" stroke-width="1.5"/>
+    <line x1="522" y1="30" x2="522" y2="76" stroke="#0f172a" stroke-width="1.5"/>
+    <text x="646" y="59" text-anchor="middle" font-size="13.5" fill="#0f172a">D1 排班信息</text>
+    <g font-size="12" fill="#475569">
+      <text x="646" y="98" text-anchor="middle" font-weight="bold" fill="#0f172a">数据存储 = 右端开口矩形</text>
+      <text x="646" y="116" text-anchor="middle">命名"D+编号 名称"</text>
+      <text x="646" y="133" text-anchor="middle">左双竖线；右端不封口</text>
+      <text x="646" y="150" text-anchor="middle">（教材也见双横线画法）</text>
+    </g>
+    <!-- 数据流 -->
+    <line x1="60" y1="210" x2="230" y2="210" stroke="#0f172a" stroke-width="1.5" marker-end="url(#lga)"/>
+    <text x="145" y="198" text-anchor="middle" font-size="12.5" fill="#0f172a">预约申请</text>
+    <g font-size="12" fill="#475569">
+      <text x="145" y="238" text-anchor="middle" font-weight="bold" fill="#0f172a">数据流 = 带名字的箭头</text>
+      <text x="145" y="256" text-anchor="middle">名字用说明原词</text>
+      <text x="145" y="273" text-anchor="middle">方向=数据的流动方向</text>
+    </g>
+    <!-- 右侧规则框 -->
+    <rect x="290" y="185" width="540" height="100" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <g font-size="12.5" fill="#0f172a">
+      <text x="306" y="210">三条铁律（图上出现即错）：</text>
+      <text x="306" y="232">① 外部实体 ⤳ 外部实体（不经过加工）</text>
+      <text x="306" y="252">② 数据存储 ⤳ 数据存储</text>
+      <text x="306" y="272">③ 外部实体 ⤳ 数据存储　——所有流必须经过加工</text>
+    </g>
+  </svg>
+  <div class="grid2" style="margin-top:8px">
+   <div class="fcard"><b>两种记法考试都认</b>加工画<b>圆角矩形</b>（本页）或<b>圆圈</b>；数据存储画<b>开口矩形</b>或<b>双横线</b>——同一张图内风格统一即可</div>
+   <div class="fcard"><b>编号=父子图对应</b>0 层图的加工 1 分解成子图时，子图里编号写 <b>1.1、1.2、1.3</b>——判卷对父子图平衡就看它</div>
+  </div>
+ </div>
+ <div class="card">
   <h2>⚖️ 三大规则 + 黑洞/奇迹图解</h2>
   <div class="grid2">
    <div class="fcard"><b>规则1 父子图平衡（10号题62 同源）</b>子图的输入/输出数据流必须与父图对应加工的<b>完全一致</b>（数量与方向），既不能多也不能少</div>
