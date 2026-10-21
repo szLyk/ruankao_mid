@@ -56,8 +56,62 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 </header>
 <main>
 
+<!-- ============ Tab0 考频重点 ============ -->
+<section id="s-hot" class="on">
+ <div class="tip">依据 2007 年至今<b>下午题⑤（设计模式大题，15 分）</b>与上午概念题的公开真题归纳 + 主流培训机构共识分级（23 模式全覆盖）。已联网核对部分年份：07上状态 / 07下策略 / 08上职责链 / 2019下观察者 / 17下两种结构型 / 18上创建型；逐项年份以当年真题为准，不影响复习优先级。配套文档：38-设计模式考频重点.md</div>
+ <div class="card">
+  <h2>🔥 T0 冲刺必拿（9 模式）——下午⑤反复直接考，类图+填空代码必须会写</h2>
+  <div class="grid3">
+   <div class="fcard" onclick="pPick('strat');showTab('all')"><b>策略 Strategy</b><br>收费/折扣/排序/算法可切换——"采用不同的算法"</div>
+   <div class="fcard" onclick="pPick('obs');showTab('all')"><b>观察者 Observer</b><br>订阅-通知/一对多依赖/状态变化自动更新（2019下真题）</div>
+   <div class="fcard" onclick="pPick('dec');showTab('all')"><b>装饰器 Decorator</b><br>动态加职责/层层包装同接口（咖啡加料类题）</div>
+   <div class="fcard" onclick="pPick('state');showTab('all')"><b>状态 State</b><br>行为随状态改变/消除 if-else 状态分支（2007上真题）</div>
+   <div class="fcard" onclick="pPick('facade');showTab('all')"><b>外观 Facade</b><br>为复杂子系统提供统一高层入口</div>
+   <div class="fcard" onclick="pPick('bridge');showTab('all')"><b>桥接 Bridge</b><br>两个独立变化维度/避免类爆炸（品牌×软件）</div>
+   <div class="fcard" onclick="pPick('single');showTab('all')"><b>单例 Singleton</b><br>仅一个实例/全局访问点 getInstance</div>
+   <div class="fcard" onclick="pPick('fm');showTab('all')"><b>工厂方法 Factory Method</b><br>实例化延迟到子类/子类决定 new 谁</div>
+   <div class="fcard" onclick="pPick('ad');showTab('all')"><b>适配器 Adapter</b><br>接口转换/兼容既有类（接口不符但想复用）</div>
+  </div>
+  <div class="tip" style="margin-top:8px">复习动作：类图能默画 + 大题⑤填空会写（角色类名/多态方法/聚合引用）+ 信号词秒答。每个 30~40 分钟。</div>
+ </div>
+ <div class="card">
+  <h2>🟡 T1 常考巩固（6 模式）——意图角色认得、填空能做</h2>
+  <div class="grid3">
+   <div class="fcard" onclick="pPick('af');showTab('all')"><b>抽象工厂 Abstract Factory</b><br>产品族成套创建（一系列相关对象）</div>
+   <div class="fcard" onclick="pPick('proxy');showTab('all')"><b>代理 Proxy</b><br>控制访问（远程/虚拟/保护）——与装饰器区分：代理管访问、装饰加功能</div>
+   <div class="fcard" onclick="pPick('comp');showTab('all')"><b>组合 Composite</b><br>部分-整体树形/文件与文件夹</div>
+   <div class="fcard" onclick="pPick('cmd');showTab('all')"><b>命令 Command</b><br>请求封装成对象/撤销重做/队列日志</div>
+   <div class="fcard" onclick="pPick('memento');showTab('all')"><b>备忘录 Memento</b><br>保存并恢复状态/快照撤销</div>
+   <div class="fcard" onclick="pPick('tmpl');showTab('all')"><b>模板方法 Template Method</b><br>骨架固定/步骤延迟子类（复用流程）</div>
+  </div>
+  <div class="tip" style="margin-top:8px">复习动作：意图+信号词秒答、类图认得、填空能做。每个 15~20 分钟。</div>
+ </div>
+ <div class="card">
+  <h2>⚪ T2 认得出即可（8 模式）——上午概念题对号就行</h2>
+  <div class="grid3">
+   <div class="fcard" onclick="pPick('iter');showTab('all')"><b>迭代器 Iterator</b><br>顺序访问集合不暴露内部表示</div>
+   <div class="fcard" onclick="pPick('proto');showTab('all')"><b>原型 Prototype</b><br>clone 克隆复制（深浅拷贝）</div>
+   <div class="fcard" onclick="pPick('builder');showTab('all')"><b>建造者 Builder</b><br>分步构建复杂对象/同构建不同表示</div>
+   <div class="fcard" onclick="pPick('fly');showTab('all')"><b>享元 Flyweight</b><br>共享细粒度对象/节省内存</div>
+   <div class="fcard" onclick="pPick('chain');showTab('all')"><b>责任链 Chain</b><br>沿链传递直至被处理（采购审批，2008上真题）</div>
+   <div class="fcard" onclick="pPick('medi');showTab('all')"><b>中介者 Mediator</b><br>封装同事交互/网状转星形</div>
+   <div class="fcard" onclick="pPick('vis');showTab('all')"><b>访问者 Visitor</b><br>作用于结构的操作/双分派</div>
+   <div class="fcard" onclick="pPick('inter');showTab('all')"><b>解释器 Interpreter</b><br>给定语言/表达式求值</div>
+  </div>
+  <div class="tip" style="margin-top:8px">复习动作：一句话意图+场景对号（上午选择 1 分题水平即可）。每个 5~10 分钟。</div>
+ </div>
+ <div class="card">
+  <h2>📋 冲刺路径（按剩余天数）</h2>
+  <div style="font-size:13.5px;line-height:1.8">
+   <b>只剩 2~3 天</b>：T0 九个过两遍（类图默画+信号词自测）→ ☕大题⑤填空做 3 道 → T1 只看意图。T2 放弃细看。<br>
+   <b>剩 4~5 天</b>：T0 精学 + T1 过一遍 + 场景识别出题刷到全对 + ☕填空 5 道。<br>
+   <b>大题⑤答题口诀</b>：先读说明定模式 → 类图对照填角色类名 → 填空优先写多态方法调用与构造注入 → 检查聚合/关联的引用方向。
+  </div>
+ </div>
+</section>
+
 <!-- ============ Tab1 总览 ============ -->
-<section id="s-all" class="on">
+<section id="s-all">
  <div class="tip">三大类 23 模式一屏总览：<b>创建型管"怎么 new"、结构型管"怎么组装"、行为型管"怎么交互"</b>。点卡片看意图/角色/信号词；⭐ = 大题⑤真题考过。</div>
  <div class="card">
   <h2>📇 23 模式卡片墙（点卡看详情）</h2>
@@ -288,7 +342,7 @@ const PQS = [
 ]
 
 /* ================= 页面骨架 ================= */
-const SECTIONS = [['all','📇 23模式总览'],['fill','☕ 大题⑤填空'],['vs','⚖️ 易混对比'],['prn','📜 六大原则'],['kgmap','🕸 知识图谱']];
+const SECTIONS = [['hot','🎯 考频重点'],['all','📇 23模式总览'],['fill','☕ 大题⑤填空'],['vs','⚖️ 易混对比'],['prn','📜 六大原则'],['kgmap','🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
