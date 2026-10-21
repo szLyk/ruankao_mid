@@ -133,13 +133,92 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 
 <!-- ============ Tab3 UML ============ -->
 <section id="s-uml">
- <div class="tip">③UML 建模（目标 10 分）：最常考<b>用例图 include/extend 箭头方向</b>与"给情景选图"。类图六关系见 25 号课件。</div>
+ <div class="tip">③UML 建模（目标 10 分）：最常考<b>用例图 include/extend 箭头方向</b>与"给情景选图"；类图六关系与状态图元素<b>图形速查见下方两图</b>，详解见 25 号课件。</div>
 
  <div class="card">
   <h2>🧭 用例图 include / extend 箭头方向（点图看口诀）</h2>
   <svg id="ucSvg" viewBox="0 0 700 210" style="width:100%;max-width:680px"></svg>
   <div id="ucDetail" style="font-size:13px;margin-top:6px;min-height:48px"></div>
  </div>
+
+ <div class="card">
+  <h2>🖼 类图六关系·图形速查（上午题年年认符号）</h2>
+  <svg viewBox="0 0 700 250" style="width:100%;max-width:680px" xmlns="http://www.w3.org/2000/svg">
+    <g font-size="12.5" fill="#0f172a">
+      <!-- 依赖 -->
+      <rect x="20" y="20" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <rect x="210" y="20" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <line x1="100" y1="35" x2="204" y2="35" stroke="#0f172a" stroke-width="1.5" stroke-dasharray="6 4"/>
+      <path d="M196,29 L206,35 L196,41" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="155" y="70" text-anchor="middle" font-weight="bold">依赖</text>
+      <text x="155" y="86" text-anchor="middle" fill="#64748b">虚线箭头：「使用」</text>
+      <!-- 关联 -->
+      <rect x="250" y="20" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <rect x="440" y="20" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <line x1="330" y1="35" x2="440" y2="35" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="385" y="70" text-anchor="middle" font-weight="bold">关联</text>
+      <text x="385" y="86" text-anchor="middle" fill="#64748b">实线，两端可标多重度</text>
+      <!-- 聚合 -->
+      <rect x="480" y="20" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <rect x="600" y="20" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <line x1="560" y1="35" x2="600" y2="35" stroke="#0f172a" stroke-width="1.5"/>
+      <polygon points="600,35 590,29 580,35 590,41" fill="#fff" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="580" y="70" text-anchor="middle" font-weight="bold">聚合</text>
+      <text x="580" y="86" text-anchor="middle" fill="#64748b">空心菱形在整体端，可分离</text>
+      <!-- 组合 -->
+      <rect x="20" y="130" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <rect x="210" y="130" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <line x1="100" y1="145" x2="210" y2="145" stroke="#0f172a" stroke-width="1.5"/>
+      <polygon points="210,145 198,138 186,145 198,152" fill="#0f172a" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="155" y="180" text-anchor="middle" font-weight="bold">组合</text>
+      <text x="155" y="196" text-anchor="middle" fill="#64748b">实心菱形，同生共死</text>
+      <!-- 泛化 -->
+      <rect x="250" y="130" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <rect x="440" y="130" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <line x1="330" y1="145" x2="434" y2="145" stroke="#0f172a" stroke-width="1.5"/>
+      <path d="M440,145 L426,138 L426,152 Z" fill="#fff" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="385" y="180" text-anchor="middle" font-weight="bold">泛化</text>
+      <text x="385" y="196" text-anchor="middle" fill="#64748b">实线+空心三角，指向父类</text>
+      <!-- 实现 -->
+      <rect x="480" y="130" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <rect x="600" y="130" width="80" height="30" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+      <line x1="560" y1="145" x2="594" y2="145" stroke="#0f172a" stroke-width="1.5" stroke-dasharray="6 4"/>
+      <path d="M600,145 L586,138 L586,152 Z" fill="#fff" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="580" y="180" text-anchor="middle" font-weight="bold">实现</text>
+      <text x="580" y="196" text-anchor="middle" fill="#64748b">虚线+空心三角，类→接口</text>
+      <text x="350" y="236" text-anchor="middle" fill="#64748b">口诀：实三角继承、虚三角实现、虚箭头依赖、菱形看空心/实心=可分离/同生死</text>
+    </g>
+  </svg>
+ </div>
+
+ <div class="card">
+  <h2>🚦 状态图元素·图形速查（初/终态、entry/do/exit、监护条件）</h2>
+  <svg viewBox="0 0 700 210" style="width:100%;max-width:680px" xmlns="http://www.w3.org/2000/svg">
+    <g font-size="12.5" fill="#0f172a">
+      <circle cx="60" cy="60" r="10" fill="#0f172a"/>
+      <text x="60" y="92" text-anchor="middle" fill="#64748b">初态（唯一）</text>
+      <line x1="72" y1="60" x2="150" y2="60" stroke="#0f172a" stroke-width="1.5"/>
+      <path d="M144,54 L154,60 L144,66" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="160" y="20" width="150" height="80" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="235" y="42" text-anchor="middle" font-weight="bold">已支付</text>
+      <line x1="170" y1="52" x2="300" y2="52" stroke="#94a3b8" stroke-width="1"/>
+      <text x="235" y="68" text-anchor="middle" font-size="11.5">entry / 记录时间</text>
+      <text x="235" y="84" text-anchor="middle" font-size="11.5">do / 等待发货</text>
+      <text x="235" y="100" text-anchor="middle" font-size="11.5" fill="#dc2626">exit / 释放库存</text>
+      <line x1="312" y1="60" x2="450" y2="60" stroke="#0f172a" stroke-width="1.5"/>
+      <path d="M444,54 L454,60 L444,66" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+      <text x="383" y="46" text-anchor="middle" fill="#2563eb">发货[库存&gt;0]/通知</text>
+      <text x="383" y="86" text-anchor="middle" fill="#64748b" font-size="11.5">事件[监护条件]/动作</text>
+      <circle cx="480" cy="60" r="12" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+      <circle cx="480" cy="60" r="6" fill="#0f172a"/>
+      <text x="480" y="92" text-anchor="middle" fill="#64748b">终态（0~多个）</text>
+      <rect x="30" y="130" width="640" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+      <text x="350" y="154" text-anchor="middle">口诀：<tspan font-weight="bold">一初多终</tspan>；框内三事件 entry / do / exit；箭头上标「事件[监护条件]/动作」</text>
+      <text x="350" y="176" text-anchor="middle" fill="#64748b" font-size="11.5">选图信号：对象的状态随事件变迁→状态图；流程有并行/泳道→活动图</text>
+    </g>
+  </svg>
+ </div>
+
 
  <div class="card">
   <h2>🎲 情景选图随机出题</h2>
