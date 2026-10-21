@@ -91,11 +91,15 @@ function parseBank(file, modId, modName) {
 // ---------- 2b. 应用技术大题（16 md）----------
 function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function md2html(t){
-  // ```代码块→<pre>；其余行→<br>拼接；**x**→<b>
+  // ```代码块→<pre>（```svg 块=原生SVG图，直插不走转义）；其余行→<br>拼接；**x**→<b>
   const parts = t.split(/```/);
   let html='';
   parts.forEach((p,i)=>{
-    if(i%2===1){ html+='<pre>'+esc(p.replace(/\s+$/,''))+'</pre>'; }
+    if(i%2===1){
+      const body = p.replace(/^\s*svg\s*\n/, '').trim();   // ```svg 围栏带语言标记，剥掉首行
+      if(/^<svg[\s>]/.test(body)){ html+='<div style="text-align:center;margin:8px 0">'+body+'</div>'; }
+      else{ html+='<pre>'+esc(p.replace(/\s+$/,''))+'</pre>'; }
+    }
     else{
       let lines = p.split(/\r?\n/).map(l=>l.replace(/^>\s?/,'')).filter((l,idx,arr)=> !(l.trim()==='' && (idx===0||idx===arr.length-1)));
       html += esc(lines.join('\n')).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
