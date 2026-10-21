@@ -63,7 +63,7 @@ W.push('| 题库 | 已答 | 错 | 正确率 | 去哪补 |');
 W.push('|---|---|---|---|---|');
 for(const b of order){
   if(!stat[b]) continue;
-  const rate = b === 'mock' ? '—（摸底卷只收录错题；实考 27/75）' : pct(stat[b].w, stat[b].n);
+  const rate = b === 'mock' ? '—（重做后 ' + (stat[b].n - stat[b].w) + '/' + stat[b].n + '）' : pct(stat[b].w, stat[b].n);
   W.push('| ' + (BANK_NAME[b] || b) + ' | ' + stat[b].n + ' | ' + stat[b].w + ' | ' + rate + ' | ' + (GO_TO[b] || '') + ' |');
 }
 const noAns = ['sw','ds','db','os','hw','pl'].filter(b => !stat[b] || stat[b].n === 0);
