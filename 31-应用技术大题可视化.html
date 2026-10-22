@@ -385,6 +385,51 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   </div>
  </div>
  <div class="card">
+  <h2>📖 完整范例③：订单三实体链（16号②-2 同源，1:n 接 m:n、双属性挂菱形）</h2>
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:13.5px;line-height:1.7">
+   <b>【题目描述】</b>客户在商城下订单，一张订单只属一名客户；一张订单可包含多种商品，每种商品可进多张订单，订单明细需记录数量与成交单价。<span style="color:#2563eb">→ 先自己画：圈三实体 → 两句语义定两个菱形和类型 → 再想两个"明细属性"挂哪，对照下图。</span>
+  </div>
+  <svg viewBox="0 0 860 430" width="100%" style="max-width:860px" xmlns="http://www.w3.org/2000/svg">
+  <rect x="60" y="117" width="120" height="66" fill="#fef3c7" stroke="#0f172a" stroke-width="1.5"/>
+  <text x="120" y="143" text-anchor="middle" font-size="14" fill="#0f172a">客户</text>
+  <text x="120" y="169" text-anchor="middle" font-size="12.5" fill="#7c2d12"><tspan text-decoration="underline">客户号</tspan>（主键）</text>
+  <rect x="370" y="107" width="130" height="86" fill="#fef3c7" stroke="#0f172a" stroke-width="1.5"/>
+  <text x="435" y="133" text-anchor="middle" font-size="14" fill="#0f172a">订单</text>
+  <text x="435" y="159" text-anchor="middle" font-size="12.5" fill="#7c2d12"><tspan text-decoration="underline">订单号</tspan>（主键）</text>
+  <text x="435" y="183" text-anchor="middle" font-size="12" fill="#7c2d12">下单时间</text>
+  <rect x="690" y="117" width="120" height="66" fill="#fef3c7" stroke="#0f172a" stroke-width="1.5"/>
+  <text x="750" y="143" text-anchor="middle" font-size="14" fill="#0f172a">商品</text>
+  <text x="750" y="169" text-anchor="middle" font-size="12.5" fill="#7c2d12"><tspan text-decoration="underline">商品号</tspan>（主键）</text>
+  <polygon points="270,120 310,150 270,180 230,150" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="270" y="155" text-anchor="middle" font-size="13" fill="#0f172a">下单</text>
+  <polygon points="595,120 635,150 595,180 555,150" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="595" y="155" text-anchor="middle" font-size="12.5" fill="#0f172a">订单明细</text>
+  <ellipse cx="530" cy="280" rx="40" ry="20" fill="#fff" stroke="#4f46e5" stroke-width="1.2"/>
+  <text x="530" y="285" text-anchor="middle" font-size="11.5" fill="#0f172a">数量</text>
+  <ellipse cx="665" cy="280" rx="52" ry="20" fill="#fff" stroke="#4f46e5" stroke-width="1.2"/>
+  <text x="665" y="285" text-anchor="middle" font-size="11.5" fill="#0f172a">成交单价</text>
+  <line x1="578" y1="176" x2="536" y2="262" stroke="#4f46e5" stroke-width="1.2"/>
+  <line x1="612" y1="176" x2="658" y2="262" stroke="#4f46e5" stroke-width="1.2"/>
+  <g stroke="#0f172a" stroke-width="1.5">
+    <line x1="180" y1="150" x2="230" y2="150"/>
+    <line x1="310" y1="150" x2="370" y2="150"/>
+    <line x1="500" y1="150" x2="555" y2="150"/>
+    <line x1="635" y1="150" x2="690" y2="150"/>
+  </g>
+  <g font-size="13" font-weight="bold" fill="#dc2626">
+    <text x="200" y="138">1</text><text x="345" y="138">n</text>
+    <text x="518" y="138">m</text><text x="665" y="138">n</text>
+  </g>
+  <text x="430" y="400" text-anchor="middle" font-size="12" fill="#15803d">红色为联系类型；数量/成交单价挂在「订单明细」联系上；主键已下划线，其余属性见说明</text>
+</svg>
+  <div class="grid2" style="margin-top:8px">
+   <div class="fcard"><b>三实体两联系</b>客户—下单—订单—订单明细—商品：先 1:n 接 m:n 串联；菱形名取说明动词（下单/订单明细），"明细"本身就是 m:n 联系的名字</div>
+   <div class="fcard"><b>双属性挂菱形</b>数量、成交单价都描述"哪张订单含哪种商品"这件事 → 都挂「订单明细」；下单时间描述订单本身 → 写进订单框（放客户/商品框都错）</div>
+   <div class="fcard"><b>转四张表</b>客户(客户号)、订单(订单号+客户号外键)、商品(商品号)、订单明细(订单号+商品号组合主键+数量+成交单价)——明细表是第3题三表 JOIN 的枢纽</div>
+   <div class="fcard"><b>配套自测</b>17号大题②-2：题目要求自己画图，参考答案即此图，另含订单总金额 SQL 与 UPDATE</div>
+  </div>
+ </div>
+ <div class="card">
   <h2>📖 SQL 三连速览（16号②-4 同源，真题②必考写法）</h2>
   <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:12.5px;overflow-x:auto">-- 1. 三表连接查"借书未还"（NULL 判断必须 IS NULL，不能 = NULL）
 SELECT r.Name, b.Title

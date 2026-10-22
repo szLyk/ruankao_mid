@@ -102,7 +102,8 @@ function md2html(t){
     }
     else{
       let lines = p.split(/\r?\n/).map(l=>l.replace(/^>\s?/,'')).filter((l,idx,arr)=> !(l.trim()==='' && (idx===0||idx===arr.length-1)));
-      html += esc(lines.join('\n')).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+      // <u>主键</u> 放行为真下划线（其余 HTML 仍转义）
+      html += esc(lines.join('\n')).replace(/&lt;u&gt;/g,'<u>').replace(/&lt;\/u&gt;/g,'</u>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
     }
   });
   return html;
