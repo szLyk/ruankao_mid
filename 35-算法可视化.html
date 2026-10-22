@@ -49,8 +49,54 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 </header>
 <main>
 
+<!-- ============ Tab0 考频重点 ============ -->
+<section id="s-hot" class="on">
+ <div class="tip">依据<b>近十余年下午题④（C 算法填空，15 分）</b>公开真题归纳 + 培训共识分级。联网核实：DP 近 14 年出现 11 次约占 25%（背包 2018下/2021下 · 字符串 2014下/2020下 · 路径 2017上/2019上）；十年五类中贪心与 DP 出镜率最高；机考时代回忆版不全，按经典池不变处理。配套文档：39-算法考频重点.md</div>
+ <div class="card">
+  <h2>📌 命题规律：15 分 = 填空 6~9 + 策略识别 3 + 复杂度 3 + 实例推演 3</h2>
+  <table>
+   <tr><th>拿分点</th><th>怎么拿</th></tr>
+   <tr><td><b>6 分离码分</b>（策略+复杂度+推演）</td><td>策略=看循环结构四选一；复杂度=<b>背表</b>（二分 O(logn)/快排 O(nlogn)/冒泡 O(n²)/暴力递归 O(2ⁿ)）；推演=草稿代入题目数据走一遍——<b>不写代码也拿满</b></td></tr>
+   <tr><td><b>填空 6~9 分</b></td><td>注释是半成品答案；句法三查（类型移植/左右匹配/对称行照抄）；填完代入验证</td></tr>
+   <tr><td><b>目标 7~10 分</b></td><td>共识：④是分水岭但阅卷踩点宽松，<b>绝不死磕</b>，时间不够先做⑤回头再填</td></tr>
+  </table>
+ </div>
+ <div class="card">
+  <h2>🔥 T0 冲刺必拿（5 板块）——下午④主力，模板必须会默写</h2>
+  <div class="grid3">
+   <div class="fcard" onclick="showTab('map')"><b>动态规划</b><br>14年考11次≈25%（头牌）：背包 2018下/2021下 · 字符串 2014下/2020下 · 路径 2017上/2019上 · 钢条切割<br><span style="color:#64748b">热区：dp[i][j]=转移方程、初始化、循环边界</span></div>
+   <div class="fcard" onclick="showTab('map')"><b>贪心</b><br>十年统计出镜率并列最高：活动安排/哈夫曼/区间/机器调度<br><span style="color:#64748b">信号："每步当前最优""不追求全局最优"</span></div>
+   <div class="fcard" onclick="showTab('map')"><b>分治与二分</b><br>快排/归并/二分——模板最固定：lo=mid+1、递归两半、merge 行<br><span style="color:#64748b">信号："分而治之""每次折半"</span></div>
+   <div class="fcard" onclick="showTab('map')"><b>递归递推</b><br>斐波那契/阶乘/汉诺塔——送分空：出口 n&lt;=1、调用自身、递推项</div>
+   <div class="fcard" onclick="showTab('fill')"><b>简单数据操作</b><br>数组最值/计数/逆置/字符串处理——循环边界+交换三行<br><span style="color:#64748b">信号："遍历求…""逆置"</span></div>
+  </div>
+  <div class="tip" style="margin-top:8px">复习动作：每板块 30~40 分钟——模板默写 + 21 号对应节 + 16 卷④实做。</div>
+ </div>
+ <div class="card">
+  <h2>🟡 T1 常考巩固（3 板块）——认得结构、两问必拿</h2>
+  <div class="grid3">
+   <div class="fcard" onclick="showTab('strat')"><b>回溯法</b><br>三要素：递归尝试→约束检查→隐式回溯；N皇后/0-1背包回溯/着色<br><span style="color:#64748b">考到就是"回溯语句+约束条件"两空</span></div>
+   <div class="fcard" onclick="showTab('fill')"><b>链表/树/图操作</b><br>逆置三行（先接后断）、遍历出口 p==NULL、BFS队/DFS栈</div>
+   <div class="fcard" onclick="showTab('sort')"><b>排序手算与复杂度</b><br>堆建堆/冒泡轮次/快排一次分区+稳定性——考手算不考代码，背表即可</div>
+  </div>
+  <div class="tip" style="margin-top:8px">复习动作：每板块 15~20 分钟。</div>
+ </div>
+ <div class="card">
+  <h2>⚪ T2 认得出即可（随缘，共 20 分钟）</h2>
+  <div class="tip">KMP 的 next 数组、拓扑排序入度法、B树性质、并查集、图着色——2010 年代考池里有（最短装配时间/拓扑/堆排序），但近十年主力不是它们；<b>认得名字+一句话用途</b>即可，不背实现。</div>
+ </div>
+ <div class="card">
+  <h2>📋 冲刺路径（按剩余天数）</h2>
+  <div class="tip">
+   只剩 2~3 天：T0 五板块过模板（DP 手算一遍背包表）→ 16 卷④挑 2 道限时做 → 复杂度表背熟。T2 只扫名字。<br>
+   剩 4~5 天：T0 精学 + T1 过一遍 + 35 号「☕ 填空演练」5 程序刷完 + 16 卷④-1~④-5 全做。<br>
+   答题口诀：先读要求→主函数→子函数；注释=半成品答案；填空代入手算验证；策略+复杂度两问先拿。
+  </div>
+ </div>
+</section>
+
 <!-- ============ Tab1 考纲地图 ============ -->
-<section id="s-map" class="on">
+<section id="s-map">
  <div class="tip">考纲算法全景（三级考频照搬《21-算法大全》§〇）：<b>⭐⭐⭐ 是大题④反复考的，必须会默写；⭐⭐ 偶考+选择题；⭐ 选择题扫一眼。</b>每项标了 21 号对应节与"填空热区"。</div>
  <div class="card">
   <h2>⭐⭐⭐ 必考（大题④真题反复考）</h2>
@@ -192,7 +238,7 @@ const LOW = [
 })();
 
 /* ================= 页面骨架 ================= */
-const SECTIONS = [['map','📋 考纲地图'],['sort','🔢 排序与查找'],['strat','🧭 策略与NP'],['fill','☕ C代码填空'],['kgmap','🕸 知识图谱']];
+const SECTIONS = [['hot','🎯 考频重点'],['map','📋 考纲地图'],['sort','🔢 排序与查找'],['strat','🧭 策略与NP'],['fill','☕ C代码填空'],['kgmap','🕸 知识图谱']];
 function showTab(id){
   SECTIONS.forEach(s => document.getElementById('s-' + s[0]).classList.toggle('on', s[0] === id));
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
@@ -202,7 +248,7 @@ function showTab(id){
   SECTIONS.forEach(s => {
     const b = document.createElement('button');
     b.textContent = s[1]; b.dataset.t = s[0];
-    if(s[0] === 'map') b.classList.add('on');
+    if(s[0] === 'hot') b.classList.add('on');
     b.onclick = () => showTab(s[0]);
     nav.appendChild(b);
   });
