@@ -114,6 +114,20 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 <section id="s-all">
  <div class="tip">三大类 23 模式一屏总览：<b>创建型管"怎么 new"、结构型管"怎么组装"、行为型管"怎么交互"</b>。点卡片看意图/角色/信号词；⭐ = 大题⑤真题考过。</div>
  <div class="card">
+  <h2>📐 表7-1 GoF 分类总纲（类/对象 × 三大类型）——上午题直接出题表</h2>
+  <table>
+   <tr><th>范围</th><th>创建型（5）</th><th>结构型（7）</th><th>行为型（11）</th></tr>
+   <tr><td><b>类</b>（4 个，靠继承）</td><td>工厂方法 Factory Method</td><td>适配器（类）Adapter</td><td>解释器 Interpreter、模板方法 Template Method</td></tr>
+   <tr><td><b>对象</b>（19 个，靠组合）</td><td>抽象工厂、建造者、原型、单例</td><td>适配器（对象）、桥接、组合、外观、享元、代理</td><td>职责链、命令、迭代器、中介者、备忘录、观察者、状态、策略、访问者</td></tr>
+  </table>
+  <div class="grid3" style="margin-top:8px">
+   <div class="fcard"><b>必背① 类范围只有 4 个</b><br>工厂方法、类适配器、解释器、模板方法——靠<b>继承</b>在编译期把关系定死；其余 19 个靠<b>组合</b>运行期搭建。考"属于类模式的是"就从这 4 个里挑</div>
+   <div class="fcard"><b>必背② 类行为型只有 2 个</b><br>解释器、模板方法——共同点"骨架用继承、子类填细节"，最容易出干扰项的角落</div>
+   <div class="fcard"><b>必背③ 适配器横跨两行</b><br>类适配器（继承实现）与对象适配器（组合实现）是同一模式的两种写法；大题⑤填空考的是<b>对象适配器</b></div>
+  </div>
+  <div class="tip" style="margin-top:8px">5+7+11=23 校验 ✓。拿不准某模式在哪列，横着问自己：它管<b>创建</b>、管<b>组装</b>、还是管<b>交互</b>？方向感比死记可靠。</div>
+ </div>
+ <div class="card">
   <h2>📇 23 模式卡片墙（点卡看详情）</h2>
   <div id="pall"></div>
   <div id="pdetail" style="margin-top:10px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px;min-height:40px"><span style="color:var(--mut)">点任意模式卡：意图 · 参与者角色 · 信号词 · 真题题号。</span></div>
