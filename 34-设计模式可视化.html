@@ -135,7 +135,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 <section id="s-fill">
  <div class="tip">大题⑤命题规律：5 空几乎固定 = <b>2 个接口/抽象类名 + 1 个 new 具体类 + 1 个多态调用 + 1 个该模式特有动作</b>。答案一定能在题面已给代码里找到对称写法——先找同类行照抄。</div>
  <div class="card">
-  <h2>☕ Java 填空演练（六大高频 · 每次随机一型）</h2>
+  <h2>☕ Java 填空演练（九大高频 · 每次随机一型）</h2>
   <div class="row"><button class="btn pri" onclick="f5New()">🎲 出一道</button><span id="f5Kind" style="font-size:13.5px;color:var(--mut)"></span></div>
   <div id="f5Q" style="margin-top:6px"></div>
   <div class="row">
@@ -352,7 +352,7 @@ function showTab(id){
   SECTIONS.forEach(s => {
     const b = document.createElement('button');
     b.textContent = s[1]; b.dataset.t = s[0];
-    if(s[0] === 'all') b.classList.add('on');
+    if(s[0] === 'hot') b.classList.add('on');
     b.onclick = () => showTab(s[0]);
     nav.appendChild(b);
   });
@@ -543,7 +543,7 @@ window.f5New = function(){
   do { k = Math.floor(Math.random() * F5.length); } while (k === f5idx && F5.length > 1);
   f5idx = k;
   f5q = F5[k].build();
-  document.getElementById('f5Kind').textContent = '本空模式已隐藏——做完再看标题（题型共 6 类轮换）';
+  document.getElementById('f5Kind').textContent = '本空模式已隐藏——做完再看标题（题型共 9 类轮换）';
   document.getElementById('f5Q').innerHTML = f5q.stem;
   f5q.clear.forEach(id => { const i = document.getElementById(id); if(i) i.value = ''; });
   document.getElementById('f5Fb').innerHTML = '';
