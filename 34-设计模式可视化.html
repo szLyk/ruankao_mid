@@ -112,7 +112,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 
 <!-- ============ Tab1 总览 ============ -->
 <section id="s-all">
- <div class="tip">三大类 23 模式一屏总览：<b>创建型管"怎么 new"、结构型管"怎么组装"、行为型管"怎么交互"</b>。点卡片看意图/角色/信号词；⭐ = 大题⑤真题考过。</div>
+ <div class="tip">三大类 23 模式一屏总览：<b>创建型管"怎么 new"、结构型管"怎么组装"、行为型管"怎么交互"</b>。点卡片看意图/角色/信号词；⭐ = 大题⑤真题考过；🔥T0 / 🟡T1 / ⚪T2 徽章 = 考频分档（与「🎯 考频重点」页签同口径，38 号文档有逐档复习动作）。</div>
  <div class="card">
   <h2>📐 表7-1 GoF 分类总纲（类/对象 × 三大类型）——上午题直接出题表</h2>
   <table>
@@ -374,12 +374,18 @@ function showTab(id){
 
 /* ================= 总览卡墙 + 详情 ================= */
 const CAT = { c: '🟣 创建型(5)', s: '🔵 结构型(7)', b: '🟠 行为型(11)' };
+const TIER = { strat:'T0', obs:'T0', dec:'T0', state:'T0', facade:'T0', bridge:'T0', single:'T0', fm:'T0', ad:'T0',
+  af:'T1', proxy:'T1', comp:'T1', cmd:'T1', memento:'T1', tmpl:'T1',
+  iter:'T2', proto:'T2', builder:'T2', fly:'T2', chain:'T2', medi:'T2', vis:'T2', inter:'T2' };
+const TIERLAB = { T0:['🔥 T0 必拿','#b45309','#fef3c7','#fcd34d'], T1:['🟡 T1 常考','#a16207','#fefce8','#fde68a'], T2:['⚪ T2 认得','#64748b','#f1f5f9','#cbd5e1'] };
+const tierBadge = id => { const L = TIERLAB[TIER[id]] || ['', '', '', 'transparent'];
+  return '<span style="font-size:11px;font-weight:700;color:' + L[1] + ';background:' + L[2] + ';border:1px solid ' + L[3] + ';border-radius:999px;padding:0 7px;margin-left:4px;white-space:nowrap">' + L[0] + '</span>'; };
 function pallDraw(){
   const parts = [];
   ['c','s','b'].forEach(k => {
     parts.push('<h4>' + CAT[k] + '</h4><div class="grid3">');
     P.filter(p => p.k === k && !p.hide).forEach(p => {
-      parts.push('<div class="fcard pcard" onclick="pPick(\'' + p.id + '\')"><b>' + (p.h ? '⭐ ' : '') + p.n + '</b><br><span style="color:#475569">' + p.one + '</span></div>');
+      parts.push('<div class="fcard pcard" onclick="pPick(\'' + p.id + '\')"><b>' + (p.h ? '⭐ ' : '') + p.n + '</b>' + tierBadge(p.id) + '<br><span style="color:#475569">' + p.one + '</span></div>');
     });
     parts.push('</div>');
   });
@@ -388,7 +394,7 @@ function pallDraw(){
 window.pPick = function(id){
   const p = P.find(x => x.id === id);
   document.getElementById('pdetail').innerHTML =
-    '<b style="color:var(--acc)">' + (p.h ? '⭐ ' : '') + p.n + '</b>　' + p.one +
+    '<b style="color:var(--acc)">' + (p.h ? '⭐ ' : '') + p.n + '</b>' + tierBadge(p.id) + '　' + p.one +
     '<br><b>参与者：</b>' + (p.roles || '—') +
     '<br><b>信号词：</b>' + (p.sig || '—') +
     (p.code ? '<div class="code">' + p.code.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>' : '') +
